@@ -14,6 +14,15 @@ void signal_callback_handler(int signum)
   cout << "#DEBUG: Start shutdown client" << endl;
 }
 
+void update_file_info(int &lastModifyHour, int &lastModifyMin, int &lastModifySec)
+{
+    stat("temp/out.txt", &attrib);
+    foo = gmtime(&(attrib.st_mtime));
+    lastModifyHour = foo->tm_hour;
+    lastModifyMin = foo->tm_min;
+    lastModifySec = foo->tm_sec;
+}
+
 int main()
 {
     signal(SIGINT, signal_callback_handler);
@@ -76,11 +85,7 @@ int main()
                 fileIn << buffor[py][px];
     fileIn.close();
 
-    stat("temp/out.txt", &attrib);
-    foo = gmtime(&(attrib.st_mtime));
-    lastModifyHour = foo->tm_hour;
-    lastModifyMin = foo->tm_min;
-    lastModifySec = foo->tm_sec;
+    update_file_info(lastModifyHour, lastModifyMin, lastModifySec);
 
     while(!end_program)
     {
@@ -105,9 +110,8 @@ int main()
 
         if(isModify == true)
         {
-            lastModifyHour = foo->tm_hour;
-            lastModifyMin = foo->tm_min;
-            lastModifySec = foo->tm_sec;
+            update_file_info(lastModifyHour, lastModifyMin, lastModifySec);
+
             cout << "#DEBUG: out.txt is modify" << endl;
 
             while(1)
@@ -179,6 +183,8 @@ int main()
                     if(buffor[py][px] != '\0')
                         fileIn << buffor[py][px];
             fileIn.close();
+
+            update_file_info(lastModifyHour, lastModifyMin, lastModifySec);
         }
 
         /*

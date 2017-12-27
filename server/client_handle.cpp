@@ -32,6 +32,7 @@ void manage_client(int nClientDesc)
             {
                 if(CST[i].allupdate == false)
                 {
+                    cout << "#DEBUG:"<< nClientDesc << " allupdate status " << CST[i].allupdate  << endl;
                     temp = 99;
                     i = 100;
                 }
@@ -63,13 +64,13 @@ void manage_client(int nClientDesc)
     else if(code_msg == 222)
     {
         read(nClientDesc, &chr, sizeof(chr));
-        cout << "#DEBUG: client_handle chr - " << chr << endl;
+        //cout << "#DEBUG: client_handle chr - " << chr << endl;
         fifo.ch = chr;
         read(nClientDesc, &posX, sizeof(posX));
-        cout << "#DEBUG: client_handle posX - " << posX << endl;
+        //cout << "#DEBUG: client_handle posX - " << posX << endl;
         fifo.posX = posX;
         read(nClientDesc, &posY, sizeof(posY));
-        cout << "#DEBUG: client_handle posY - " << posY << endl;
+        //cout << "#DEBUG: client_handle posY - " << posY << endl;
         fifo.posY = posY;
         fifo.type = 10;
 
@@ -84,7 +85,7 @@ void manage_client(int nClientDesc)
         }
 
         for(int i = 0; i < CLIENT_LIMIT; i++)
-            if(CST[i].descriptor != -1)
+            if(CST[i].descriptor != nClientDesc)
                 CST[i].allupdate = false;
     }
     else if(code_msg == 333)
