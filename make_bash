@@ -1,12 +1,12 @@
 #!/bin/bash
 
-str=$(sudo dpkg -s python-qt4 | grep -oh "installed")
+str=$(sudo dpkg -s python3-pyqt4 | grep -oh "installed")
 reset
 if [ "$str" == "installed" ]; then
-    echo "> Python-qt4 installed"
+    echo "> Python3-qt4 installed"
 else
-    echo "> Wait we need lib :P Python-qt4"
-    sudo apt-get install python-qt4
+    echo "> Wait we need lib :P Python3-qt4"
+    sudo apt-get install python3-pyqt4
 fi
 
 echo "> Compile server ..."
