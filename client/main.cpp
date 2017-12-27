@@ -124,6 +124,7 @@ int main()
             {
                 for(px = 0; px < line.length(); px++)
                     buffor[py][px] = line[px];
+                buffor[py][px+1] = '\n';
                 ++py;
             }
             fileOut.close();
