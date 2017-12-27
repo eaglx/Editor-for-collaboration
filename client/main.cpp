@@ -38,7 +38,7 @@ int main()
     char chr;
     int posX;
     int posY;
-    //int activeUsers;
+    int activeUsers;
 
     ofstream fileIn;
     fstream fileOut;
@@ -188,7 +188,7 @@ int main()
             update_file_info(lastModifyHour, lastModifyMin, lastModifySec);
         }
 
-        /*
+
         // **********CHECK ACTIVE OTHER CLIENTS**********
         usleep(1000 * 1); // 1 seconds
         code_msg = 333;
@@ -244,7 +244,7 @@ int main()
             fileIn << posY << '\n';
         }
         fileIn.close();
-        */
+        
     }
     close(socketDesc);
     return 0;
