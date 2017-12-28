@@ -55,7 +55,7 @@ class Window(QtGui.QMainWindow):
             userNum = int(text)
         except:
             userNum = 0
-
+        '''
         if (userNum != 0) and (userNum < 10):
             self.textFieldEditTwo.clear()
             self.textFieldEditTwo.setTextColor(QtGui.QColor("#000000"))
@@ -68,6 +68,7 @@ class Window(QtGui.QMainWindow):
             self.textFieldEditTwo.setTextColor(QtGui.QColor("#000000"))
             self.textFieldEditTwo.append('Active users:')
             self.textFieldEditTwo.append('0')
+        '''
 
     def __text__selection__changed__(self):
         self.textFieldEdit.textChanged.disconnect()
@@ -79,26 +80,24 @@ class Window(QtGui.QMainWindow):
         text = f.read()
         f.close()
 
+        text = text.split()
         try:
             userNum = int(text[0])
         except:
             userNum = 0
         if(userNum != 0):
-            try:
-                temp_count = 1
-                for i in range(1, userNum):
-                    cst = int(text[temp_count])
-                    temp_count += 1
-                    ced = int(text[i])
-                    temp_count += 1
-                    if cst != ced:
-                        cursor_new.setPosition(cst)
-                        cursor_new.setPosition(ced, QtGui.QTextCursor.KeepAnchor)
-                        format.setBackground(QtGui.QBrush(QtGui.QColor(self.colorsUsers[userNum])))
-                        cursor_new.mergeCharFormat(format)
-                        self.textFieldEdit.setTextCursor(cursor_new)
-            except:
-                pass
+            temp_count = 1
+            for i in range(userNum):
+                cst = int(text[temp_count][0])
+                temp_count += 1
+                ced = int(text[temp_count][0])
+                temp_count += 1
+                if cst != ced:
+                    cursor_new.setPosition(cst)
+                    cursor_new.setPosition(ced, QtGui.QTextCursor.KeepAnchor)
+                    format.setBackground(QtGui.QBrush(QtGui.QColor(self.colorsUsers[i])))
+                    cursor_new.mergeCharFormat(format)
+                    self.textFieldEdit.setTextCursor(cursor_new)
 
         self.textFieldEdit.setTextCursor(cursor_old)
         self.textFieldEdit.textChanged.connect(self.__text_field_edit_event_func__)
