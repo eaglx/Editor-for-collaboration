@@ -51,7 +51,10 @@ class Window(QtGui.QMainWindow):
         f = open("temp/activusr.txt", "r")
         text = f.read()
         f.close()
-        userNum = int(text)
+        try:
+            userNum = int(text)
+        except:
+            userNum = 0
 
         if userNum != 0:
             self.textFieldEditTwo.clear()
@@ -62,6 +65,7 @@ class Window(QtGui.QMainWindow):
         else:
             self.textFieldEditTwo.clear()
             self.textFieldEditTwo.append('Active users:')
+            self.textFieldEditTwo.append('0')
 
     def __text__selection__changed__(self):
         self.textFieldEdit.textChanged.disconnect()
