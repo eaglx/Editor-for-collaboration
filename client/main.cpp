@@ -208,6 +208,7 @@ int main()
         usleep(1000 * 1); // 1 seconds
         code_msg = 444;
         //cout << "#DEBUG: code_msg: " << code_msg << endl;
+        posX = posY = 0;
         while(1)
         {
             fileOut.open("temp/selecpos.txt");
@@ -218,34 +219,38 @@ int main()
         getline(fileOut, line);
         posY = atoi(line.c_str());
         fileOut.close();
-        write(socketDesc, &code_msg, sizeof(code_msg));
-        write(socketDesc, &code_msg, sizeof(code_msg));
-        write(socketDesc, &posX, sizeof(posX));
-        write(socketDesc, &posY, sizeof(posY));
+        if(posX != posY)
+        {
+            //cout << "#DEBUG: User select pos: " << posX << ":" << posY << endl;
+            write(socketDesc, &code_msg, sizeof(code_msg));
+            write(socketDesc, &code_msg, sizeof(code_msg));
+            write(socketDesc, &posX, sizeof(posX));
+            write(socketDesc, &posY, sizeof(posY));
+        }
 
         // **********DOWNLOAD SELECTED TEXT BY OTHERS**********
         usleep(1000 * 1); // 1 seconds
         code_msg = 555;
         //cout << "#DEBUG: code_msg: " << code_msg << endl;
+        activeUsers = 0;
+        write(socketDesc, &code_msg, sizeof(code_msg));
+        write(socketDesc, &code_msg, sizeof(code_msg));
+        read(socketDesc, &activeUsers, sizeof(activeUsers));
         while(1)
         {
             fileIn.open("temp/selecposother.txt");
             if(fileIn.is_open()) break;
         }
-        activeUsers = 0;
-        write(socketDesc, &code_msg, sizeof(code_msg));
-        write(socketDesc, &code_msg, sizeof(code_msg));
-        read(socketDesc, &activeUsers, sizeof(activeUsers));
-        if((activeUsers != 0) && (activeUsers < 10))
+        if(activeUsers != 0)
         {
-          fileIn << activeUsers << '\n';
-          for(int i = 0; i < activeUsers; i++)
-          {
+            fileIn << activeUsers << '\n';
+            for(int i = 0; i < activeUsers; i++)
+            {
               read(socketDesc, &posX, sizeof(posX));
               read(socketDesc, &posY, sizeof(posY));
               fileIn << posX << '\n';
               fileIn << posY << '\n';
-          }
+            }
         }
         else
         {

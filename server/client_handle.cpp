@@ -111,7 +111,7 @@ void manage_client(int nClientDesc)
         {
             write(nClientDesc, &tempSCD, sizeof(tempSCD));
             for(int i = 0; i < CLIENT_LIMIT; i++)
-                if(CST[i].descriptor != -1)
+                if((CST[i].descriptor != -1) && (CST[i].descriptor != nClientDesc))
                 {
                     write(nClientDesc, &CST[i].selectStart, sizeof(CST[i].selectStart));
                     write(nClientDesc, &CST[i].selectEnd, sizeof(CST[i].selectEnd));
