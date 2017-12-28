@@ -91,12 +91,18 @@ class Window(QtGui.QMainWindow):
                 temp_count += 1
                 ced = int(text[temp_count][0])
                 temp_count += 1
-                #if cst != ced:
-                cursor_new.setPosition(cst)
-                cursor_new.setPosition(ced, QtGui.QTextCursor.KeepAnchor)
-                format.setBackground(QtGui.QBrush(QtGui.QColor(self.colorsUsers[i])))
-                cursor_new.mergeCharFormat(format)
-                self.textFieldEdit.setTextCursor(cursor_new)
+                if cst != ced:
+                    cursor_new.setPosition(cst)
+                    cursor_new.setPosition(ced, QtGui.QTextCursor.KeepAnchor)
+                    format.setBackground(QtGui.QBrush(QtGui.QColor(self.colorsUsers[i])))
+                    cursor_new.mergeCharFormat(format)
+                    self.textFieldEdit.setTextCursor(cursor_new)
+                else:
+                    cursor_new.setPosition(cst)
+                    cursor_new.setPosition(ced, QtGui.QTextCursor.KeepAnchor)
+                    format.setBackground(QtGui.QBrush(QtGui.QColor("#FFFFFF")))
+                    cursor_new.mergeCharFormat(format)
+                    self.textFieldEdit.setTextCursor(cursor_new)
 
         format.setBackground(QtGui.QBrush(QtGui.QColor("#FFFFFF")))
         cursor_old.mergeCharFormat(format)
