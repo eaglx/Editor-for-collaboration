@@ -46,7 +46,7 @@ void manage_client(int nClientDesc)
         if(temp == 99)
         {
             write(nClientDesc, &temp, sizeof(temp));
-
+            //cout << "#DEBUG: client " << nClientDesc << " send update file" << endl;
             for(int i = 0; i < PAGE_X; i++)
                 for(int j = 0; j < PAGE_Y; j++)
                     write(nClientDesc, &plik->buffor[i][j], sizeof(plik->buffor[i][j]));

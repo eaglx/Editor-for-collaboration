@@ -135,6 +135,12 @@ int main()
                     buffor[py][i] = '\0';
 
             for(int i = 0; i < PAGE_X; i++)
+                for(int j = 1; j < PAGE_Y; j++)
+                    if(buffor[i][j-1] == buffor[i][j])
+                        if(buffor[i][j] == '\n')
+                            buffor[i][j] = '\0';
+
+            for(int i = 0; i < PAGE_X; i++)
                 for(int j = 0; j < PAGE_Y; j++)
                 {
                     chr = buffor[i][j];

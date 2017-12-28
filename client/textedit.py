@@ -20,11 +20,11 @@ class Window(QtGui.QMainWindow):
     def __home__(self):
         self.textFieldEdit = QtGui.QTextEdit(self)
         self.textFieldEdit.resize(400,500)
-        self.textFieldEdit.move(40,20)
+        self.textFieldEdit.move(35,20)
 
         self.textFieldEditTwo = QtGui.QTextEdit(self)
         self.textFieldEditTwo.resize(200,300)
-        self.textFieldEditTwo.move(480,30)
+        self.textFieldEditTwo.move(440,30)
         self.textFieldEditTwo.setReadOnly(True)
 
         self.textFieldEditTwo.append('Active users:')
@@ -91,13 +91,15 @@ class Window(QtGui.QMainWindow):
                 temp_count += 1
                 ced = int(text[temp_count][0])
                 temp_count += 1
-                if cst != ced:
-                    cursor_new.setPosition(cst)
-                    cursor_new.setPosition(ced, QtGui.QTextCursor.KeepAnchor)
-                    format.setBackground(QtGui.QBrush(QtGui.QColor(self.colorsUsers[i])))
-                    cursor_new.mergeCharFormat(format)
-                    self.textFieldEdit.setTextCursor(cursor_new)
+                #if cst != ced:
+                cursor_new.setPosition(cst)
+                cursor_new.setPosition(ced, QtGui.QTextCursor.KeepAnchor)
+                format.setBackground(QtGui.QBrush(QtGui.QColor(self.colorsUsers[i])))
+                cursor_new.mergeCharFormat(format)
+                self.textFieldEdit.setTextCursor(cursor_new)
 
+        format.setBackground(QtGui.QBrush(QtGui.QColor("#FFFFFF")))
+        cursor_old.mergeCharFormat(format)
         self.textFieldEdit.setTextCursor(cursor_old)
         self.textFieldEdit.textChanged.connect(self.__text_field_edit_event_func__)
 
@@ -171,9 +173,13 @@ class Window(QtGui.QMainWindow):
         f = open("temp/out.txt", "r")
         self.text = f.read()
         f.close()
+        self.text = self.text.split('\n')
         copyCursor = self.textFieldEdit.textCursor()
         cursorPosition = self.textFieldEdit.textCursor().position()
-        self.textFieldEdit.setPlainText(self.text)
+        self.textFieldEdit.clear()
+        for i in range(len(self.text)):
+            self.textFieldEdit.append(self.text[i])
+            i = i * 2
 
         try:
             copyCursor.setPosition(cursorPosition)
