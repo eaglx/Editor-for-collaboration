@@ -56,14 +56,16 @@ class Window(QtGui.QMainWindow):
         except:
             userNum = 0
 
-        if userNum != 0:
+        if (userNum != 0) and (userNum < 10):
             self.textFieldEditTwo.clear()
+            self.textFieldEditTwo.setTextColor(QtGui.QColor("#000000"))
             self.textFieldEditTwo.append('Active users:')
             for i in range(userNum):
                 self.textFieldEditTwo.setTextColor(QtGui.QColor(self.colorsUsers[i]))
                 self.textFieldEditTwo.append('User_%d' % (i))
         else:
             self.textFieldEditTwo.clear()
+            self.textFieldEditTwo.setTextColor(QtGui.QColor("#000000"))
             self.textFieldEditTwo.append('Active users:')
             self.textFieldEditTwo.append('0')
 
@@ -74,26 +76,29 @@ class Window(QtGui.QMainWindow):
         cursor_new = self.textFieldEdit.textCursor() # User == remote, who select text
 
         f = open("temp/selecposother.txt", "r")
-        text = f.readlines()
-        userNum = 0
+        text = f.read()
         f.close()
+
         try:
-            for i in range(text.length):
-                if i == 0:
-                    if int(text[0]) == 0:
-                        break
-                cst = int(text[i])
-                i += 1
-                ced = int(text[i])
-                if cst != ced:
-                    cursor_new.setPosition(cst)
-                    cursor_new.setPosition(ced, QtGui.QTextCursor.KeepAnchor)
-                    format.setBackground(QtGui.QBrush(QtGui.QColor(self.colorsUsers[userNum])))
-                    cursor_new.mergeCharFormat(format)
-                    self.textFieldEdit.setTextCursor(cursor_new)
-                userNum += 1
+            userNum = int(text[0])
         except:
-            pass
+            userNum = 0
+        if(userNum != 0):
+            try:
+                temp_count = 1
+                for i in range(1, userNum):
+                    cst = int(text[temp_count])
+                    temp_count += 1
+                    ced = int(text[i])
+                    temp_count += 1
+                    if cst != ced:
+                        cursor_new.setPosition(cst)
+                        cursor_new.setPosition(ced, QtGui.QTextCursor.KeepAnchor)
+                        format.setBackground(QtGui.QBrush(QtGui.QColor(self.colorsUsers[userNum])))
+                        cursor_new.mergeCharFormat(format)
+                        self.textFieldEdit.setTextCursor(cursor_new)
+            except:
+                pass
 
         self.textFieldEdit.setTextCursor(cursor_old)
         self.textFieldEdit.textChanged.connect(self.__text_field_edit_event_func__)
