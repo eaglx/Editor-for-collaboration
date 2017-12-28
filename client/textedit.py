@@ -2,7 +2,7 @@ import sys
 from PyQt4 import QtGui, QtCore
 import re
 import os
-
+import subprocess
 
 class Window(QtGui.QMainWindow):
     def __init__(self):
@@ -222,6 +222,7 @@ if __name__ == '__main__':
         f = open("temp/activusr.txt", "w")
         f.write("0")
         f.close()
+    subprocess.Popen(["./client"])
     app = QtGui.QApplication(sys.argv)
     GUI = Window()
     sys.exit(app.exec_())

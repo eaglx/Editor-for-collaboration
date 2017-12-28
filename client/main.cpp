@@ -12,6 +12,7 @@ void signal_callback_handler(int signum)
   end_program = true;
   close(socketDesc);
   cout << "#DEBUG: Start shutdown client" << endl;
+  exit(0);
 }
 
 void update_file_info(int &lastModifyHour, int &lastModifyMin, int &lastModifySec)
@@ -21,6 +22,30 @@ void update_file_info(int &lastModifyHour, int &lastModifyMin, int &lastModifySe
     lastModifyHour = foo->tm_hour;
     lastModifyMin = foo->tm_min;
     lastModifySec = foo->tm_sec;
+}
+
+void check_existance()
+{
+    cout <<"#DEBUG: thread-check_existance running" << endl;
+    struct stat dirStat;
+    while(!end_program)
+    {
+        if(stat("temp", &dirStat) != -1)
+        {
+            if(S_ISDIR(dirStat.st_mode) == 0)
+            {
+                close(socketDesc);
+                end_program = true;
+            }
+        }
+        else
+        {
+            close(socketDesc);
+            end_program = true;
+        }
+    }
+    cout <<"#DEBUG: thread-check_existance stop" << endl;
+    raise(SIGINT);
 }
 
 int main()
@@ -87,6 +112,7 @@ int main()
 
     update_file_info(lastModifyHour, lastModifyMin, lastModifySec);
 
+    thread th_1(check_existance);
     while(!end_program)
     {
         // **********SEND CHANGES IN EDITED FILE**********
@@ -265,7 +291,9 @@ int main()
           fileIn << 0 << '\n';
         }
         fileIn.close();
+
     }
     close(socketDesc);
+    th_1.join();
     return 0;
 }
