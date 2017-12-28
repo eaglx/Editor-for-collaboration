@@ -124,7 +124,8 @@ int main()
             {
                 for(px = 0; px < line.length(); px++)
                     buffor[py][px] = line[px];
-                buffor[py][px+1] = '\n';
+                if(buffor[py][px] != '\n')
+                  buffor[py][px+1] = '\n';          // NEED ???
                 ++py;
             }
             fileOut.close();
@@ -188,11 +189,10 @@ int main()
             update_file_info(lastModifyHour, lastModifyMin, lastModifySec);
         }
 
-
         // **********CHECK ACTIVE OTHER CLIENTS**********
         usleep(1000 * 1); // 1 seconds
         code_msg = 333;
-        cout << "#DEBUG: code_msg: " << code_msg << endl;
+        //cout << "#DEBUG: code_msg: " << code_msg << endl;
         write(socketDesc, &code_msg, sizeof(code_msg));
         write(socketDesc, &code_msg, sizeof(code_msg));
         read(socketDesc, &activeUsers, sizeof(activeUsers));
@@ -203,11 +203,11 @@ int main()
         }
         fileIn << activeUsers;
         fileIn.close();
-
+        /*
         // **********SEND SELECTED TEXT BY SELF**********
         usleep(1000 * 1); // 1 seconds
         code_msg = 444;
-        cout << "#DEBUG: code_msg: " << code_msg << endl;
+        //cout << "#DEBUG: code_msg: " << code_msg << endl;
         while(1)
         {
             fileOut.open("temp/selecpos.txt");
@@ -226,7 +226,7 @@ int main()
         // **********DOWNLOAD SELECTED TEXT BY OTHERS**********
         usleep(1000 * 1); // 1 seconds
         code_msg = 555;
-        cout << "#DEBUG: code_msg: " << code_msg << endl;
+        //cout << "#DEBUG: code_msg: " << code_msg << endl;
         write(socketDesc, &code_msg, sizeof(code_msg));
         write(socketDesc, &code_msg, sizeof(code_msg));
         while(1)
@@ -244,7 +244,7 @@ int main()
             fileIn << posY << '\n';
         }
         fileIn.close();
-        
+        */
     }
     close(socketDesc);
     return 0;
