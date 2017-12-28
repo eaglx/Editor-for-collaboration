@@ -32,7 +32,7 @@ void manage_client(int nClientDesc)
             {
                 if(CST[i].allupdate == false)
                 {
-                    cout << "#DEBUG:"<< nClientDesc << " allupdate status " << CST[i].allupdate  << endl;
+                    //cout << "#DEBUG:"<< nClientDesc << " allupdate status " << CST[i].allupdate  << endl;
                     temp = 99;
                     i = 100;
                 }
@@ -105,15 +105,23 @@ void manage_client(int nClientDesc)
     }
     else if(code_msg == 555)
     {
-        int temp = numberClientsDescriptors - 1;
-        write(nClientDesc, &temp, sizeof(temp));
-        if(temp != 0)
+        int tempSCD = 0;
+        tempSCD = numberClientsDescriptors - 1;
+        if((tempSCD != 0) && (tempSCD < CLIENT_LIMIT))
+        {
+            write(nClientDesc, &tempSCD, sizeof(tempSCD));
             for(int i = 0; i < CLIENT_LIMIT; i++)
-                if(CST[i].descriptor != nClientDesc)
+                if(CST[i].descriptor != -1)
                 {
                     write(nClientDesc, &CST[i].selectStart, sizeof(CST[i].selectStart));
                     write(nClientDesc, &CST[i].selectEnd, sizeof(CST[i].selectEnd));
                 }
+        }
+        else
+        {
+          tempSCD = 0;
+          write(nClientDesc, &tempSCD, sizeof(tempSCD));
+        }
     }
     else cout << "#DEBUG: DFQ!!!!" << endl;
 }
