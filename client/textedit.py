@@ -55,7 +55,7 @@ class Window(QtGui.QMainWindow):
             userNum = int(text)
         except:
             userNum = 0
-        '''
+
         if (userNum != 0) and (userNum < 10):
             self.textFieldEditTwo.clear()
             self.textFieldEditTwo.setTextColor(QtGui.QColor("#000000"))
@@ -68,7 +68,6 @@ class Window(QtGui.QMainWindow):
             self.textFieldEditTwo.setTextColor(QtGui.QColor("#000000"))
             self.textFieldEditTwo.append('Active users:')
             self.textFieldEditTwo.append('0')
-        '''
 
     def __text__selection__changed__(self):
         self.textFieldEdit.textChanged.disconnect()
