@@ -41,6 +41,12 @@ void check_existance()
     raise(SIGINT);
 }
 
+void clrBuff(char (&buffor)[PAGE_X][PAGE_Y])
+{
+    for(int i = 0; i < PAGE_X; i++)
+        for(int j = 0; j < PAGE_Y; j++) buffor[i][j] = '\0';
+}
+
 int main()
 {
     signal(SIGINT, signal_callback_handler);
@@ -48,9 +54,7 @@ int main()
     int code_msg;
 
     char buffor[PAGE_X][PAGE_Y];
-    for(int i = 0; i < PAGE_X; i++)
-        for(int j = 0; j < PAGE_Y; j++)
-            buffor[i][j] = '\0';
+    clrBuff(buffor);
 
     unsigned int px, py;
     char chr;
@@ -82,7 +86,6 @@ int main()
         cout <<"#ERROR-client: Cannot connect to server!!!" << endl;
         return -2;
     }
-
 
     code_msg = 111;
     write(socketDesc, &code_msg, sizeof(code_msg));
@@ -140,7 +143,7 @@ int main()
                 for(px = 0; px < line.length(); px++)
                     buffor[py][px] = line[px];
                 if(buffor[py][px] != '\n')
-                  buffor[py][px+1] = '\n';          // NEED ???
+                    buffor[py][px+1] = '\n';
                 ++py;
             }
             fileOut.close();
@@ -149,11 +152,11 @@ int main()
                 for(int i = 0; i < PAGE_Y; i++)
                     buffor[py][i] = '\0';
 
-            for(int i = 0; i < PAGE_X; i++)
+            /*for(int i = 0; i < PAGE_X; i++)
                 for(int j = 1; j < PAGE_Y; j++)
                     if(buffor[i][j-1] == buffor[i][j])
                         if(buffor[i][j] == '\n')
-                            buffor[i][j] = '\0';
+                            buffor[i][j] = '\0';*/
 
             for(int i = 0; i < PAGE_X; i++)
                 for(int j = 0; j < PAGE_Y; j++)
@@ -210,7 +213,7 @@ int main()
             update_file_info(lastModifyMin, lastModifySec);
         }
 
-        if(loopCount > 3) { loopCount = 0; continue; }
+        if(loopCount > 3) { loopCount = 0; clrBuff(buffor); continue; }
         // **********CHECK ACTIVE OTHER CLIENTS**********
         usleep(1000 * 1); // 1 seconds
         code_msg = 333;

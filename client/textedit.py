@@ -170,9 +170,9 @@ class Window(QtGui.QMainWindow):
             copyCursor.setPosition(0)
             self.textFieldEdit.setTextCursor(copyCursor)
         self.textFieldEdit.textChanged.connect(self.__text_field_edit_event_func__)
-        self.watcher.fileChanged.connect(self.__file_changed_edit_file__)
         with open("temp/out.txt", "w+") as f:
             f.write(self.text)
+        self.watcher.fileChanged.connect(self.__file_changed_edit_file__)
 
     def __file_changed_edit_file__(self):
         self.textFieldEdit.textChanged.disconnect()
