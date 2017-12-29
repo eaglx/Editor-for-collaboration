@@ -87,14 +87,24 @@ void control_client()
                                     CST[i].descriptor = -1;
                                     CST[i].selectStart = 0;
                                     CST[i].selectEnd = 0;
-                                    CST[i].allupdate = false; 
+                                    CST[i].allupdate = false;
                                     i = 100;
                                 }
 
                             cout << "#DEBUG: control_client Delete client id - " << waitfor[i].fd << endl;
                         }
                         else
-                            manage_client(waitfor[i].fd);
+                        {
+                            try
+                            {
+                                manage_client(waitfor[i].fd);
+                            }
+                            catch(int e)
+                            {
+                                cout << "#DEBUG: Exception Nr. " << e << '\n';
+                                continue;
+                            }
+                        }
                     }
            }
         }
