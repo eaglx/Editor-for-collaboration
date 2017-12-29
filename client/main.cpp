@@ -240,7 +240,9 @@ int main()
             if(fileOut.is_open()) break;
         }
         getline(fileOut, line);
+        //cout << "#DEBUG-client: get line: " << line << endl;
         posX = atoi(line.c_str());
+        //cout << "#DEBUG-client: after convertion: " << posX << endl;
         getline(fileOut, line);
         posY = atoi(line.c_str());
         fileOut.close();
