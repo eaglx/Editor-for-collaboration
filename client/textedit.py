@@ -20,11 +20,11 @@ class Window(QtGui.QMainWindow):
     def __home__(self):
         self.textFieldEdit = QtGui.QTextEdit(self)
         self.textFieldEdit.resize(400,500)
-        self.textFieldEdit.move(35,20)
+        self.textFieldEdit.move(20,20)
 
         self.textFieldEditTwo = QtGui.QTextEdit(self)
         self.textFieldEditTwo.resize(200,300)
-        self.textFieldEditTwo.move(440,30)
+        self.textFieldEditTwo.move(430,30)
         self.textFieldEditTwo.setReadOnly(True)
 
         self.textFieldEditTwo.append('Active users:')
@@ -86,10 +86,15 @@ class Window(QtGui.QMainWindow):
             userNum = 0
         if(userNum != 0):
             temp_count = 1
+            cursor_new.setPosition(0)
+            cursor_new.setPosition(len(self.textFieldEdit.toPlainText()), QtGui.QTextCursor.KeepAnchor)
+            format.setBackground(QtGui.QBrush(QtGui.QColor("#FFFFFF")))
+            cursor_new.mergeCharFormat(format)
+            self.textFieldEdit.setTextCursor(cursor_new)
             for i in range(userNum):
-                cst = int(text[temp_count][0])
+                cst = int(text[temp_count])
                 temp_count += 1
-                ced = int(text[temp_count][0])
+                ced = int(text[temp_count])
                 temp_count += 1
                 if cst != ced:
                     cursor_new.setPosition(cst)

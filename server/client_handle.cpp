@@ -100,6 +100,8 @@ void manage_client(int nClientDesc)
             {
                 read(nClientDesc, &CST[i].selectStart, sizeof(CST[i].selectStart));
                 read(nClientDesc, &CST[i].selectEnd, sizeof(CST[i].selectEnd));
+                //cout << "#DEBUG: select pos get "
+                //    << CST[i].selectStart << ":" << CST[i].selectEnd << endl;
                 i = 100;
             }
     }
@@ -115,6 +117,8 @@ void manage_client(int nClientDesc)
                 {
                     write(nClientDesc, &CST[i].selectStart, sizeof(CST[i].selectStart));
                     write(nClientDesc, &CST[i].selectEnd, sizeof(CST[i].selectEnd));
+                    //cout << "#DEBUG: send pos selection "
+                    //    << CST[i].selectStart << ":" << CST[i].selectEnd << endl;
                 }
         }
         else
