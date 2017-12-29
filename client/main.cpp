@@ -8,43 +8,36 @@ struct stat attrib;
 
 void signal_callback_handler(int signum)
 {
-  cout << "#DEBUG: Signum = " << signum <<endl;
+  cout << "#DEBUG-client: Signum = " << signum <<endl;
   end_program = true;
   close(socketDesc);
-  cout << "#DEBUG: Start shutdown client" << endl;
+  cout << "#DEBUG-client: Start shutdown client" << endl;
   exit(0);
 }
 
-void update_file_info(int &lastModifyHour, int &lastModifyMin, int &lastModifySec)
+void update_file_info(int &lastModifyMin, int &lastModifySec)
 {
     stat("temp/out.txt", &attrib);
     foo = gmtime(&(attrib.st_mtime));
-    lastModifyHour = foo->tm_hour;
     lastModifyMin = foo->tm_min;
     lastModifySec = foo->tm_sec;
 }
 
 void check_existance()
 {
-    cout <<"#DEBUG: thread-check_existance running" << endl;
+    cout <<"#DEBUG-client: thread-check_existance running" << endl;
     struct stat dirStat;
     while(!end_program)
     {
         if(stat("temp", &dirStat) != -1)
         {
             if(S_ISDIR(dirStat.st_mode) == 0)
-            {
-                close(socketDesc);
                 end_program = true;
-            }
         }
         else
-        {
-            close(socketDesc);
             end_program = true;
-        }
     }
-    cout <<"#DEBUG: thread-check_existance stop" << endl;
+    cout <<"#DEBUG-client: thread-check_existance stop" << endl;
     raise(SIGINT);
 }
 
@@ -69,7 +62,6 @@ int main()
     fstream fileOut;
     string line;
 
-    int lastModifyHour = 0;
     int lastModifyMin = 0;
     int lastModifySec = 0;
     bool isModify = false;
@@ -77,7 +69,7 @@ int main()
     socketDesc = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
     if(socketDesc < 0)
     {
-        cout << "#ERROR: Failed create socket!!!" << endl;
+        cout << "#ERROR-client: Failed create socket!!!" << endl;
         return -1;
     }
 
@@ -87,7 +79,7 @@ int main()
 
     if(connect(socketDesc, (struct sockaddr *) &serverAddr, sizeof(serverAddr)) < 0)
     {
-        cout <<"#ERROR: Cannot connect to server!!!" << endl;
+        cout <<"#ERROR-client: Cannot connect to server!!!" << endl;
         return -2;
     }
 
@@ -110,25 +102,22 @@ int main()
                 fileIn << buffor[py][px];
     fileIn.close();
 
-    update_file_info(lastModifyHour, lastModifyMin, lastModifySec);
+    update_file_info(lastModifyMin, lastModifySec);
 
     thread th_1(check_existance);
+    int loopCount = 0;
     while(!end_program)
     {
         // **********SEND CHANGES IN EDITED FILE**********
         usleep(1000 * 1); // 1 seconds
         stat("temp/out.txt", &attrib);
         foo = gmtime(&(attrib.st_mtime));
-        if(lastModifyHour == foo->tm_hour)
+        if(lastModifyMin == foo->tm_min)
         {
-            if(lastModifyMin == foo->tm_min)
+            if(lastModifySec == foo->tm_sec)
             {
-                if(lastModifySec == foo->tm_sec)
-                {
-                    isModify = false;
-                    //cout << "#DEBUG: out.txt not modify" << endl;
-                }
-                else isModify = true;
+                isModify = false;
+                //cout << "#DEBUG: out.txt not modify" << endl;
             }
             else isModify = true;
         }
@@ -136,9 +125,9 @@ int main()
 
         if(isModify == true)
         {
-            update_file_info(lastModifyHour, lastModifyMin, lastModifySec);
+            update_file_info(lastModifyMin, lastModifySec);
 
-            cout << "#DEBUG: out.txt is modify" << endl;
+            cout << "#DEBUG-client: out.txt is modify" << endl;
 
             while(1)
             {
@@ -193,7 +182,7 @@ int main()
         read(socketDesc, &code_msg, sizeof(code_msg));
         if(code_msg == 99)
         {
-            cout << "#DEBUG: Update from server" << endl;
+            cout << "#DEBUG-client: Update from server" << endl;
             isModify = true;
             for(int i = 0; i < PAGE_X; i++)
                 for(int j = 0; j < PAGE_Y; j++)
@@ -218,9 +207,10 @@ int main()
                         fileIn << buffor[py][px];
             fileIn.close();
 
-            update_file_info(lastModifyHour, lastModifyMin, lastModifySec);
+            update_file_info(lastModifyMin, lastModifySec);
         }
 
+        if(loopCount > 3) { loopCount = 0; continue; }
         // **********CHECK ACTIVE OTHER CLIENTS**********
         usleep(1000 * 1); // 1 seconds
         code_msg = 333;
@@ -251,14 +241,14 @@ int main()
         getline(fileOut, line);
         posY = atoi(line.c_str());
         fileOut.close();
-        if(posX != posY)
-        {
-            //cout << "#DEBUG: User select pos: " << posX << ":" << posY << endl;
-            write(socketDesc, &code_msg, sizeof(code_msg));
-            write(socketDesc, &code_msg, sizeof(code_msg));
-            write(socketDesc, &posX, sizeof(posX));
-            write(socketDesc, &posY, sizeof(posY));
-        }
+        //if(posX != posY)
+        //{
+        //cout << "#DEBUG: User select pos: " << posX << ":" << posY << endl;
+        write(socketDesc, &code_msg, sizeof(code_msg));
+        write(socketDesc, &code_msg, sizeof(code_msg));
+        write(socketDesc, &posX, sizeof(posX));
+        write(socketDesc, &posY, sizeof(posY));
+        //}
 
         // **********DOWNLOAD SELECTED TEXT BY OTHERS**********
         usleep(1000 * 1); // 1 seconds
@@ -291,7 +281,7 @@ int main()
           fileIn << 0 << '\n';
         }
         fileIn.close();
-
+        ++loopCount;
     }
     close(socketDesc);
     th_1.join();
