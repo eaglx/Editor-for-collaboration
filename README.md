@@ -1,5 +1,9 @@
 # network_lab_project
-network_lab_project
+Editor for collaboration. 
+
+Task requirement:
+* server only in C/C++;
+* graphic gui for client.
 
 ## Demo 
 ### Screenshot 1
