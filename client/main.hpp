@@ -22,8 +22,8 @@
 
 #define PORT 6666
 
-#define PAGE_X 45
-#define PAGE_Y 26
+#define PAGE_X 26
+#define PAGE_Y 45
 
 using namespace std;
 
