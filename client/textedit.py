@@ -21,11 +21,13 @@ class Window(QtGui.QMainWindow):
         self.textFieldEdit = QtGui.QTextEdit(self)
         self.textFieldEdit.resize(400,500)
         self.textFieldEdit.move(20,20)
+        self.textFieldEdit.setStyleSheet("color: black; background-color: #FFFFFF")
 
         self.textFieldEditTwo = QtGui.QTextEdit(self)
         self.textFieldEditTwo.resize(200,300)
         self.textFieldEditTwo.move(430,30)
         self.textFieldEditTwo.setReadOnly(True)
+        self.textFieldEditTwo.setStyleSheet("color: black; background-color: #FFFFFF")
 
         self.textFieldEditTwo.append('Active users:')
 
