@@ -127,5 +127,10 @@ void manage_client(int nClientDesc)
           write(nClientDesc, &tempSCD, sizeof(tempSCD));
         }
     }
-    else cout << "#DEBUG: DFQ!!!!" << endl;
+    else
+    {
+        cout << "#DEBUG: DFQ!!!!" << endl;
+        cout << "#DEBUG: Closed client due security reason > " << nClientDesc << endl;
+        close(nClientDesc);
+    }
 }
