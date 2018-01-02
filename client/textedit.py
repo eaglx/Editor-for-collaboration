@@ -10,8 +10,8 @@ class Window(QtGui.QMainWindow):
         self.setGeometry(150, 150, 700, 600)
         self.setWindowTitle("TextEdit")
         self.fixSizeString = False
-
-        self.colorsUsers = ["#ff0000","ffd700","ff7200","b89300","#07f000","006d00","00fecc","0061cc","9c61cc", "ff43d4"]
+        # self.colorsUsers change !!!
+        self.colorsUsers = [QtGui.QColor(255, 0, 0), QtGui.QColor(255, 0, 150), QtGui.QColor(135, 0, 255), QtGui.QColor(0, 0, 255), QtGui.QColor(0, 150, 255), QtGui.QColor(0, 255, 100), QtGui.QColor(0, 255, 0), QtGui.QColor(130, 255, 0), QtGui.QColor(255, 255, 0), QtGui.QColor(255, 100, 0)]
         self.text = ''
         self.watcher = ''
 
@@ -60,14 +60,14 @@ class Window(QtGui.QMainWindow):
 
         if (userNum != 0) and (userNum < 10):
             self.textFieldEditTwo.clear()
-            self.textFieldEditTwo.setTextColor(QtGui.QColor("#000000"))
+            self.textFieldEditTwo.setTextColor(QtGui.QColor(0, 0, 0))
             self.textFieldEditTwo.append('Active users:')
             for i in range(userNum):
-                self.textFieldEditTwo.setTextColor(QtGui.QColor(self.colorsUsers[i]))
+                self.textFieldEditTwo.setTextColor(self.colorsUsers[i])
                 self.textFieldEditTwo.append('User_%d' % (i))
         else:
             self.textFieldEditTwo.clear()
-            self.textFieldEditTwo.setTextColor(QtGui.QColor("#000000"))
+            self.textFieldEditTwo.setTextColor(QtGui.QColor(0, 0, 0))
             self.textFieldEditTwo.append('Active users:')
             self.textFieldEditTwo.append('0')
 
@@ -90,7 +90,7 @@ class Window(QtGui.QMainWindow):
             temp_count = 1
             cursor_new.setPosition(0)
             cursor_new.setPosition(len(self.textFieldEdit.toPlainText()), QtGui.QTextCursor.KeepAnchor)
-            format.setBackground(QtGui.QBrush(QtGui.QColor("#FFFFFF")))
+            format.setBackground(QtGui.QBrush(QtGui.QColor(255, 255, 255)))
             cursor_new.mergeCharFormat(format)
             self.textFieldEdit.setTextCursor(cursor_new)
             for i in range(userNum):
@@ -101,17 +101,17 @@ class Window(QtGui.QMainWindow):
                 if cst != ced:
                     cursor_new.setPosition(cst)
                     cursor_new.setPosition(ced, QtGui.QTextCursor.KeepAnchor)
-                    format.setBackground(QtGui.QBrush(QtGui.QColor(self.colorsUsers[i])))
+                    format.setBackground(QtGui.QBrush(self.colorsUsers[i]))
                     cursor_new.mergeCharFormat(format)
                     self.textFieldEdit.setTextCursor(cursor_new)
                 else:
                     cursor_new.setPosition(cst)
                     cursor_new.setPosition(ced, QtGui.QTextCursor.KeepAnchor)
-                    format.setBackground(QtGui.QBrush(QtGui.QColor("#FFFFFF")))
+                    format.setBackground(QtGui.QBrush(QtGui.QColor(255, 255, 255)))
                     cursor_new.mergeCharFormat(format)
                     self.textFieldEdit.setTextCursor(cursor_new)
 
-        format.setBackground(QtGui.QBrush(QtGui.QColor("#FFFFFF")))
+        format.setBackground(QtGui.QBrush(QtGui.QColor(255, 255, 255)))
         cursor_old.mergeCharFormat(format)
         self.textFieldEdit.setTextCursor(cursor_old)
         self.textFieldEdit.textChanged.connect(self.__text_field_edit_event_func__)

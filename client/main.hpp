@@ -20,8 +20,6 @@
 #include <signal.h>
 #include <thread>
 
-#define PORT 6666
-
 #define PAGE_X 26
 #define PAGE_Y 45
 

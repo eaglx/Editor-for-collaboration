@@ -12,7 +12,7 @@ void signal_callback_handler(int signum)
   end_program = true;
   close(socketDesc);
   cout << "#DEBUG-client: Start shutdown client" << endl;
-  exit(0);
+  exit(0);  // change !!!
 }
 
 void update_file_info(int &lastModifyMin, int &lastModifySec)
@@ -47,8 +47,32 @@ void clrBuff(char (&buffor)[PAGE_X][PAGE_Y])
         for(int j = 0; j < PAGE_Y; j++) buffor[i][j] = '\0';
 }
 
+bool load_config(string &ip_addr, int &port)
+{
+    ifstream configFile("config_file.conf");
+    string temp;
+    if(configFile.is_open())
+    {
+      getline(configFile, ip_addr);
+      getline(configFile, temp);
+      port = atoi(temp.c_str());
+      configFile.close();
+      cout <<"#DEBUG-client: configurations loaded" << endl;
+      return true;
+    }
+    else
+    {
+        cout <<"#DEBUG-client: no config!!!" << endl;
+        return false;
+    }
+}
+
 int main()
 {
+    string servIPaddr;
+    int servPORT;
+    if(!load_config(servIPaddr, servPORT)) exit(-1);
+
     signal(SIGINT, signal_callback_handler);
     struct sockaddr_in serverAddr;
     int code_msg;
@@ -74,17 +98,17 @@ int main()
     if(socketDesc < 0)
     {
         cout << "#ERROR-client: Failed create socket!!!" << endl;
-        return -1;
+        exit(-2);
     }
 
-    serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+    serverAddr.sin_addr.s_addr = inet_addr(servIPaddr.c_str());
     serverAddr.sin_family = AF_INET;
-    serverAddr.sin_port = htons(PORT);
+    serverAddr.sin_port = htons(servPORT);
 
     if(connect(socketDesc, (struct sockaddr *) &serverAddr, sizeof(serverAddr)) < 0)
     {
         cout <<"#ERROR-client: Cannot connect to server!!!" << endl;
-        return -2;
+        exit(-3);
     }
 
     code_msg = 111;
