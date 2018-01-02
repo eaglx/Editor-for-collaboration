@@ -13,4 +13,4 @@ Task requirement:
 ![demo_second](https://user-images.githubusercontent.com/32968460/34445288-1004c298-ecd3-11e7-8870-4c83416571fd.png)
 
 ### Screenshot 3
-![demo_third](https://user-images.githubusercontent.com/32968460/34469204-e5782616-ef19-11e7-9d35-3b156ad0e22a.png)
+![demo_thrid](https://user-images.githubusercontent.com/32968460/34482638-8af9e4a4-efb9-11e7-8eb7-9f56e03d0914.png)
