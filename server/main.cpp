@@ -138,21 +138,11 @@ void control_client()
 
 int server()
 {
-    thread cth(control_client);
-
     int nClientDesc;
     int nBind, nListen;
     struct sockaddr_in serverAddr, clientAddr;
     socklen_t sockAddrSize;
     int nFoo = 1;
-
-    id = msgget(123456, 0644|IPC_CREAT);
-    if(id == -1)
-    {
-        cout << "#ERROR: Cannot create IPC!!!" << endl;
-        return 1;
-    }
-
 
     sockAddrSize = sizeof(struct sockaddr);
 
@@ -215,16 +205,21 @@ int server()
         }
     }
 
-    cth.join();
     clientsDescriptors.clear();
     close(nSocketDesc);
-    msgctl(id, IPC_RMID, NULL);
     return 0;
 }
 
 int main()
 {
     signal(SIGINT, signal_callback_handler);
+
+    id = msgget(123456, 0644|IPC_CREAT);
+    if(id == -1)
+    {
+        cout << "#ERROR: Cannot create IPC!!!" << endl;
+        return 1;
+    }
 
     for(int i = 0; i < CLIENT_LIMIT; i++)
     {
@@ -235,11 +230,14 @@ int main()
     }
 
     thread th_1(feditor);
+    thread cth(control_client);
 
     while(server());
 
     cout << "#DEBUG: Server is closed" << endl;
+    msgctl(id, IPC_RMID, NULL);
     th_1.join();
+    cth.join();
 
     return 0;
 }
