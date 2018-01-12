@@ -62,6 +62,7 @@ struct ClientSelectText
     int descriptor;
     int selectStart;
     int selectEnd;
+    int timeoutcount;
     bool allupdate;
 };
 

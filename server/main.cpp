@@ -22,6 +22,13 @@ void signal_callback_handler(int signum)
   cout << "#DEBUG: Start shutdown server" << endl;
 }
 
+bool rebootSERV = false;
+void signal_callback_handler_PIPE(int signum)
+{
+    cout << "#DEBUG: caught signal SIGPIPE " << signum << endl;
+    rebootSERV = true;
+}
+
 
 void pollfd_array_resize()
 {
@@ -57,7 +64,7 @@ void control_client()
 
         if(numberClientsDescriptors != 0)
         {
-            readypoll = poll(waitfor, numberClientsDescriptors, -1);
+            readypoll = poll(waitfor, numberClientsDescriptors, 2000);
             if(readypoll == -1)
             {
                 cout << "#DEBUG: control_client POLL ERROR" << endl;
@@ -66,6 +73,33 @@ void control_client()
             else if(readypoll == 0)
             {
                 cout <<"#DEBUG: control_client POLL TIMEOUT" << endl;
+                for(unsigned int i = 0; i < clientsDescriptors.size(); i++)
+                {
+                    cout <<"#DEBUG: Test connection to port " << waitfor[i].fd << endl;
+                    codeMsg = send(waitfor[i].fd, &codeMsg, sizeof(codeMsg), MSG_NOSIGNAL);
+                    if ((codeMsg == -1) || (CST[i].timeoutcount == 5))
+                    {
+                        --numberClientsDescriptors;
+                        clientsDescriptors.erase(clientsDescriptors.begin() + i);
+                        numberClientsDescriptorsChang = true;
+
+                        cout << "#DEBUG: control_client Delete client id - " << waitfor[i].fd << endl;
+                        for(int i = 0; i < CLIENT_LIMIT; i++)
+                            if(CST[i].descriptor == waitfor[i].fd)
+                            {
+                                close(waitfor[i].fd);
+                                CST[i].descriptor = -1;
+                                CST[i].selectStart = 0;
+                                CST[i].selectEnd = 0;
+                                CST[i].allupdate = false;
+                                CST[i].timeoutcount = 0;
+                                i = 100;
+                            }
+                        i = clientsDescriptors.size();
+                    }
+                    else cout << "#DEBUG: Test connection to port OK" << endl;
+                    ++CST[i].timeoutcount;
+                }
                 continue;
             }
             else
@@ -76,22 +110,22 @@ void control_client()
                     {
                         if(read(waitfor[i].fd, &codeMsg, sizeof(codeMsg)) <= 0)
                         {
-                            close(waitfor[i].fd);
                             --numberClientsDescriptors;
                             clientsDescriptors.erase(clientsDescriptors.begin() + i);
                             numberClientsDescriptorsChang = true;
 
+                            cout << "#DEBUG: control_client Delete client id - " << waitfor[i].fd << endl;
                             for(int i = 0; i < CLIENT_LIMIT; i++)
                                 if(CST[i].descriptor == waitfor[i].fd)
                                 {
+                                    close(waitfor[i].fd);
                                     CST[i].descriptor = -1;
                                     CST[i].selectStart = 0;
                                     CST[i].selectEnd = 0;
                                     CST[i].allupdate = false;
+                                    CST[i].timeoutcount = 0;
                                     i = 100;
                                 }
-
-                            cout << "#DEBUG: control_client Delete client id - " << waitfor[i].fd << endl;
                         }
                         else
                         {
@@ -99,23 +133,22 @@ void control_client()
                             {
                                 if(!manage_client(waitfor[i].fd, codeMsg))
                                 {
-                                    close(waitfor[i].fd);
                                     --numberClientsDescriptors;
                                     clientsDescriptors.erase(clientsDescriptors.begin() + i);
                                     numberClientsDescriptorsChang = true;
 
+                                    cout << "#DEBUG: control_client Delete client id - " << waitfor[i].fd << endl;
                                     for(int i = 0; i < CLIENT_LIMIT; i++)
                                         if(CST[i].descriptor == waitfor[i].fd)
                                         {
+                                            close(waitfor[i].fd);
                                             CST[i].descriptor = -1;
                                             CST[i].selectStart = 0;
                                             CST[i].selectEnd = 0;
                                             CST[i].allupdate = false;
+                                            CST[i].timeoutcount = 0;
                                             i = 100;
                                         }
-
-                                    cout << "#DEBUG: control_client Delete client id - " << waitfor[i].fd << endl;
-
                                 }
                             }
                             catch(int e)
@@ -200,8 +233,19 @@ int server()
                 if(CST[i].descriptor == -1)
                 {
                     CST[i].descriptor = nClientDesc;
+                    CST[i].selectStart = 0;
+                    CST[i].selectEnd = 0;
+                    CST[i].allupdate = false;
+                    CST[i].timeoutcount = 0;
                     i = 100;
                 }
+        }
+
+        if(rebootSERV)
+        {
+            rebootSERV = false;
+            cout << "#DEBUG: Reboot server ##############" << endl;
+            return -4;
         }
     }
 
@@ -213,6 +257,7 @@ int server()
 int main()
 {
     signal(SIGINT, signal_callback_handler);
+    signal(SIGPIPE, signal_callback_handler_PIPE);
 
     id = msgget(123456, 0644|IPC_CREAT);
     if(id == -1)
@@ -227,12 +272,13 @@ int main()
         CST[i].selectStart = 0;
         CST[i].selectEnd = 0;
         CST[i].allupdate = false;
+        CST[i].timeoutcount = 0;
     }
 
     thread th_1(feditor);
     thread cth(control_client);
 
-    while(server());
+    while(server()) usleep(1000 * 30); // 30 seconds;
 
     cout << "#DEBUG: Server is closed" << endl;
     msgctl(id, IPC_RMID, NULL);

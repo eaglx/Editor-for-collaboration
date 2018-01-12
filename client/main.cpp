@@ -14,7 +14,7 @@ void signal_callback_handler(int signum)
   write(socketDesc, &code_msg, sizeof(code_msg));
   close(socketDesc);
   cout << "#DEBUG-client: Start shutdown client" << endl;
-  exit(0);  // change !!!
+  exit(0);
 }
 
 void update_file_info(int &lastModifyMin, int &lastModifySec)
@@ -41,6 +41,7 @@ void check_existance()
     }
     cout <<"#DEBUG-client: thread-check_existance stop" << endl;
     raise(SIGINT);
+    exit(0);
 }
 
 void clrBuff(char (&buffor)[PAGE_X][PAGE_Y])
@@ -291,6 +292,8 @@ int main()
         ++loopCount;
     }
     close(socketDesc);
+    cout << "#DEBUG-client: Wait for thread" << endl;
     th_1.join();
+    cout << "#DEBUG-client: Client closed" << endl;
     return 0;
 }
