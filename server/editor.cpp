@@ -15,11 +15,11 @@ void feditor()
     plik = new Plik;
 
     struct msgbuf fifo;
-    int id;
+    int idF;
     int typeGet = 10;
 
-    id = msgget(123456, 0644|IPC_CREAT);
-    if(id == -1)
+    idF = msgget(123456, 0644|IPC_CREAT);
+    if(idF == -1)
     {
         cout << "#ERROR: Cannot create IPC!!!" << endl;
         delete plik;
@@ -33,7 +33,7 @@ void feditor()
     cout << "#DEBUG: feditor ready." << endl;
     while(!end_program)
     {
-        while(msgrcv(id, &fifo, sizeof(fifo) - sizeof(long), typeGet, 0) > 0)
+        while(msgrcv(idF, &fifo, sizeof(fifo) - sizeof(long), typeGet, 0) > 0)
         {
             plik->buffor[fifo.posX][fifo.posY] = fifo.ch;
         }
