@@ -257,7 +257,8 @@ int server()
 int main()
 {
     signal(SIGINT, signal_callback_handler);
-    signal(SIGPIPE, signal_callback_handler_PIPE);
+    //signal(SIGPIPE, signal_callback_handler_PIPE);
+    signal(SIGPIPE, SIG_IGN);
 
     id = msgget(123456, 0644|IPC_CREAT);
     if(id == -1)
