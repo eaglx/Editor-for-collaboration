@@ -43,7 +43,7 @@ void control_client()
     cout << "#DEBUG: control_client lounched" << endl;
 
     int readypoll;
-    int buf;
+    int codeMsg;
 
     while(!end_program)
     {
@@ -74,7 +74,7 @@ void control_client()
                 for(int i = 0; i < numberClientsDescriptors; i++)
                     if(waitfor[i].revents & POLLIN)
                     {
-                        if(read(waitfor[i].fd, &buf, sizeof(buf)) <= 0)
+                        if(read(waitfor[i].fd, &codeMsg, sizeof(codeMsg)) <= 0)
                         {
                             close(waitfor[i].fd);
                             --numberClientsDescriptors;
@@ -97,7 +97,26 @@ void control_client()
                         {
                             try
                             {
-                                manage_client(waitfor[i].fd);
+                                if(!manage_client(waitfor[i].fd, codeMsg))
+                                {
+                                    close(waitfor[i].fd);
+                                    --numberClientsDescriptors;
+                                    clientsDescriptors.erase(clientsDescriptors.begin() + i);
+                                    numberClientsDescriptorsChang = true;
+
+                                    for(int i = 0; i < CLIENT_LIMIT; i++)
+                                        if(CST[i].descriptor == waitfor[i].fd)
+                                        {
+                                            CST[i].descriptor = -1;
+                                            CST[i].selectStart = 0;
+                                            CST[i].selectEnd = 0;
+                                            CST[i].allupdate = false;
+                                            i = 100;
+                                        }
+
+                                    cout << "#DEBUG: control_client Delete client id - " << waitfor[i].fd << endl;
+
+                                }
                             }
                             catch(int e)
                             {

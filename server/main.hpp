@@ -45,9 +45,10 @@ extern int id;
 extern struct Plik *plik;
 extern int numberClientsDescriptors;
 extern struct ClientSelectText CST[CLIENT_LIMIT];
+extern bool numberClientsDescriptorsChang;
 
 /* FUNCTIONS */
-void manage_client(int nClientDesc);
+bool manage_client(int nClientDesc, int code_msg);
 void feditor();
 
 /* STRUCT */

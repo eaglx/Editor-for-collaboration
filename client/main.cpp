@@ -10,6 +10,8 @@ void signal_callback_handler(int signum)
 {
   cout << "#DEBUG-client: Signum = " << signum <<endl;
   end_program = true;
+  int code_msg = 666;
+  write(socketDesc, &code_msg, sizeof(code_msg));
   close(socketDesc);
   cout << "#DEBUG-client: Start shutdown client" << endl;
   exit(0);  // change !!!
@@ -113,7 +115,6 @@ int main()
 
     code_msg = 111;
     write(socketDesc, &code_msg, sizeof(code_msg));
-    write(socketDesc, &code_msg, sizeof(code_msg));
     read(socketDesc, &code_msg, sizeof(code_msg));
     for(int i = 0; i < PAGE_X; i++)
         for(int j = 0; j < PAGE_Y; j++)
@@ -133,6 +134,7 @@ int main()
 
     thread th_1(check_existance);
     int loopCount = 0;
+    cout <<"#DEBUG-client: loop started" << endl;
     while(!end_program)
     {
         // **********SEND CHANGES IN EDITED FILE**********
@@ -141,11 +143,7 @@ int main()
         foo = gmtime(&(attrib.st_mtime));
         if(lastModifyMin == foo->tm_min)
         {
-            if(lastModifySec == foo->tm_sec)
-            {
-                isModify = false;
-                //cout << "#DEBUG: out.txt not modify" << endl;
-            }
+            if(lastModifySec == foo->tm_sec)isModify = false;
             else isModify = true;
         }
         else isModify = true;
@@ -190,8 +188,6 @@ int main()
                     posY = j;
 
                     code_msg = 222;
-                    //cout << "#DEBUG: code_msg: " << code_msg << endl;
-                    write(socketDesc, &code_msg, sizeof(code_msg));
                     write(socketDesc, &code_msg, sizeof(code_msg));
                     write(socketDesc, &chr, sizeof(chr));
                     write(socketDesc, &posX, sizeof(posX));
@@ -202,8 +198,6 @@ int main()
         // **********DOWNLOAD 'EDITED' FILE**********
         usleep(1000 * 1); // 1 seconds
         code_msg = 111;
-        //cout << "#DEBUG: code_msg: " << code_msg << endl;
-        write(socketDesc, &code_msg, sizeof(code_msg));
         write(socketDesc, &code_msg, sizeof(code_msg));
 
         read(socketDesc, &code_msg, sizeof(code_msg));
@@ -215,11 +209,7 @@ int main()
                 for(int j = 0; j < PAGE_Y; j++)
                     read(socketDesc, &buffor[i][j], sizeof(buffor[i][j]));
         }
-        else
-        {
-            //cout << "#DEBUG: All updated" << endl;
-            isModify = false;
-        }
+        else isModify = false;
 
         if(isModify == true)
         {
@@ -241,8 +231,6 @@ int main()
         // **********CHECK ACTIVE OTHER CLIENTS**********
         usleep(1000 * 1); // 1 seconds
         code_msg = 333;
-        //cout << "#DEBUG: code_msg: " << code_msg << endl;
-        write(socketDesc, &code_msg, sizeof(code_msg));
         write(socketDesc, &code_msg, sizeof(code_msg));
         read(socketDesc, &activeUsers, sizeof(activeUsers));
         while(1)
@@ -256,7 +244,6 @@ int main()
         // **********SEND SELECTED TEXT BY SELF**********
         usleep(1000 * 1); // 1 seconds
         code_msg = 444;
-        //cout << "#DEBUG: code_msg: " << code_msg << endl;
         posX = posY = 0;
         while(1)
         {
@@ -264,27 +251,18 @@ int main()
             if(fileOut.is_open()) break;
         }
         getline(fileOut, line);
-        //cout << "#DEBUG-client: get line: " << line << endl;
         posX = atoi(line.c_str());
-        //cout << "#DEBUG-client: after convertion: " << posX << endl;
         getline(fileOut, line);
         posY = atoi(line.c_str());
         fileOut.close();
-        //if(posX != posY)
-        //{
-        //cout << "#DEBUG: User select pos: " << posX << ":" << posY << endl;
-        write(socketDesc, &code_msg, sizeof(code_msg));
         write(socketDesc, &code_msg, sizeof(code_msg));
         write(socketDesc, &posX, sizeof(posX));
         write(socketDesc, &posY, sizeof(posY));
-        //}
 
         // **********DOWNLOAD SELECTED TEXT BY OTHERS**********
         usleep(1000 * 1); // 1 seconds
         code_msg = 555;
-        //cout << "#DEBUG: code_msg: " << code_msg << endl;
         activeUsers = 0;
-        write(socketDesc, &code_msg, sizeof(code_msg));
         write(socketDesc, &code_msg, sizeof(code_msg));
         read(socketDesc, &activeUsers, sizeof(activeUsers));
         while(1)
