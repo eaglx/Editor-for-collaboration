@@ -5,6 +5,11 @@ Task requirement:
 * server only in C/C++ (C socket);
 * gui for client.
 
+How to launch:
+* launch make_bash file (only dist with apt, other must build manual)
+* start server: ./server/server
+* start client: python3 client/textedit.py
+
 ## Demo 
 ### Screenshot 1
 ![demo_screen](https://user-images.githubusercontent.com/32968460/34411660-63ba9440-ebd8-11e7-8215-6958b7eef73e.png)
