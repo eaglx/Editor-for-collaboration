@@ -213,17 +213,17 @@ int main()
                     posY = j;
 
                     code_msg = 222;
-                    if(write(socketDesc, &code_msg, sizeof(code_msg)) < 0) { close(socketDesc); return -1; }
-                    if(write(socketDesc, &chr, sizeof(chr)) < 0) { close(socketDesc); return -1; }
-                    if(write(socketDesc, &posX, sizeof(posX)) < 0) { close(socketDesc); return -1; }
-                    if(write(socketDesc, &posY, sizeof(posY)) < 0) { close(socketDesc); return -1; }
+                    if(write(socketDesc, &code_msg, sizeof(code_msg)) < 0) { close(socketDesc); end_program = true;  break;}
+                    if(write(socketDesc, &chr, sizeof(chr)) < 0) { close(socketDesc); end_program = true;  break;}
+                    if(write(socketDesc, &posX, sizeof(posX)) < 0) { close(socketDesc); end_program = true;  break;}
+                    if(write(socketDesc, &posY, sizeof(posY)) < 0) { close(socketDesc); end_program = true;  break;}
                 }
         }
 
         // **********DOWNLOAD 'EDITED' FILE**********
         usleep(1000 * 1); // 1 seconds
         code_msg = 111;
-        if(write(socketDesc, &code_msg, sizeof(code_msg)) < 0) { close(socketDesc); return -1; }
+        if(write(socketDesc, &code_msg, sizeof(code_msg)) < 0) { close(socketDesc); end_program = true;  break;}
 
         read(socketDesc, &code_msg, sizeof(code_msg));
         if(code_msg == 99)
@@ -256,7 +256,7 @@ int main()
         // **********CHECK ACTIVE OTHER CLIENTS**********
         usleep(1000 * 1); // 1 seconds
         code_msg = 333;
-        if(write(socketDesc, &code_msg, sizeof(code_msg)) < 0) { close(socketDesc); return -1; }
+        if(write(socketDesc, &code_msg, sizeof(code_msg)) < 0) { close(socketDesc); end_program = true;  break;}
         read(socketDesc, &activeUsers, sizeof(activeUsers));
         while(1)
         {
@@ -280,15 +280,15 @@ int main()
         getline(fileOut, line);
         posY = atoi(line.c_str());
         fileOut.close();
-        if(write(socketDesc, &code_msg, sizeof(code_msg)) < 0) { close(socketDesc); return -1; }
-        if(write(socketDesc, &posX, sizeof(posX)) < 0) { close(socketDesc); return -1; }
-        if(write(socketDesc, &posY, sizeof(posY)) < 0) { close(socketDesc); return -1; }
+        if(write(socketDesc, &code_msg, sizeof(code_msg)) < 0) { close(socketDesc); end_program = true;  break;}
+        if(write(socketDesc, &posX, sizeof(posX)) < 0) { close(socketDesc); end_program = true;  break;}
+        if(write(socketDesc, &posY, sizeof(posY)) < 0) { close(socketDesc); end_program = true;  break;}
 
         // **********DOWNLOAD SELECTED TEXT BY OTHERS**********
         usleep(1000 * 1); // 1 seconds
         code_msg = 555;
         activeUsers = 0;
-        if(write(socketDesc, &code_msg, sizeof(code_msg)) < 0) { close(socketDesc); return -1; }
+        if(write(socketDesc, &code_msg, sizeof(code_msg)) < 0) { close(socketDesc); end_program = true;  break;}
         read(socketDesc, &activeUsers, sizeof(activeUsers));
         while(1)
         {
