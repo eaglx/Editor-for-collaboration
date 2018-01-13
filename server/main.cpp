@@ -22,11 +22,9 @@ void signal_callback_handler(int signum)
   cout << "#DEBUG: Start shutdown server" << endl;
 }
 
-bool rebootSERV = false;
 void signal_callback_handler_PIPE(int signum)
 {
-    cout << "#DEBUG: caught signal SIGPIPE " << signum << endl;
-    rebootSERV = true;
+    cout << "#ERROR: caught signal SIGPIPE " << signum << "!!!!!!" << endl;
 }
 
 
@@ -240,13 +238,6 @@ int server()
                     i = 100;
                 }
         }
-
-        if(rebootSERV)
-        {
-            rebootSERV = false;
-            cout << "#DEBUG: Reboot server ##############" << endl;
-            return -4;
-        }
     }
 
     clientsDescriptors.clear();
@@ -257,8 +248,8 @@ int server()
 int main()
 {
     signal(SIGINT, signal_callback_handler);
-    //signal(SIGPIPE, signal_callback_handler_PIPE);
-    signal(SIGPIPE, SIG_IGN);
+    signal(SIGPIPE, signal_callback_handler_PIPE);
+    //signal(SIGPIPE, SIG_IGN);
 
     id = msgget(123456, 0644|IPC_CREAT);
     if(id == -1)

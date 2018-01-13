@@ -41,7 +41,8 @@ bool manage_client(int nClientDesc, int code_msg)
             write(nClientDesc, &temp, sizeof(temp));
             for(int i = 0; i < PAGE_X; i++)
                 for(int j = 0; j < PAGE_Y; j++)
-                    write(nClientDesc, &plik->buffor[i][j], sizeof(plik->buffor[i][j]));
+                    if(write(nClientDesc, &plik->buffor[i][j], sizeof(plik->buffor[i][j])) < 0)
+                        return false;
 
             for(int i = 0; i < CLIENT_LIMIT; i++)
                 if(CST[i].descriptor == nClientDesc)
@@ -51,15 +52,15 @@ bool manage_client(int nClientDesc, int code_msg)
                 }
         }
         else
-            write(nClientDesc, &temp, sizeof(temp));
+            if(write(nClientDesc, &temp, sizeof(temp)) < 0) return false;
     }
     else if(code_msg == 222)
     {
-        read(nClientDesc, &chr, sizeof(chr));
+        if(read(nClientDesc, &chr, sizeof(chr)) < 0) return false;
         fifo.ch = chr;
-        read(nClientDesc, &posX, sizeof(posX));
+        if(read(nClientDesc, &posX, sizeof(posX)) < 0) return false;
         fifo.posX = posX;
-        read(nClientDesc, &posY, sizeof(posY));
+        if(read(nClientDesc, &posY, sizeof(posY)) < 0) return false;
         fifo.posY = posY;
         fifo.type = 10;
 
@@ -80,7 +81,7 @@ bool manage_client(int nClientDesc, int code_msg)
     else if(code_msg == 333)
     {
         int temp = numberClientsDescriptors - 1;
-        write(nClientDesc, &temp, sizeof(temp));
+        if(write(nClientDesc, &temp, sizeof(temp))  < 0) return false;
     }
     else if(code_msg == 444)
     {
@@ -98,18 +99,18 @@ bool manage_client(int nClientDesc, int code_msg)
         tempSCD = numberClientsDescriptors - 1;
         if((tempSCD != 0) && (tempSCD < CLIENT_LIMIT))
         {
-            write(nClientDesc, &tempSCD, sizeof(tempSCD));
+            if(write(nClientDesc, &tempSCD, sizeof(tempSCD)) < 0) return false;
             for(int i = 0; i < CLIENT_LIMIT; i++)
                 if((CST[i].descriptor != -1) && (CST[i].descriptor != nClientDesc))
                 {
-                    write(nClientDesc, &CST[i].selectStart, sizeof(CST[i].selectStart));
-                    write(nClientDesc, &CST[i].selectEnd, sizeof(CST[i].selectEnd));
+                    if(write(nClientDesc, &CST[i].selectStart, sizeof(CST[i].selectStart)) < 0) return false;
+                    if(write(nClientDesc, &CST[i].selectEnd, sizeof(CST[i].selectEnd)) < 0) return false;
                 }
         }
         else
         {
           tempSCD = 0;
-          write(nClientDesc, &tempSCD, sizeof(tempSCD));
+          if(write(nClientDesc, &tempSCD, sizeof(tempSCD)) < 0) return false;
         }
     }
     else if(code_msg == 666)
