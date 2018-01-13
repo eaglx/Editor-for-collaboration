@@ -30,6 +30,7 @@ void signal_callback_handler_PIPE(int signum)
 
 void pollfd_array_resize()
 {
+    cout << "#DEBUG: pollfd_array_resize" << endl;
     if(waitfor != NULL)
     {
         delete waitfor;
@@ -40,6 +41,7 @@ void pollfd_array_resize()
     {
         waitfor[i].fd = clientsDescriptors[i];
         waitfor[i].events = POLLIN;
+        cout << "#DEBUG: Active descriptions " << clientsDescriptors[i] << endl;
     }
 }
 
@@ -62,7 +64,7 @@ void control_client()
 
         if(numberClientsDescriptors != 0)
         {
-            readypoll = poll(waitfor, numberClientsDescriptors, 2000);
+            readypoll = poll(waitfor, numberClientsDescriptors, 500);
             if(readypoll == -1)
             {
                 cout << "#DEBUG: control_client POLL ERROR" << endl;
@@ -75,7 +77,7 @@ void control_client()
                 {
                     cout <<"#DEBUG: Test connection to port " << waitfor[i].fd << endl;
                     codeMsg = send(waitfor[i].fd, &codeMsg, sizeof(codeMsg), MSG_NOSIGNAL);
-                    if ((codeMsg == -1) || (CST[i].timeoutcount == 5))
+                    if ((codeMsg == -1) || (CST[i].timeoutcount == 3))
                     {
                         --numberClientsDescriptors;
                         clientsDescriptors.erase(clientsDescriptors.begin() + i);
@@ -270,7 +272,7 @@ int main()
     thread th_1(feditor);
     thread cth(control_client);
 
-    while(server()) cout << "#INFO: Server exit from loop!!!!!!!!!!!!!!!" << endl;;
+    while(server()) cout << "#INFO: Server exit from loop!!!!!!!!!!!!!!!" << endl;
 
     cout << "#DEBUG: Server is closed" << endl;
     msgctl(id, IPC_RMID, NULL);
