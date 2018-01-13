@@ -14,7 +14,13 @@ void signal_callback_handler(int signum)
   write(socketDesc, &code_msg, sizeof(code_msg));
   close(socketDesc);
   cout << "#DEBUG-client: Start shutdown client" << endl;
-  exit(0);
+}
+
+void signal_callback_handler_PIPE(int signum)
+{
+    cout << "#ERROR: caught signal SIGPIPE " << signum << "!!!!!!" << endl;
+    end_program = true;
+    close(socketDesc);
 }
 
 void update_file_info(int &lastModifyMin, int &lastModifySec)
@@ -77,6 +83,8 @@ int main()
     if(!load_config(servIPaddr, servPORT)) exit(-1);
 
     signal(SIGINT, signal_callback_handler);
+    signal(SIGPIPE, signal_callback_handler_PIPE);
+
     struct sockaddr_in serverAddr;
     int code_msg;
 
