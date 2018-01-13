@@ -214,21 +214,26 @@ class Window(QtGui.QMainWindow):
         os.rmdir("temp")
         super(Window, self).closeEvent(event)
 
+def make_temp_folders():
+    f = open("temp/out.txt", "w")
+    f.close()
+    f = open("temp/selecpos.txt", "w")
+    f.write("0\n0")
+    f.close()
+    f = open("temp/selecposother.txt", "w")
+    f.write("0\n0\n0")  # How many users select text, start & end select
+    f.close()
+    f = open("temp/activusr.txt", "w")
+    f.write("0")
+    f.close()
 
 if __name__ == '__main__':
     if not os.path.exists("temp/out.txt"):
         os.makedirs("temp")
-        f = open("temp/out.txt", "w")
-        f.close()
-        f = open("temp/selecpos.txt", "w")
-        f.write("0\n0")
-        f.close()
-        f = open("temp/selecposother.txt", "w")
-        f.write("0\n0\n0")  # How many users select text, start & end select
-        f.close()
-        f = open("temp/activusr.txt", "w")
-        f.write("0")
-        f.close()
+        make_temp_folders()
+    else:
+        make_temp_folders()
+        
     subprocess.Popen(["./client"])
     app = QtGui.QApplication(sys.argv)
     GUI = Window()

@@ -109,6 +109,13 @@ int main()
     if(socketDesc < 0)
     {
         cout << "#ERROR-client: Failed create socket!!!" << endl;
+        while(1)
+        {
+            fileIn.open("temp/out.txt");
+            if(fileIn.is_open()) break;
+        }
+        fileIn << "#ERROR-client: Failed create socket!!!";
+        fileIn.close();
         exit(-2);
     }
     int nFoo = 1;
@@ -122,6 +129,13 @@ int main()
     if(connect(socketDesc, (struct sockaddr *) &serverAddr, sizeof(serverAddr)) < 0)
     {
         cout <<"#ERROR-client: Cannot connect to server!!!" << endl;
+        while(1)
+        {
+            fileIn.open("temp/out.txt");
+            if(fileIn.is_open()) break;
+        }
+        fileIn << "#ERROR-client: Cannot connect to server!!!";
+        fileIn.close();
         exit(-3);
     }
 
