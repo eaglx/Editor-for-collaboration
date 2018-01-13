@@ -19,8 +19,8 @@ void signal_callback_handler(int signum)
 void signal_callback_handler_PIPE(int signum)
 {
     cout << "#ERROR: caught signal SIGPIPE " << signum << "!!!!!!" << endl;
-    //end_program = true;
-    //close(socketDesc);
+    end_program = true;
+    close(socketDesc);
 }
 
 void update_file_info(int &lastModifyMin, int &lastModifySec)
@@ -83,7 +83,7 @@ int main()
     if(!load_config(servIPaddr, servPORT)) exit(-1);
 
     signal(SIGINT, signal_callback_handler);
-    signal(SIGPIPE, SIG_IGN);//signal_callback_handler_PIPE);
+    signal(SIGPIPE, signal_callback_handler_PIPE);
 
     struct sockaddr_in serverAddr;
     int code_msg;
