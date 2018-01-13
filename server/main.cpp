@@ -25,12 +25,12 @@ void signal_callback_handler(int signum)
 void signal_callback_handler_PIPE(int signum)
 {
     cout << "#ERROR: caught signal SIGPIPE " << signum << "!!!!!!" << endl;
-    for(unsigned int i = 0; i < clientsDescriptors.size(); i++)
+    /*for(unsigned int i = 0; i < clientsDescriptors.size(); i++)
     {
         cout << "#DEBUG-schPIPE: Close descriptor - " << waitfor[i].fd << endl;
         close(waitfor[i].fd);
         waitfor[i].fd = -1;
-    }
+    }*/
 }
 
 
@@ -225,43 +225,39 @@ int server()
             close(nClientDesc);
         else
         {
-            int coutnCLIENT = 0;
+            int countCLIENT = 0;
             for(int i = 0; i < CLIENT_LIMIT; i++)
             {
                 cout << "#DEBUG: This client desc is saved: " << CST[i].descriptor << endl;
-                if(CST[i].descriptor == -1) ++coutnCLIENT;
+                if(CST[i].descriptor == -1) ++countCLIENT;
                 else
                 {
                     cout <<"#DEBUG: Test connection to descriptor " << endl;
-                    if(CST[i].descriptor == -1) ++coutnCLIENT;
+                    char c;
+                    ssize_t x = recv(CST[i].descriptor, &c, 1, MSG_PEEK);
+                    if (x > 0)
+                    {
+                        /* ...have data, leave it in socket buffer */
+                        cout << "#DEBUG: This client exist: " << CST[i].descriptor << endl;
+                    }
+                    else if (x == 0)
+                    {
+                        /* ...handle FIN from client */
+                        close(CST[i].descriptor);
+                        CST[i].descriptor = -1;
+                        ++countCLIENT;
+                    }
                     else
                     {
-                        char c;
-                        ssize_t x = recv(CST[i].descriptor, &c, 1, MSG_PEEK);
-                        if (x > 0)
-                        {
-                            /* ...have data, leave it in socket buffer until B connects */
-                            cout << "#DEBUG: This client exist: " << CST[i].descriptor << endl;
-                        }
-                        else if (x == 0)
-                        {
-                            /* ...handle FIN from A */
-                            close(CST[i].descriptor);
-                            CST[i].descriptor = -1;
-                            ++coutnCLIENT;
-                        }
-                        else
-                        {
-                             /* ...handle errors */
-                            close(CST[i].descriptor);
-                            CST[i].descriptor = -1;
-                            ++coutnCLIENT;
-                        }
+                         /* ...handle errors */
+                        close(CST[i].descriptor);
+                        CST[i].descriptor = -1;
+                        ++countCLIENT;
                     }
                 }
             }
 
-            if(coutnCLIENT == CLIENT_LIMIT)
+            if(countCLIENT == CLIENT_LIMIT)
             {
                 clientsDescriptors.clear();
                 numberClientsDescriptorsChang = true;
