@@ -25,6 +25,12 @@ void signal_callback_handler(int signum)
 void signal_callback_handler_PIPE(int signum)
 {
     cout << "#ERROR: caught signal SIGPIPE " << signum << "!!!!!!" << endl;
+    for(unsigned int i = 0; i < clientsDescriptors.size(); i++)
+    {
+        cout << "#DEBUG-schPIPE: Close descriptor - " << waitfor[i].fd << endl;
+        close(waitfor[i].fd);
+        waitfor[i].fd = -1;
+    }
 }
 
 
@@ -36,12 +42,16 @@ void pollfd_array_resize()
         delete waitfor;
         waitfor = NULL;
     }
-    waitfor = new pollfd[numberClientsDescriptors];
-    for(size_t i = 0; i < clientsDescriptors.size(); i++)
+    cout << "#DEBUG: numberClientsDescriptors = " << numberClientsDescriptors << endl;
+    if(numberClientsDescriptors != 0)
     {
-        waitfor[i].fd = clientsDescriptors[i];
-        waitfor[i].events = POLLIN;
-        cout << "#DEBUG: Active descriptions " << clientsDescriptors[i] << endl;
+        waitfor = new pollfd[numberClientsDescriptors];
+        for(size_t i = 0; i < clientsDescriptors.size(); i++)
+        {
+            waitfor[i].fd = clientsDescriptors[i];
+            waitfor[i].events = POLLIN;
+            cout << "#DEBUG: Active descriptions " << clientsDescriptors[i] << endl;
+        }
     }
 }
 
@@ -64,7 +74,7 @@ void control_client()
 
         if(numberClientsDescriptors != 0)
         {
-            readypoll = poll(waitfor, numberClientsDescriptors, 500);
+            readypoll = poll(waitfor, numberClientsDescriptors, 1000);
             if(readypoll == -1)
             {
                 cout << "#DEBUG: control_client POLL ERROR" << endl;
@@ -83,22 +93,21 @@ void control_client()
                         clientsDescriptors.erase(clientsDescriptors.begin() + i);
                         numberClientsDescriptorsChang = true;
 
-                        cout << "#DEBUG: control_client Delete client id - " << waitfor[i].fd << endl;
+                        cout << "#DEBUG: Delete due timeout client id " << waitfor[i].fd << endl;
                         for(int i = 0; i < CLIENT_LIMIT; i++)
                             if(CST[i].descriptor == waitfor[i].fd)
                             {
                                 close(waitfor[i].fd);
                                 CST[i].descriptor = -1;
-                                CST[i].selectStart = 0;
-                                CST[i].selectEnd = 0;
-                                CST[i].allupdate = false;
-                                CST[i].timeoutcount = 0;
                                 i = 100;
                             }
                         i = clientsDescriptors.size();
                     }
-                    else cout << "#DEBUG: Test connection to port OK" << endl;
-                    ++CST[i].timeoutcount;
+                    else
+                    {
+                        cout << "#DEBUG: Test connection to port OK" << endl;
+                        ++CST[i].timeoutcount;
+                    }
                 }
                 continue;
             }
@@ -112,7 +121,6 @@ void control_client()
                         {
                             --numberClientsDescriptors;
                             clientsDescriptors.erase(clientsDescriptors.begin() + i);
-                            numberClientsDescriptorsChang = true;
 
                             cout << "#DEBUG: control_client Delete client id - " << waitfor[i].fd << endl;
                             for(int i = 0; i < CLIENT_LIMIT; i++)
@@ -120,10 +128,6 @@ void control_client()
                                 {
                                     close(waitfor[i].fd);
                                     CST[i].descriptor = -1;
-                                    CST[i].selectStart = 0;
-                                    CST[i].selectEnd = 0;
-                                    CST[i].allupdate = false;
-                                    CST[i].timeoutcount = 0;
                                     i = 100;
                                 }
                         }
@@ -143,10 +147,6 @@ void control_client()
                                         {
                                             close(waitfor[i].fd);
                                             CST[i].descriptor = -1;
-                                            CST[i].selectStart = 0;
-                                            CST[i].selectEnd = 0;
-                                            CST[i].allupdate = false;
-                                            CST[i].timeoutcount = 0;
                                             i = 100;
                                         }
                                 }
@@ -225,10 +225,6 @@ int server()
             close(nClientDesc);
         else
         {
-            ++numberClientsDescriptors;
-            clientsDescriptors.push_back(nClientDesc);
-            numberClientsDescriptorsChang = true;
-
             for(int i = 0; i < CLIENT_LIMIT; i++)
                 if(CST[i].descriptor == -1)
                 {
@@ -239,6 +235,9 @@ int server()
                     CST[i].timeoutcount = 0;
                     i = 100;
                 }
+            ++numberClientsDescriptors;
+            clientsDescriptors.push_back(nClientDesc);
+            numberClientsDescriptorsChang = true;
         }
     }
 
@@ -260,14 +259,7 @@ int main()
         return 1;
     }
 
-    for(int i = 0; i < CLIENT_LIMIT; i++)
-    {
-        CST[i].descriptor = -1;
-        CST[i].selectStart = 0;
-        CST[i].selectEnd = 0;
-        CST[i].allupdate = false;
-        CST[i].timeoutcount = 0;
-    }
+    for(int i = 0; i < CLIENT_LIMIT; i++) CST[i].descriptor = -1;
 
     thread th_1(feditor);
     thread cth(control_client);
