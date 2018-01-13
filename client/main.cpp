@@ -111,6 +111,9 @@ int main()
         cout << "#ERROR-client: Failed create socket!!!" << endl;
         exit(-2);
     }
+    int nFoo = 1;
+    setsockopt(socketDesc, SOL_SOCKET, SO_REUSEADDR, (char *) &nFoo, sizeof(nFoo));
+
 
     serverAddr.sin_addr.s_addr = inet_addr(servIPaddr.c_str());
     serverAddr.sin_family = AF_INET;
