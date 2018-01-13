@@ -209,7 +209,7 @@ int server()
 
     while(!end_program)
     {
-        nClientDesc = accept(nSocketDesc, (struct sockaddr *) &clientAddr, &sockAddrSize);
+        nClientDesc = accept4(nSocketDesc, (struct sockaddr *) &clientAddr, &sockAddrSize, SOCK_CLOEXEC);
 
         if(nClientDesc <= 0) continue;
 
@@ -270,7 +270,7 @@ int main()
     thread th_1(feditor);
     thread cth(control_client);
 
-    while(server()) usleep(1000 * 30); // 30 seconds;
+    while(server()) cout << "#INFO: Server exit from loop!!!!!!!!!!!!!!!" << endl;;
 
     cout << "#DEBUG: Server is closed" << endl;
     msgctl(id, IPC_RMID, NULL);
