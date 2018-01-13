@@ -17,6 +17,8 @@ bool manage_client(int nClientDesc, int code_msg)
     int posX;
     int posY;
 
+    usleep(1000 * 1); //1 sec
+
     if(code_msg == 111)
     {
         int temp;
@@ -64,14 +66,14 @@ bool manage_client(int nClientDesc, int code_msg)
         fifo.posY = posY;
         fifo.type = 10;
 
-        if(!(posX >= 0) && (posX < PAGE_X)) return true;
-        if(!(posY >= 0) && (posY < PAGE_Y)) return true;
+        if(!(posX >= 0) && (posX < PAGE_X)) return false;
+        if(!(posY >= 0) && (posY < PAGE_Y)) return false;
 
         status = msgsnd(id, &fifo, sizeof(fifo) - sizeof(long), 0);
         if(status != 0)
         {
             cout << "#DEBUG: MSGSND ERROR!!!" << endl;
-            return true;
+            return false;
         }
 
         for(int i = 0; i < CLIENT_LIMIT; i++)
