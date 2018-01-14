@@ -6,7 +6,7 @@ int nSocketDesc;
 
 condition_variable cv;
 mutex cv_m;
-bool ready = false;
+bool READY_THREAD_GLOBAL_SYNC = false;
 
 vector < int > clientsDescriptors;
 int numberClientsDescriptors = 0;
@@ -19,6 +19,7 @@ void signal_callback_handler(int signum)
 {
   cout << "#DEBUG: Signum = " << signum <<endl;
   end_program = true;
+  READY_THREAD_GLOBAL_SYNC = true;
   cout << "#DEBUG: Start shutdown server" << endl;
 }
 
@@ -64,6 +65,11 @@ void control_client()
 
     while(!end_program)
     {
+        unique_lock<std::mutex> lk(cv_m);
+        //cerr << "#DEBUG: control_client WAITING... \n";
+        cv.wait(lk, []{return READY_THREAD_GLOBAL_SYNC;});
+        //cerr << "#DEBUG: control_client FINISHED WAITING.\n";
+
         if(numberClientsDescriptors == 0) continue;
 
         if(numberClientsDescriptorsChang == true)
@@ -167,6 +173,8 @@ void control_client()
         for(int i = 0; i < numberClientsDescriptors; i++) close(waitfor[i].fd);
         delete waitfor;
     }
+    
+    cout << "#DEBUG: control_client closed" << endl;
 }
 
 int server()
@@ -225,6 +233,11 @@ int server()
             close(nClientDesc);
         else
         {
+            READY_THREAD_GLOBAL_SYNC = false;
+            this_thread::sleep_for(std::chrono::seconds(1));
+            lock_guard<std::mutex> lk(cv_m);
+            cerr << "#DEBUG: server manage new connection\n";
+
             int countCLIENT = 0;
             for(int i = 0; i < CLIENT_LIMIT; i++)
             {
@@ -278,11 +291,15 @@ int server()
             clientsDescriptors.push_back(nClientDesc);
             numberClientsDescriptorsChang = true;
             ++numberClientsDescriptors;
+
+            cv.notify_all();
+            READY_THREAD_GLOBAL_SYNC = true;
         }
     }
 
     clientsDescriptors.clear();
     close(nSocketDesc);
+    cout << "#DEBUG: server closed" << endl;
     return 0;
 }
 
@@ -311,5 +328,6 @@ int main()
     th_1.join();
     cth.join();
 
+    cout << "#DEBUG: @@@@ EVERYTHING IS SUCCESSIVELY CLOSED @@@@" << endl;
     return 0;
 }
