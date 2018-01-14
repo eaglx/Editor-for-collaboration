@@ -40,7 +40,7 @@ using namespace std;
 extern bool end_program;
 extern condition_variable cv;
 extern mutex cv_m;
-extern bool ready;
+extern bool READY_THREAD_GLOBAL_SYNC;
 extern int id;
 extern struct Plik *plik;
 extern int numberClientsDescriptors;
