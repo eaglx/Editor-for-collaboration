@@ -49,9 +49,12 @@ void check_existance()
                 cout <<"#DEBUG-client-th-check_existance: raised SIGINT" << endl;
             }
         }
-        else end_loop = true;
-        
-        if(end_program == true) end_loop = true;
+        else 
+        {
+            end_loop = true;
+            raise(SIGINT);
+            cout <<"#DEBUG-client-th-check_existance: raised SIGINT" << endl;
+        }
     }
     cout <<"#DEBUG-client-th-check_existance: thread-check_existance stop" << endl;
     exit(0);
