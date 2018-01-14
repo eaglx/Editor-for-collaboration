@@ -36,20 +36,24 @@ void update_file_info(int &lastModifyMin, int &lastModifySec)
 void check_existance()
 {
     bool end_loop = false;
-    cout <<"#DEBUG-client: thread-check_existance running" << endl;
+    cout <<"#DEBUG-client-th-check_existance: thread-check_existance running" << endl;
     struct stat dirStat;
     while(!end_loop)
     {
         if(stat("temp", &dirStat) != -1)
         {
             if(S_ISDIR(dirStat.st_mode) == 0)
+            {
                 end_loop = true;
+                raise(SIGINT);
+                cout <<"#DEBUG-client-th-check_existance: raised SIGINT" << endl;
+            }
         }
-        else
-            end_loop = true;
+        else end_loop = true;
+        
+        if(end_program == true) end_loop = true;
     }
-    cout <<"#DEBUG-client: thread-check_existance stop" << endl;
-    raise(SIGINT);
+    cout <<"#DEBUG-client-th-check_existance: thread-check_existance stop" << endl;
     exit(0);
 }
 
@@ -129,7 +133,7 @@ int main()
             }
             fileIn << "#ERROR-client: Failed create socket!!!";
             fileIn.close();
-            exit(-2);
+            continue;
         }
         setsockopt(socketDesc, SOL_SOCKET, SO_REUSEADDR, (char *) &nFoo, sizeof(nFoo));
 
@@ -148,7 +152,7 @@ int main()
             }
             fileIn << "#ERROR-client: Cannot connect to server!!!";
             fileIn.close();
-            exit(-3);
+            continue;
         }
 
         code_msg = 111;
