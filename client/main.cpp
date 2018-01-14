@@ -22,7 +22,7 @@ void signal_callback_handler_PIPE(int signum)
 {
     cout << "#ERROR: caught signal SIGPIPE " << signum << "!!!!!!" << endl;
     end_program = true;
-    //close(socketDesc);
+    close(socketDesc);
 }
 
 void update_file_info(int &lastModifyMin, int &lastModifySec)
