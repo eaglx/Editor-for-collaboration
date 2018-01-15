@@ -40,10 +40,12 @@ int main()
 
     for(int i = 0; i < CLIENT_LIMIT; i++) CST[i].descriptor = -1;
 
-    thread acth(accept_connections);
+    thread acth(accept_connections_ed);
     thread cth(control_client);
+    thread acath(accept_connections_activ);
 
     acth.join();
+    acath.join();
     cth.join();
 
     cout << "#DEBUG: @@@@ EVERYTHING IS SUCCESSIVELY CLOSED @@@@" << endl;

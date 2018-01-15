@@ -22,7 +22,8 @@
 #include <sys/poll.h>
 
 #define QUEUE_SIZE 10
-#define PORT 6666
+#define PORT_E 6666
+#define PORT_A 7777
 
 #define PAGE_X 26
 #define PAGE_Y 45
@@ -44,7 +45,8 @@ extern bool numberClientsDescriptorsChang;
 /* FUNCTIONS */
 void client_handle_editor(int nClientDesc_HE, int code_msg_HE);
 void control_client();
-void accept_connections();
+void accept_connections_ed();
+void accept_connections_activ();
 void client_handle_activ(int nClientDesc_ACV, int code_msg_ACV);
 
 /* STRUCT */
