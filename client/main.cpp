@@ -13,7 +13,7 @@ void signal_callback_handler(int signum)
   end_program = true;
   reconnect = false;
   int code_msg = 666;
-  write(socketDesc, &code_msg, sizeof(code_msg));
+  send(socketDesc, &code_msg, sizeof(code_msg), 0);
   close(socketDesc);
   cout << "#DEBUG-client: Start shutdown client" << endl;
 }
@@ -25,11 +25,10 @@ void signal_callback_handler_PIPE(int signum)
     close(socketDesc);
 }
 
-void update_file_info(int &lastModifyMin, int &lastModifySec)
+void update_file_info(int &lastModifySec)
 {
     stat("temp/out.txt", &attrib);
     foo = gmtime(&(attrib.st_mtime));
-    lastModifyMin = foo->tm_min;
     lastModifySec = foo->tm_sec;
 }
 
@@ -49,7 +48,7 @@ void check_existance()
                 cout <<"#DEBUG-client-th-check_existance: raised SIGINT" << endl;
             }
         }
-        else 
+        else
         {
             end_loop = true;
             raise(SIGINT);
@@ -91,40 +90,33 @@ int main()
     string servIPaddr;
     int servPORT;
     if(!load_config(servIPaddr, servPORT)) exit(-1);
-
     signal(SIGINT, signal_callback_handler);
     signal(SIGPIPE, signal_callback_handler_PIPE);
-
     struct sockaddr_in serverAddr;
     int code_msg;
     int nFoo = 1;
-
     char buffor[PAGE_X][PAGE_Y];
-
     unsigned int px, py;
     char chr;
     int posX;
     int posY;
     int activeUsers;
-
     ofstream fileIn;
     fstream fileOut;
     string line;
-
-    int lastModifyMin;
     int lastModifySec;
     bool isModify;
+    int bytesSR;
 
     thread th_1(check_existance);
-    
+
     while(reconnect)
     {
         end_program = false;
-        lastModifyMin = 0;
         lastModifySec = 0;
         isModify = false;
         clrBuff(buffor);
-        
+
         socketDesc = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
         if(socketDesc < 0)
         {
@@ -159,11 +151,18 @@ int main()
         }
 
         code_msg = 111;
-        if(write(socketDesc, &code_msg, sizeof(code_msg)) < 0) { close(socketDesc); return -1; }
-        read(socketDesc, &code_msg, sizeof(code_msg));
+        bytesSR = send(socketDesc, &code_msg, sizeof(code_msg), 0);
+        cout << "#DEBUG: send bytes " << bytesSR << endl;
+        if(bytesSR < 0) { close(socketDesc); return -1; }
+
+        bytesSR = recv(socketDesc, &code_msg, sizeof(code_msg), 0);
+        cout << "#DEBUG: recv bytes " << bytesSR << endl;
         for(int i = 0; i < PAGE_X; i++)
             for(int j = 0; j < PAGE_Y; j++)
-                read(socketDesc, &buffor[i][j], sizeof(buffor[i][j]));
+            {
+                bytesSR = recv(socketDesc, &buffor[i][j], sizeof(buffor[i][j]), 0);
+                cout << "#DEBUG: recv bytes " << bytesSR << endl;
+            }
         while(1)
         {
             fileIn.open("temp/out.txt");
@@ -175,27 +174,20 @@ int main()
                     fileIn << buffor[py][px];
         fileIn.close();
 
-        update_file_info(lastModifyMin, lastModifySec);
+        update_file_info(lastModifySec);
 
         int loopCount = 0;
         cout <<"#DEBUG-client: loop started" << endl;
         while(!end_program)
         {
             // **********SEND CHANGES IN EDITED FILE**********
-            usleep(1000 * 1); // 1 seconds
             stat("temp/out.txt", &attrib);
             foo = gmtime(&(attrib.st_mtime));
-            if(lastModifyMin == foo->tm_min)
-            {
-                if(lastModifySec == foo->tm_sec)isModify = false;
-                else isModify = true;
-            }
-            else isModify = true;
+            if(lastModifySec == foo->tm_sec) isModify = false;
+            else { lastModifySec = foo->tm_sec; isModify = true; }
 
             if(isModify == true)
             {
-                update_file_info(lastModifyMin, lastModifySec);
-
                 cout << "#DEBUG-client: out.txt is modify" << endl;
 
                 while(1)
@@ -232,26 +224,39 @@ int main()
                         posY = j;
 
                         code_msg = 222;
-                        if(write(socketDesc, &code_msg, sizeof(code_msg)) < 0) { close(socketDesc); end_program = true;  break;}
-                        if(write(socketDesc, &chr, sizeof(chr)) < 0) { close(socketDesc); end_program = true;  break;}
-                        if(write(socketDesc, &posX, sizeof(posX)) < 0) { close(socketDesc); end_program = true;  break;}
-                        if(write(socketDesc, &posY, sizeof(posY)) < 0) { close(socketDesc); end_program = true;  break;}
+                        bytesSR = send(socketDesc, &code_msg, sizeof(code_msg),0);
+                        cout << "#DEBUG: send bytes " << bytesSR << endl;
+                        if(bytesSR < 0) { close(socketDesc); end_program = true;  break;}
+                        bytesSR = send(socketDesc, &chr, sizeof(chr),0);
+                        cout << "#DEBUG: send bytes " << bytesSR << endl;
+                        if(bytesSR < 0) { close(socketDesc); end_program = true;  break;}
+                        bytesSR = send(socketDesc, &posX, sizeof(posX),0);
+                        cout << "#DEBUG: send bytes " << bytesSR << endl;
+                        if(bytesSR < 0) { close(socketDesc); end_program = true;  break;}
+                        bytesSR = send(socketDesc, &posY, sizeof(posY),0);
+                        cout << "#DEBUG: send bytes " << bytesSR << endl;
+                        if(bytesSR < 0) { close(socketDesc); end_program = true;  break;}
                     }
             }
 
             // **********DOWNLOAD 'EDITED' FILE**********
-            usleep(1000 * 1); // 1 seconds
             code_msg = 111;
-            if(write(socketDesc, &code_msg, sizeof(code_msg)) < 0) { close(socketDesc); end_program = true;  break;}
+            bytesSR = send(socketDesc, &code_msg, sizeof(code_msg), 0);
+            cout << "#DEBUG: send bytes " << bytesSR << endl;
+            if(bytesSR < 0) { close(socketDesc); end_program = true;  break;}
 
-            read(socketDesc, &code_msg, sizeof(code_msg));
+            bytesSR = recv(socketDesc, &code_msg, sizeof(code_msg),0);
+            cout << "#DEBUG: recv bytes " << bytesSR << endl;
             if(code_msg == 99)
             {
                 cout << "#DEBUG-client: Update from server" << endl;
                 isModify = true;
                 for(int i = 0; i < PAGE_X; i++)
                     for(int j = 0; j < PAGE_Y; j++)
-                        read(socketDesc, &buffor[i][j], sizeof(buffor[i][j]));
+                    {
+                        bytesSR = recv(socketDesc, &buffor[i][j], sizeof(buffor[i][j]),0);
+                        cout << "#DEBUG: recv bytes " << bytesSR << endl;
+                    }
             }
             else isModify = false;
 
@@ -268,15 +273,18 @@ int main()
                             fileIn << buffor[py][px];
                 fileIn.close();
 
-                update_file_info(lastModifyMin, lastModifySec);
+                update_file_info(lastModifySec);
             }
 
             if(loopCount > 3) { loopCount = 0; clrBuff(buffor); continue; }
             // **********CHECK ACTIVE OTHER CLIENTS**********
-            usleep(1000 * 1); // 1 seconds
             code_msg = 333;
-            if(write(socketDesc, &code_msg, sizeof(code_msg)) < 0) { close(socketDesc); end_program = true;  break;}
-            read(socketDesc, &activeUsers, sizeof(activeUsers));
+            bytesSR = send(socketDesc, &code_msg, sizeof(code_msg), 0);
+            cout << "#DEBUG: send bytes " << bytesSR << endl;
+            if(bytesSR < 0) { close(socketDesc); end_program = true;  break;}
+
+            bytesSR = recv(socketDesc, &activeUsers, sizeof(activeUsers),0);
+            cout << "#DEBUG: recv bytes " << bytesSR << endl;
             while(1)
             {
                 fileIn.open("temp/activusr.txt");
@@ -286,7 +294,6 @@ int main()
             fileIn.close();
 
             // **********SEND SELECTED TEXT BY SELF**********
-            usleep(1000 * 1); // 1 seconds
             code_msg = 444;
             posX = posY = 0;
             while(1)
@@ -299,16 +306,26 @@ int main()
             getline(fileOut, line);
             posY = atoi(line.c_str());
             fileOut.close();
-            if(write(socketDesc, &code_msg, sizeof(code_msg)) < 0) { close(socketDesc); end_program = true;  break;}
-            if(write(socketDesc, &posX, sizeof(posX)) < 0) { close(socketDesc); end_program = true;  break;}
-            if(write(socketDesc, &posY, sizeof(posY)) < 0) { close(socketDesc); end_program = true;  break;}
+
+            bytesSR = send(socketDesc, &code_msg, sizeof(code_msg), 0);
+            cout << "#DEBUG: send bytes " << bytesSR << endl;
+            if(bytesSR < 0) { close(socketDesc); end_program = true;  break;}
+            bytesSR = send(socketDesc, &posX, sizeof(posX), 0);
+            cout << "#DEBUG: send bytes " << bytesSR << endl;
+            if(bytesSR < 0) { close(socketDesc); end_program = true;  break;}
+            bytesSR = send(socketDesc, &posY, sizeof(posY), 0);
+            cout << "#DEBUG: send bytes " << bytesSR << endl;
+            if(bytesSR < 0) { close(socketDesc); end_program = true;  break;}
 
             // **********DOWNLOAD SELECTED TEXT BY OTHERS**********
-            usleep(1000 * 1); // 1 seconds
             code_msg = 555;
             activeUsers = 0;
-            if(write(socketDesc, &code_msg, sizeof(code_msg)) < 0) { close(socketDesc); end_program = true;  break;}
-            read(socketDesc, &activeUsers, sizeof(activeUsers));
+            bytesSR = send(socketDesc, &code_msg, sizeof(code_msg), 0);
+            cout << "#DEBUG: send bytes " << bytesSR << endl;
+            if(bytesSR < 0) { close(socketDesc); end_program = true;  break;}
+
+            bytesSR = recv(socketDesc, &activeUsers, sizeof(activeUsers), 0);
+            cout << "#DEBUG: recv bytes " << bytesSR << endl;
             while(1)
             {
                 fileIn.open("temp/selecposother.txt");
@@ -319,10 +336,13 @@ int main()
                 fileIn << activeUsers << '\n';
                 for(int i = 0; i < activeUsers; i++)
                 {
-                  read(socketDesc, &posX, sizeof(posX));
-                  read(socketDesc, &posY, sizeof(posY));
-                  fileIn << posX << '\n';
-                  fileIn << posY << '\n';
+                    bytesSR = recv(socketDesc, &posX, sizeof(posX), 0);
+                    cout << "#DEBUG: recv bytes " << bytesSR << endl;
+                    bytesSR = recv(socketDesc, &posY, sizeof(posY), 0);
+                    cout << "#DEBUG: recv bytes " << bytesSR << endl;
+
+                    fileIn << posX << '\n';
+                    fileIn << posY << '\n';
                 }
             }
             else
@@ -334,7 +354,7 @@ int main()
             fileIn.close();
             ++loopCount;
         }
-        
+
         while(1)
         {
             fileIn.open("temp/out.txt");
@@ -344,11 +364,11 @@ int main()
         fileIn.close();
         usleep(1000 * 6); // 6 seconds
     }
-    
+
     close(socketDesc);
     cout << "#DEBUG-client: Wait for thread" << endl;
     th_1.join();
     cout << "#DEBUG-client: Client closed" << endl;
-    
+
     return 0;
 }

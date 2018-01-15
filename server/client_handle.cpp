@@ -16,9 +16,12 @@ bool manage_client(int nClientDesc, int code_msg)
     char chr;
     int posX;
     int posY;
+    int bytesSR;
 
     usleep(1000 * 1); //1 sec
 
+    cout << "#DEBUG-manage_client: manage code_msg " << code_msg << endl;
+    cout << "#DEBUG-manage_client: manage descriptor " << nClientDesc << endl;
     if(code_msg == 111)
     {
         int temp;
@@ -40,11 +43,16 @@ bool manage_client(int nClientDesc, int code_msg)
 
         if(temp == 99)
         {
-            write(nClientDesc, &temp, sizeof(temp));
+            bytesSR = send(nClientDesc, &temp, sizeof(temp), 0);
+            cout << "#DEBUG-client_handle: temp send bytes " << bytesSR << endl;
             for(int i = 0; i < PAGE_X; i++)
                 for(int j = 0; j < PAGE_Y; j++)
-                    if(write(nClientDesc, &plik->buffor[i][j], sizeof(plik->buffor[i][j])) < 0)
+                {
+                    bytesSR = send(nClientDesc, &plik->buffor[i][j], sizeof(plik->buffor[i][j]), 0);
+                    cout << "#DEBUG-client_handle: loop send bytes " << bytesSR << endl;
+                    if(bytesSR < 0)
                         return false;
+                }
 
             for(int i = 0; i < CLIENT_LIMIT; i++)
                 if(CST[i].descriptor == nClientDesc)
@@ -54,15 +62,26 @@ bool manage_client(int nClientDesc, int code_msg)
                 }
         }
         else
-            if(write(nClientDesc, &temp, sizeof(temp)) < 0) return false;
+        {
+            bytesSR = send(nClientDesc, &temp, sizeof(temp), 0);
+            //cout << "#DEBUG-client_handle: send bytes " << bytesSR << endl;
+            if(bytesSR < 0) return false;
+        }
     }
     else if(code_msg == 222)
     {
-        if(read(nClientDesc, &chr, sizeof(chr)) < 0) return false;
+        bytesSR = recv(nClientDesc, &chr, sizeof(chr), 0);
+        //cout << "#DEBUG-client_handle: recv bytes " << bytesSR << endl;
+        if(bytesSR < 0) return false;
+        bytesSR = recv(nClientDesc, &posX, sizeof(posX), 0);
+        //cout << "#DEBUG-client_handle: recv bytes " << bytesSR << endl;
+        if(bytesSR < 0) return false;
+        bytesSR = recv(nClientDesc, &posY, sizeof(posY), 0);
+        //cout << "#DEBUG-client_handle: recv bytes " << bytesSR << endl;
+        if(bytesSR < 0) return false;
+
         fifo.ch = chr;
-        if(read(nClientDesc, &posX, sizeof(posX)) < 0) return false;
         fifo.posX = posX;
-        if(read(nClientDesc, &posY, sizeof(posY)) < 0) return false;
         fifo.posY = posY;
         fifo.type = 10;
 
@@ -83,15 +102,19 @@ bool manage_client(int nClientDesc, int code_msg)
     else if(code_msg == 333)
     {
         int temp = numberClientsDescriptors - 1;
-        if(write(nClientDesc, &temp, sizeof(temp))  < 0) return false;
+        bytesSR = send(nClientDesc, &temp, sizeof(temp), 0);
+        //cout << "#DEBUG-client_handle: send bytes " << bytesSR << endl;
+        if(bytesSR < 0) return false;
     }
     else if(code_msg == 444)
     {
         for(int i = 0; i < CLIENT_LIMIT; i++)
             if(CST[i].descriptor == nClientDesc)
             {
-                read(nClientDesc, &CST[i].selectStart, sizeof(CST[i].selectStart));
-                read(nClientDesc, &CST[i].selectEnd, sizeof(CST[i].selectEnd));
+                bytesSR = recv(nClientDesc, &CST[i].selectStart, sizeof(CST[i].selectStart), 0);
+                //cout << "#DEBUG-client_handle: recv bytes " << bytesSR << endl;
+                bytesSR = recv(nClientDesc, &CST[i].selectEnd, sizeof(CST[i].selectEnd), 0);
+                //cout << "#DEBUG-client_handle: recv bytes " << bytesSR << endl;
                 i = 100;
             }
     }
@@ -99,20 +122,28 @@ bool manage_client(int nClientDesc, int code_msg)
     {
         int tempSCD = 0;
         tempSCD = numberClientsDescriptors - 1;
-        if((tempSCD != 0) && (tempSCD < CLIENT_LIMIT))
+        if(tempSCD != 0)
         {
-            if(write(nClientDesc, &tempSCD, sizeof(tempSCD)) < 0) return false;
+            bytesSR = send(nClientDesc, &tempSCD, sizeof(tempSCD), 0);
+            cout << "#DEBUG-client_handle: tempSCD send bytes " << bytesSR << endl;
+            if(bytesSR < 0) return false;
             for(int i = 0; i < CLIENT_LIMIT; i++)
                 if((CST[i].descriptor != -1) && (CST[i].descriptor != nClientDesc))
                 {
-                    if(write(nClientDesc, &CST[i].selectStart, sizeof(CST[i].selectStart)) < 0) return false;
-                    if(write(nClientDesc, &CST[i].selectEnd, sizeof(CST[i].selectEnd)) < 0) return false;
+                    bytesSR = recv(nClientDesc, &CST[i].selectStart, sizeof(CST[i].selectStart), 0);
+                    cout << "#DEBUG-client_handle: recv bytes " << bytesSR << endl;
+                    if(bytesSR < 0) return false;
+                    bytesSR = recv(nClientDesc, &CST[i].selectEnd, sizeof(CST[i].selectEnd), 0);
+                    cout << "#DEBUG-client_handle: recv bytes " << bytesSR << endl;
+                    if(bytesSR < 0) return false;
                 }
         }
         else
         {
           tempSCD = 0;
-          if(write(nClientDesc, &tempSCD, sizeof(tempSCD)) < 0) return false;
+          bytesSR = send(nClientDesc, &tempSCD, sizeof(tempSCD), 0);
+          //cout << "#DEBUG-client_handle: send bytes " << bytesSR << endl;
+          if(bytesSR < 0) return false;
         }
     }
     else if(code_msg == 666)

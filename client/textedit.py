@@ -131,7 +131,6 @@ class Window(QtGui.QMainWindow):
         cursorPosition = self.textFieldEdit.textCursor().position()
         if self.text:
             self.fixSizeString = True
-            self.text = self.text.lower()           # Change chars to lower
             textCopy = self.text.encode().decode()
             i = 0
             j = 0
@@ -233,7 +232,7 @@ if __name__ == '__main__':
         make_temp_folders()
     else:
         make_temp_folders()
-        
+
     subprocess.Popen(["./client"])
     app = QtGui.QApplication(sys.argv)
     GUI = Window()
