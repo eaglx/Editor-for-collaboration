@@ -6,8 +6,6 @@ void client_handle_editor(int nClientDesc_HE, int code_msg_HE)
     char chr;
     int posX, posY;
 
-    usleep(1000 * 1); //1 sec
-
     cout << "#DEBUG-client_handle_editor: manage code_msg " << code_msg_HE << endl;
     cout << "#DEBUG-client_handle_editor: manage descriptor " << nClientDesc_HE << endl;
     if(code_msg_HE == 111)
