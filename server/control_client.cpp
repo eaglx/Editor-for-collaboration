@@ -36,7 +36,12 @@ void control_client()
         unique_lock<std::mutex> lk(cv_m);
         cv.wait(lk, []{return READY_THREAD_GLOBAL_SYNC;});
 
-        if(numberClientsDescriptors == 0) continue;
+        if(numberClientsDescriptors == 0)
+        {
+            lk.unlock();
+            cv.notify_all();
+            continue;
+        }
 
         if(numberClientsDescriptorsChang == true)
         {
@@ -50,6 +55,8 @@ void control_client()
             if(readypoll == -1)
             {
                 cout << "#DEBUG: control_client POLL ERROR" << endl;
+                lk.unlock();
+                cv.notify_all();
                 continue;
             }
             else if(readypoll == 0)
@@ -81,7 +88,6 @@ void control_client()
                         ++CST[i].timeoutcount;
                     }
                 }
-                continue;
             }
             else
             {
@@ -115,6 +121,8 @@ void control_client()
                         }
                     }
            }
+           lk.unlock();
+           cv.notify_all();
         }
     }
 
