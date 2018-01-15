@@ -103,6 +103,7 @@ void manage_editor()
         while(!end_program)
         {
             // **********SEND CHANGES IN EDITED FILE**********
+            usleep(1000 * 1); // 1 seconds
             stat("temp/out.txt", &attrib);
             foo = gmtime(&(attrib.st_mtime));
             if(lastModifySec == foo->tm_sec) isModify = false;
@@ -162,6 +163,7 @@ void manage_editor()
             }
 
             // **********DOWNLOAD 'EDITED' FILE**********
+            usleep(1000 * 1); // 1 seconds
             code_msg = 111;
             bytesSR = send(socketDesc, &code_msg, sizeof(code_msg), 0);
             cout << "#DEBUG: send bytes " << bytesSR << endl;
@@ -200,6 +202,7 @@ void manage_editor()
 
             if(loopCount > 3) { loopCount = 0; clrBuff(buffor); continue; }
             // **********CHECK ACTIVE OTHER CLIENTS**********
+            usleep(1000 * 1); // 1 seconds
             code_msg = 333;
             bytesSR = send(socketDesc, &code_msg, sizeof(code_msg), 0);
             cout << "#DEBUG: send bytes " << bytesSR << endl;
@@ -216,6 +219,7 @@ void manage_editor()
             fileIn.close();
 
             // **********SEND SELECTED TEXT BY SELF**********
+            usleep(1000 * 1); // 1 seconds
             code_msg = 444;
             posX = posY = 0;
             while(1)
@@ -240,6 +244,7 @@ void manage_editor()
             if(bytesSR < 0) { close(socketDesc); end_program = true;  break;}
 
             // **********DOWNLOAD SELECTED TEXT BY OTHERS**********
+            usleep(1000 * 1); // 1 seconds
             code_msg = 555;
             activeUsers = 0;
             bytesSR = send(socketDesc, &code_msg, sizeof(code_msg), 0);
