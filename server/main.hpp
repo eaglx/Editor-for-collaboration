@@ -42,7 +42,7 @@ extern struct ClientSelectText CST[CLIENT_LIMIT];
 extern bool numberClientsDescriptorsChang;
 
 /* FUNCTIONS */
-bool client_handle_editor(int nClientDesc, int code_msg);
+void client_handle_editor(int nClientDesc, int code_msg);
 void control_client();
 void accept_connections();
 
