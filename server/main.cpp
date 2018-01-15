@@ -26,12 +26,6 @@ void signal_callback_handler(int signum)
 void signal_callback_handler_PIPE(int signum)
 {
     cout << "#ERROR: caught signal SIGPIPE " << signum << "!!!!!!" << endl;
-    /*for(unsigned int i = 0; i < clientsDescriptors.size(); i++)
-    {
-        cout << "#DEBUG-schPIPE: Close descriptor - " << waitfor[i].fd << endl;
-        close(waitfor[i].fd);
-        waitfor[i].fd = -1;
-    }*/
 }
 
 
@@ -62,13 +56,12 @@ void control_client()
 
     int readypoll;
     int codeMsg;
+    int bytesSR;
 
     while(!end_program)
     {
         unique_lock<std::mutex> lk(cv_m);
-        //cerr << "#DEBUG: control_client WAITING... \n";
         cv.wait(lk, []{return READY_THREAD_GLOBAL_SYNC;});
-        //cerr << "#DEBUG: control_client FINISHED WAITING.\n";
 
         if(numberClientsDescriptors == 0) continue;
 
@@ -123,7 +116,9 @@ void control_client()
                 for(int i = 0; i < numberClientsDescriptors; i++)
                     if(waitfor[i].revents & POLLIN)
                     {
-                        if(read(waitfor[i].fd, &codeMsg, sizeof(codeMsg)) <= 0)
+                        bytesSR = recv(waitfor[i].fd, &codeMsg, sizeof(codeMsg), 0);
+                        cout << "#DEBUG: recv bytes before manage_client " << bytesSR << endl;
+                        if(bytesSR <= 0)
                         {
                             --numberClientsDescriptors;
                             clientsDescriptors.erase(clientsDescriptors.begin() + i);
@@ -173,7 +168,7 @@ void control_client()
         for(int i = 0; i < numberClientsDescriptors; i++) close(waitfor[i].fd);
         delete waitfor;
     }
-    
+
     cout << "#DEBUG: control_client closed" << endl;
 }
 
@@ -276,7 +271,6 @@ int server()
                 numberClientsDescriptorsChang = true;
                 numberClientsDescriptors = 0;
             }
-            usleep(1000 * 1); //1 sec
 
             for(int i = 0; i < CLIENT_LIMIT; i++)
                 if(CST[i].descriptor == -1)
