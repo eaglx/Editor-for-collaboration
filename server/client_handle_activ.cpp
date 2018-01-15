@@ -52,10 +52,6 @@ void client_handle_activ(int nClientDesc_ACV, int code_msg_ACV)
           cout << "#DEBUG-client_handle_activ: only one client, send bytes " << bytesSR << endl;
         }
     }
-    else if(code_msg_ACV == 666)
-    {
-        cout << "#DEBUG-client_handle_activ: Client finished work > " << nClientDesc_ACV << endl;
-    }
     else
     {
         cout << "#DEBUG-client_handle_activ: DFQ!!!! from " << nClientDesc_ACV << endl;

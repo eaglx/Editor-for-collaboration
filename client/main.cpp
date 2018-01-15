@@ -1,10 +1,13 @@
 #include "main.hpp"
 
-int socketDesc;
+int socketDescE;
+int socketDescA;
 string servIPaddr;
-int servPORT;
+int servPORT_A;
+int servPORT_E;
 bool end_program = false;
-bool reconnect = true;
+bool reconnect_ed = true;
+bool reconnect_acv = true;
 
 struct tm *foo;
 struct stat attrib;
@@ -13,10 +16,9 @@ void signal_callback_handler(int signum)
 {
   cout << "#DEBUG-client: Signum = " << signum <<endl;
   end_program = true;
-  reconnect = false;
-  int code_msg = 666;
-  send(socketDesc, &code_msg, sizeof(code_msg), 0);
-  close(socketDesc);
+  reconnect_acv = reconnect_ed = false;
+  close(socketDescE);
+  close(socketDescA);
   cout << "#DEBUG-client: Start shutdown client" << endl;
 }
 
@@ -24,7 +26,6 @@ void signal_callback_handler_PIPE(int signum)
 {
     cout << "#ERROR: caught signal SIGPIPE " << signum << "!!!!!!" << endl;
     end_program = true;
-    close(socketDesc);
 }
 
 void check_files_existance()
@@ -54,15 +55,17 @@ void check_files_existance()
     exit(0);
 }
 
-bool load_config(string &ip_addr, int &port)
+bool load_config()
 {
     ifstream configFile("config_file.conf");
     string temp;
     if(configFile.is_open())
     {
-      getline(configFile, ip_addr);
+      getline(configFile, servIPaddr);
       getline(configFile, temp);
-      port = atoi(temp.c_str());
+      servPORT_E = atoi(temp.c_str());
+      getline(configFile, temp);
+      servPORT_A = atoi(temp.c_str());
       configFile.close();
       cout <<"#DEBUG-client: configurations loaded" << endl;
       return true;
@@ -76,17 +79,19 @@ bool load_config(string &ip_addr, int &port)
 
 int main()
 {
-    if(!load_config(servIPaddr, servPORT)) exit(-1);
+    if(!load_config()) exit(-1);
 
     signal(SIGINT, signal_callback_handler);
     signal(SIGPIPE, signal_callback_handler_PIPE);
 
     thread cfeth(check_files_existance);
     thread meth(manage_editor);
+    thread math(manage_activ);
 
     cout << "#DEBUG-client: Wait for threads" << endl;
     cfeth.join();
     meth.join();
+    math.join();
     cout << "#DEBUG-client: Client closed" << endl;
 
     return 0;

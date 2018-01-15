@@ -17,7 +17,7 @@ void accept_connections_ed()
     nSocketDesc = socket(AF_INET, SOCK_STREAM, 0);
     if(nSocketDesc < 0)
     {
-        cout << "#ERROR-accept_connections: Can't create a socket!!!" << endl;
+        cout << "#ERROR-accept_connections_ed: Can't create a socket!!!" << endl;
         exit(-1);
     }
     setsockopt(nSocketDesc, SOL_SOCKET, SO_REUSEADDR, (char *) &nFoo, sizeof(nFoo));
@@ -27,18 +27,18 @@ void accept_connections_ed()
     nBind = bind(nSocketDesc, (struct sockaddr *) &serverAddr, sizeof(struct sockaddr));
     if(nBind < 0)
     {
-        cout << "#ERROR-accept_connections: Can't bind a socket!!!" << endl;
+        cout << "#ERROR-accept_connections_ed: Can't bind a socket!!!" << endl;
         exit(-2);
     }
 
     nListen = listen(nSocketDesc, QUEUE_SIZE);
     if(nListen < 0)
     {
-        cout << "#ERROR-accept_connections: Can't set listen queue!!!" << endl;
+        cout << "#ERROR-accept_connections_ed: Can't set listen queue!!!" << endl;
         exit(-3);
     }
 
-    cout << "#DEBUG-accept_connections: accept_connections work." << endl;
+    cout << "#DEBUG-accept_connections_ed: accept_connections work." << endl;
 
     while(!end_program)
     {
@@ -46,8 +46,8 @@ void accept_connections_ed()
 
         if(nClientDesc <= 0) continue;
 
-        cout << "#DEBUG-accept_connections: nClientDesc -> " << nClientDesc << endl;
-        cout << "#DEBUG-accept_connections: Client -> " << inet_ntoa((struct in_addr) clientAddr.sin_addr) << endl;
+        cout << "#DEBUG-accept_connections_ed: nClientDesc -> " << nClientDesc << endl;
+        cout << "#DEBUG-accept_connections_ed: Client -> " << inet_ntoa((struct in_addr) clientAddr.sin_addr) << endl;
 
         if(end_program)
             break;
@@ -59,22 +59,22 @@ void accept_connections_ed()
             READY_THREAD_GLOBAL_SYNC = false;
             this_thread::sleep_for(std::chrono::seconds(1));
             lock_guard<std::mutex> lk(cv_m);
-            cerr << "#DEBUG-accept_connections: accept_connections manage new connection\n";
+            cerr << "#DEBUG-accept_connections_ed: accept_connections manage new connection\n";
 
             int countCLIENT = 0;
             for(int i = 0; i < CLIENT_LIMIT; i++)
             {
-                cout << "#DEBUG-accept_connections: This client desc is saved: " << CST[i].descriptor << endl;
+                cout << "#DEBUG-accept_connections_ed: This client desc is saved: " << CST[i].descriptor << endl;
                 if(CST[i].descriptor == -1) ++countCLIENT;
                 else
                 {
-                    cout <<"#DEBUG-accept_connections: Test connection to descriptor " << endl;
+                    cout <<"#DEBUG-accept_connections_ed: Test connection to descriptor " << endl;
                     char c;
                     ssize_t x = recv(CST[i].descriptor, &c, 1, MSG_PEEK);
                     if (x > 0)
                     {
                         /* ...have data, leave it in socket buffer */
-                        cout << "#DEBUG-accept_connections: This client exist: " << CST[i].descriptor << endl;
+                        cout << "#DEBUG-accept_connections_ed: This client exist: " << CST[i].descriptor << endl;
                     }
                     else if (x == 0)
                     {
@@ -121,6 +121,6 @@ void accept_connections_ed()
 
     clientsDescriptors.clear();
     close(nSocketDesc);
-    cout << "#DEBUG-accept_connections: Closed" << endl;
+    cout << "#DEBUG-accept_connections_ed: Closed" << endl;
     exit(0);
 }
