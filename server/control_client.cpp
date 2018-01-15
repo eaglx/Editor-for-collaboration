@@ -2,11 +2,6 @@
 
 pollfd *waitfor = NULL;
 
-int nClientDesc_HE;
-int code_msg_HE;
-int nClientDesc_ACV;
-int code_msg_ACV;
-
 void pollfd_array_resize()
 {
     cout << "#DEBUG: pollfd_array_resize" << endl;
@@ -113,14 +108,10 @@ void control_client()
                         else
                         {
                             if(codeMsg < 333)
-                            {
-                                //thread th(client_handle_editor, waitfor[i].fd, codeMsg);
-                                //th.join();
-                            }
+                                client_handle_editor(waitfor[i].fd, codeMsg);
                             else
-                            {
-                                ;
-                            }
+                                client_handle_activ(waitfor[i].fd, codeMsg);
+
                         }
                     }
            }
