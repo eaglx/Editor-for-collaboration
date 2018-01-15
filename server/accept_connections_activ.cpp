@@ -1,5 +1,37 @@
 #include "main.hpp"
 
+bool test_connection_th_off;
+void test_connection_th(int client_desc_test)
+{
+    char c;
+    ssize_t x;
+    cout << "#DEBUG-accept_connections_activ: test_connection_th run" << endl;
+    while(!test_connection_th_off)
+    {
+        x = recv(client_desc_test, &c, 1, MSG_PEEK);
+        if (x > 0)
+        {
+            /* ...have data, leave it in socket buffer */
+            cout << "#DEBUG-test_connection_th: Cclient exist" << endl;
+        }
+        else if (x == 0)
+        {
+            /* ...handle FIN from client */
+            cout << "#DEBUG-test_connection_th: Close client - FIN" << endl;
+            close(client_desc_test);
+            test_connection_th_off = true;
+        }
+        else
+        {
+             /* ...handle errors */
+             cout << "#DEBUG-test_connection_th: Close client - error" << endl;
+            close(client_desc_test);
+            test_connection_th_off = true;
+        }
+    }
+    cout << "#DEBUG-accept_connections_activ: test_connection_th stop" << endl;
+}
+
 void accept_connections_activ()
 {
     int nClientDesc;
@@ -50,15 +82,21 @@ void accept_connections_activ()
         cout << "#DEBUG-accept_connections_activ: nClientDesc -> " << nClientDesc << endl;
         cout << "#DEBUG-accept_connections_activ: Client -> " << inet_ntoa((struct in_addr) clientAddr.sin_addr) << endl;
 
+        test_connection_th_off = false;
+        thread th(test_connection_th, nClientDesc);
+
         bytesSR = recv(nClientDesc, &code_msg, sizeof(code_msg), 0);
-        cout << "#DEBUG-accept_connections_activ: recv bytes " << bytesSR << endl;
+        cout << "#DEBUG-accept_connections_activ: recv bytes " << bytesSR << " code_msg " << code_msg << endl;
         client_handle_activ(nClientDesc, code_msg);
         bytesSR = recv(nClientDesc, &code_msg, sizeof(code_msg), 0);
-        cout << "#DEBUG-accept_connections_activ: recv bytes " << bytesSR << endl;
+        cout << "#DEBUG-accept_connections_activ: recv bytes " << bytesSR << " code_msg " << code_msg << endl;
         client_handle_activ(nClientDesc, code_msg);
         bytesSR = recv(nClientDesc, &code_msg, sizeof(code_msg), 0);
-        cout << "#DEBUG-accept_connections_activ: recv bytes " << bytesSR << endl;
+        cout << "#DEBUG-accept_connections_activ: recv bytes " << bytesSR << " code_msg " << code_msg << endl;
         client_handle_activ(nClientDesc, code_msg);
+
+        test_connection_th_off = true;
+        th.join();
 
         close(nClientDesc);
     }

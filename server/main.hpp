@@ -50,7 +50,7 @@ void accept_connections_activ();
 void client_handle_activ(int nClientDesc_ACV, int code_msg_ACV);
 
 /* STRUCT */
-struct ClientSelectText
+struct ClientSelectText     ???? //TODO: ADD USER SPECIAL ID generate on users side
 {
     int descriptor;
     int selectStart;

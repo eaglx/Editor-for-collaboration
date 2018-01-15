@@ -73,16 +73,16 @@ void manage_editor()
 
         code_msg = 111;
         bytesSR = send(socketDescE, &code_msg, sizeof(code_msg), 0);
-        cout << "#DEBUG-manage_editor: send bytes before big loop" << bytesSR << endl;
+        //cout << "#DEBUG-manage_editor: send bytes before big loop" << bytesSR << endl;
         if(bytesSR < 0) { close(socketDescE); continue; }
 
         bytesSR = recv(socketDescE, &code_msg, sizeof(code_msg), 0);
-        cout << "#DEBUG-manage_editor: recv bytes before big loop" << bytesSR << endl;
+        //cout << "#DEBUG-manage_editor: recv bytes before big loop" << bytesSR << endl;
         for(int i = 0; i < PAGE_X; i++)
             for(int j = 0; j < PAGE_Y; j++)
             {
                 bytesSR = recv(socketDescE, &buffor[i][j], sizeof(buffor[i][j]), 0);
-                cout << "#DEBUG-manage_editor: recv bytes in small loop " << bytesSR << endl;
+                //cout << "#DEBUG-manage_editor: recv bytes in small loop " << bytesSR << endl;
             }
         while(1)
         {
@@ -147,16 +147,16 @@ void manage_editor()
 
                         code_msg = 222;
                         bytesSR = send(socketDescE, &code_msg, sizeof(code_msg),0);
-                        cout << "#DEBUG-manage_editor: send bytes " << bytesSR << endl;
+                        //cout << "#DEBUG-manage_editor: send bytes " << bytesSR << endl;
                         if(bytesSR < 0) { close(socketDescE); end_program_e = true;  break;}
                         bytesSR = send(socketDescE, &chr, sizeof(chr),0);
-                        cout << "#DEBUG-manage_editor: send bytes " << bytesSR << endl;
+                        //cout << "#DEBUG-manage_editor: send bytes " << bytesSR << endl;
                         if(bytesSR < 0) { close(socketDescE); end_program_e = true;  break;}
                         bytesSR = send(socketDescE, &posX, sizeof(posX),0);
-                        cout << "#DEBUG-manage_editor: send bytes " << bytesSR << endl;
+                        //cout << "#DEBUG-manage_editor: send bytes " << bytesSR << endl;
                         if(bytesSR < 0) { close(socketDescE); end_program_e = true;  break;}
                         bytesSR = send(socketDescE, &posY, sizeof(posY),0);
-                        cout << "#DEBUG-manage_editor: send bytes " << bytesSR << endl;
+                        //cout << "#DEBUG-manage_editor: send bytes " << bytesSR << endl;
                         if(bytesSR < 0) { close(socketDescE); end_program_e = true;  break;}
                     }
             }
@@ -165,20 +165,20 @@ void manage_editor()
             usleep(500000); // 0.5 seconds
             code_msg = 111;
             bytesSR = send(socketDescE, &code_msg, sizeof(code_msg), 0);
-            cout << "#DEBUG-manage_editor: send bytes " << bytesSR << endl;
+            //cout << "#DEBUG-manage_editor: send bytes " << bytesSR << endl;
             if(bytesSR < 0) { close(socketDescE); end_program_e = true;  break;}
 
             bytesSR = recv(socketDescE, &code_msg, sizeof(code_msg),0);
-            cout << "#DEBUG-manage_editor: recv bytes " << bytesSR << endl;
+            //cout << "#DEBUG-manage_editor: recv bytes " << bytesSR << endl;
             if(code_msg == 99)
             {
-                cout << "#DEBUG-manage_editor: Update from server" << endl;
+                //cout << "#DEBUG-manage_editor: Update from server" << endl;
                 isModify = true;
                 for(int i = 0; i < PAGE_X; i++)
                     for(int j = 0; j < PAGE_Y; j++)
                     {
                         bytesSR = recv(socketDescE, &buffor[i][j], sizeof(buffor[i][j]),0);
-                        cout << "#DEBUG-manage_editor: recv bytes " << bytesSR << endl;
+                        //cout << "#DEBUG-manage_editor: recv bytes " << bytesSR << endl;
                     }
             }
             else isModify = false;

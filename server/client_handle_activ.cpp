@@ -16,7 +16,7 @@ void client_handle_activ(int nClientDesc_ACV, int code_msg_ACV)
     else if(code_msg_ACV == 444)
     {
         for(int i = 0; i < CLIENT_LIMIT; i++)
-            if(CST[i].descriptor == nClientDesc_ACV)
+            if(???? == 0) //TODO
             {
                 bytesSR = recv(nClientDesc_ACV, &CST[i].selectStart, sizeof(CST[i].selectStart), 0);
                 cout << "#DEBUG-client_handle_activ: recv bytes " << bytesSR << endl;
@@ -35,7 +35,7 @@ void client_handle_activ(int nClientDesc_ACV, int code_msg_ACV)
             cout << "#DEBUG-client_handle_activ: lot clients, send bytes " << bytesSR << endl;
 
             for(int i = 0; i < CLIENT_LIMIT; i++)
-                if((CST[i].descriptor != -1) && (CST[i].descriptor != nClientDesc_ACV))
+                if((CST[i].descriptor != -1) && (???? != 0)) //TODO
                 {
                     bytesSR = send(nClientDesc_ACV, &CST[i].selectStart, sizeof(CST[i].selectStart), 0);
                     cout << "#DEBUG-client_handle_activ: send bytes " << bytesSR << endl;
