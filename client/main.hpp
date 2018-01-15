@@ -25,4 +25,14 @@
 
 using namespace std;
 
+extern int socketDesc;
+extern string servIPaddr;
+extern int servPORT;
+extern bool end_program;
+extern bool reconnect;
+extern struct tm *foo;
+extern struct stat attrib;
+
+void manage_editor();
+
 #endif

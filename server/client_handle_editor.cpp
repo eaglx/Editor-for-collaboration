@@ -96,7 +96,7 @@ void client_handle_editor(int nClientDesc, int code_msg)
         {
             bytesSR = send(nClientDesc, &tempSCD, sizeof(tempSCD), 0);
             cout << "#DEBUG-client_handle: lot clients, send bytes " << bytesSR << endl;
-            
+
             for(int i = 0; i < CLIENT_LIMIT; i++)
                 if((CST[i].descriptor != -1) && (CST[i].descriptor != nClientDesc))
                 {
@@ -111,22 +111,14 @@ void client_handle_editor(int nClientDesc, int code_msg)
           tempSCD = 0;
           bytesSR = send(nClientDesc, &tempSCD, sizeof(tempSCD), 0);
           cout << "#DEBUG-client_handle: only one client, send bytes " << bytesSR << endl;
-          if(bytesSR < 0)
-          {
-              cout << "#DEBUG-client_handle_editor: close descriptor " << nClientDesc << endl;
-              close(nClientDesc);
-          }
         }
     }
     else if(code_msg == 666)
     {
-        cout << "#DEBUG: Close client due he finished work > " << nClientDesc << endl;
-        close(nClientDesc);
+        cout << "#DEBUG: Client finished work > " << nClientDesc << endl;
     }
     else
     {
-        cout << "#DEBUG: DFQ!!!!" << endl;
-        cout << "#DEBUG: Close client due security reason > " << nClientDesc << endl;
-        close(nClientDesc);
+        cout << "#DEBUG: DFQ!!!! from " << nClientDesc << endl;
     }
 }

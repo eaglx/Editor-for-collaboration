@@ -19,7 +19,7 @@ else
 fi
 
 echo "> Compile client ..."
-g++ client/main.cpp -o client/client -Wall -Wextra -std=c++11 -lpthread -g
+g++ client/main.cpp client/manage_editor.cpp -o client/client -Wall -Wextra -std=c++11 -lpthread -g
 if [ $? -eq 0 ]; then
     echo "> Client build"
 else
