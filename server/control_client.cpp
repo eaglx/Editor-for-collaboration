@@ -111,14 +111,7 @@ void control_client()
                                     CST[i].timeoutcount = 0;
                                 }
                         }
-                        else
-                        {
-                            if(codeMsg < 333)
-                                client_handle_editor(waitfor[i].fd, codeMsg);
-                            else
-                                client_handle_activ(waitfor[i].fd, codeMsg);
-
-                        }
+                        else { client_handle_editor(waitfor[i].fd, codeMsg); }
                     }
            }
            lk.unlock();

@@ -1,6 +1,6 @@
 #include "main.hpp"
 
-void accept_connections()
+void accept_connections_ed()
 {
     int nClientDesc;
     int nBind, nListen;
@@ -12,7 +12,7 @@ void accept_connections()
 
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);
-    serverAddr.sin_port = htons(PORT);
+    serverAddr.sin_port = htons(PORT_E);
 
     nSocketDesc = socket(AF_INET, SOCK_STREAM, 0);
     if(nSocketDesc < 0)
