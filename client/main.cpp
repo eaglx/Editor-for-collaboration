@@ -5,7 +5,8 @@ int socketDescA;
 string servIPaddr;
 int servPORT_A;
 int servPORT_E;
-bool end_program = false;
+bool end_program_e = false;
+bool end_program_a = false;
 bool reconnect_ed = true;
 bool reconnect_acv = true;
 
@@ -15,7 +16,7 @@ struct stat attrib;
 void signal_callback_handler(int signum)
 {
   cout << "#DEBUG-client: Signum = " << signum <<endl;
-  end_program = true;
+  end_program_a = end_program_e = true;
   reconnect_acv = reconnect_ed = false;
   close(socketDescE);
   close(socketDescA);
@@ -25,7 +26,6 @@ void signal_callback_handler(int signum)
 void signal_callback_handler_PIPE(int signum)
 {
     cout << "#ERROR: caught signal SIGPIPE " << signum << "!!!!!!" << endl;
-    end_program = true;
 }
 
 void check_files_existance()

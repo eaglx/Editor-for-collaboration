@@ -33,7 +33,7 @@ void manage_editor()
 
     while(reconnect_ed)
     {
-        end_program = false;
+        end_program_e = false;
         lastModifySec = 0;
         isModify = false;
         clrBuff(buffor);
@@ -99,10 +99,10 @@ void manage_editor()
 
         int loopCount = 0;
         cout <<"#DEBUG-manage_editor: loop started" << endl;
-        while(!end_program)
+        while(!end_program_e)
         {
             // **********SEND CHANGES IN EDITED FILE**********
-            usleep(1000 * 1); // 1 seconds
+            usleep(500000); // 0.5 seconds
             stat("temp/out.txt", &attrib);
             foo = gmtime(&(attrib.st_mtime));
             if(lastModifySec == foo->tm_sec) isModify = false;
@@ -148,25 +148,25 @@ void manage_editor()
                         code_msg = 222;
                         bytesSR = send(socketDescE, &code_msg, sizeof(code_msg),0);
                         cout << "#DEBUG-manage_editor: send bytes " << bytesSR << endl;
-                        if(bytesSR < 0) { close(socketDescE); end_program = true;  break;}
+                        if(bytesSR < 0) { close(socketDescE); end_program_e = true;  break;}
                         bytesSR = send(socketDescE, &chr, sizeof(chr),0);
                         cout << "#DEBUG-manage_editor: send bytes " << bytesSR << endl;
-                        if(bytesSR < 0) { close(socketDescE); end_program = true;  break;}
+                        if(bytesSR < 0) { close(socketDescE); end_program_e = true;  break;}
                         bytesSR = send(socketDescE, &posX, sizeof(posX),0);
                         cout << "#DEBUG-manage_editor: send bytes " << bytesSR << endl;
-                        if(bytesSR < 0) { close(socketDescE); end_program = true;  break;}
+                        if(bytesSR < 0) { close(socketDescE); end_program_e = true;  break;}
                         bytesSR = send(socketDescE, &posY, sizeof(posY),0);
                         cout << "#DEBUG-manage_editor: send bytes " << bytesSR << endl;
-                        if(bytesSR < 0) { close(socketDescE); end_program = true;  break;}
+                        if(bytesSR < 0) { close(socketDescE); end_program_e = true;  break;}
                     }
             }
 
             // **********DOWNLOAD 'EDITED' FILE**********
-            usleep(1000 * 1); // 1 seconds
+            usleep(500000); // 0.5 seconds
             code_msg = 111;
             bytesSR = send(socketDescE, &code_msg, sizeof(code_msg), 0);
             cout << "#DEBUG-manage_editor: send bytes " << bytesSR << endl;
-            if(bytesSR < 0) { close(socketDescE); end_program = true;  break;}
+            if(bytesSR < 0) { close(socketDescE); end_program_e = true;  break;}
 
             bytesSR = recv(socketDescE, &code_msg, sizeof(code_msg),0);
             cout << "#DEBUG-manage_editor: recv bytes " << bytesSR << endl;
@@ -211,6 +211,6 @@ void manage_editor()
         fileIn << "CONNECTION FAILURE, WAIT TO RECONNECT";
         fileIn.close();
         cout << "#DEBUG-manage_editor: CONNECTION FAILURE, WAIT TO RECONNECT" << endl;
-        usleep(1000 * 6); // 6 seconds
+        usleep(4000000); // 4 seconds
     }
 }

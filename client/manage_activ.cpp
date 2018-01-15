@@ -13,13 +13,14 @@ void manage_activ()
     string line;
     int bytesSR;
 
+    usleep(3000000); // 3 seconds
     while(reconnect_ed)
     {
         socketDescA = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
         if(socketDescA < 0)
         {
             cout << "#ERROR-manage_activ: Failed create socket!!!" << endl;
-            usleep(1000 * 4); // 4 seconds
+            usleep(1000000); // 1 seconds
             continue;
         }
         setsockopt(socketDescA, SOL_SOCKET, SO_REUSEADDR, (char *) &nFoo, sizeof(nFoo));
@@ -33,19 +34,18 @@ void manage_activ()
         {
             cout <<"#ERROR-manage_activ: Cannot connect to server!!!" << endl;
             close(socketDescA);
-            usleep(1000 * 4); // 4 seconds
+            usleep(1000000); // 1 seconds
             continue;
         }
 
         cout <<"#DEBUG-manage_activ: loop started" << endl;
-        while(!end_program)
+        while(!end_program_a)
         {
             // **********CHECK ACTIVE OTHER CLIENTS**********
-            usleep(1000 * 4); // 4 seconds
             code_msg = 333;
             bytesSR = send(socketDescA, &code_msg, sizeof(code_msg), 0);
             cout << "#DEBUG-manage_activ: send bytes " << bytesSR << endl;
-            if(bytesSR < 0) { close(socketDescA); end_program = true;  break;}
+            if(bytesSR < 0) { close(socketDescA); end_program_a = true;  break;}
 
             bytesSR = recv(socketDescA, &activeUsers, sizeof(activeUsers),0);
             cout << "#DEBUG-manage_activ: recv bytes " << bytesSR << endl;
@@ -58,7 +58,6 @@ void manage_activ()
             fileIn.close();
 
             // **********SEND SELECTED TEXT BY SELF**********
-            usleep(1000 * 4); // 4 seconds
             code_msg = 444;
             posX = posY = 0;
             while(1)
@@ -74,21 +73,20 @@ void manage_activ()
 
             bytesSR = send(socketDescA, &code_msg, sizeof(code_msg), 0);
             cout << "#DEBUG-manage_activ: send bytes " << bytesSR << endl;
-            if(bytesSR < 0) { close(socketDescA); end_program = true;  break;}
+            if(bytesSR < 0) { close(socketDescA); end_program_a = true;  break;}
             bytesSR = send(socketDescA, &posX, sizeof(posX), 0);
             cout << "#DEBUG-manage_activ: send bytes " << bytesSR << endl;
-            if(bytesSR < 0) { close(socketDescA); end_program = true;  break;}
+            if(bytesSR < 0) { close(socketDescA); end_program_a = true;  break;}
             bytesSR = send(socketDescA, &posY, sizeof(posY), 0);
             cout << "#DEBUG-manage_activ: send bytes " << bytesSR << endl;
-            if(bytesSR < 0) { close(socketDescA); end_program = true;  break;}
+            if(bytesSR < 0) { close(socketDescA); end_program_a = true;  break;}
 
             // **********DOWNLOAD SELECTED TEXT BY OTHERS**********
-            usleep(1000 * 4); // 4 seconds
             code_msg = 555;
             activeUsers = 0;
             bytesSR = send(socketDescA, &code_msg, sizeof(code_msg), 0);
             cout << "#DEBUG-manage_activ: send bytes " << bytesSR << endl;
-            if(bytesSR < 0) { close(socketDescA); end_program = true;  break;}
+            if(bytesSR < 0) { close(socketDescA); end_program_a = true;  break;}
 
             bytesSR = recv(socketDescA, &activeUsers, sizeof(activeUsers), 0);
             cout << "#DEBUG-manage_activ: recv bytes " << bytesSR << endl;
@@ -118,9 +116,10 @@ void manage_activ()
               fileIn << 0 << '\n';
             }
             fileIn.close();
+            usleep(2000000); // 2 seconds
         }
 
         cout << "#DEBUG-manage_activ:CONNECTION FAILURE, WAIT TO RECONNECT" << endl;
-        usleep(1000 * 6); // 6 seconds
+        usleep(6000000); // 6 seconds
     }
 }

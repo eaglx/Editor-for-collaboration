@@ -4,8 +4,6 @@ void client_handle_activ(int nClientDesc_ACV, int code_msg_ACV)
 {
     int bytesSR;
 
-    usleep(1000 * 1); //1 sec
-
     cout << "#DEBUG-client_handle_activ: manage code_msg " << code_msg_ACV << endl;
     cout << "#DEBUG-client_handle_activ: manage descriptor " << nClientDesc_ACV << endl;
 
