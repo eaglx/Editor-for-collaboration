@@ -36,12 +36,14 @@ extern mutex cv_m;
 extern bool READY_THREAD_GLOBAL_SYNC;
 extern int id;
 extern char bufforFE[PAGE_X][PAGE_Y];
+extern vector < int > clientsDescriptors;
 extern int numberClientsDescriptors;
 extern struct ClientSelectText CST[CLIENT_LIMIT];
 extern bool numberClientsDescriptorsChang;
 
 /* FUNCTIONS */
 bool manage_client(int nClientDesc, int code_msg);
+void control_client();
 
 /* STRUCT */
 struct ClientSelectText
