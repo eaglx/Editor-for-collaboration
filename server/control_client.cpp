@@ -107,28 +107,20 @@ void control_client()
                         }
                         else
                         {
-                            try
+                            if(!client_handle_editor(waitfor[i].fd, codeMsg))
                             {
-                                if(!client_handle_editor(waitfor[i].fd, codeMsg))
-                                {
-                                    --numberClientsDescriptors;
-                                    clientsDescriptors.erase(clientsDescriptors.begin() + i);
-                                    numberClientsDescriptorsChang = true;
+                                --numberClientsDescriptors;
+                                clientsDescriptors.erase(clientsDescriptors.begin() + i);
+                                numberClientsDescriptorsChang = true;
 
-                                    cout << "#DEBUG: control_client Delete client id - " << waitfor[i].fd << endl;
-                                    for(int i = 0; i < CLIENT_LIMIT; i++)
-                                        if(CST[i].descriptor == waitfor[i].fd)
-                                        {
-                                            close(waitfor[i].fd);
-                                            CST[i].descriptor = -1;
-                                            CST[i].timeoutcount = 0;
-                                        }
-                                }
-                            }
-                            catch(int e)
-                            {
-                                cout << "#DEBUG: Exception Nr. " << e << '\n';
-                                continue;
+                                cout << "#DEBUG: control_client Delete client id - " << waitfor[i].fd << endl;
+                                for(int i = 0; i < CLIENT_LIMIT; i++)
+                                    if(CST[i].descriptor == waitfor[i].fd)
+                                    {
+                                        close(waitfor[i].fd);
+                                        CST[i].descriptor = -1;
+                                        CST[i].timeoutcount = 0;
+                                    }
                             }
                         }
                     }

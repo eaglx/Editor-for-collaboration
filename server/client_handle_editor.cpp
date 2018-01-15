@@ -7,8 +7,8 @@ bool client_handle_editor(int nClientDesc, int code_msg)
     int posX, posY;
     usleep(1000 * 1); //1 sec
 
-    cout << "#DEBUG-manage_client: manage code_msg " << code_msg << endl;
-    cout << "#DEBUG-manage_client: manage descriptor " << nClientDesc << endl;
+    cout << "#DEBUG-client_handle_editor: manage code_msg " << code_msg << endl;
+    cout << "#DEBUG-client_handle_editor: manage descriptor " << nClientDesc << endl;
     if(code_msg == 111)
     {
         int temp;
@@ -31,12 +31,12 @@ bool client_handle_editor(int nClientDesc, int code_msg)
         if(temp == 99)
         {
             bytesSR = send(nClientDesc, &temp, sizeof(temp), 0);
-            cout << "#DEBUG-client_handle: temp send bytes " << bytesSR << endl;
+            cout << "#DEBUG-client_handle_editor: temp send bytes " << bytesSR << endl;
             for(int i = 0; i < PAGE_X; i++)
                 for(int j = 0; j < PAGE_Y; j++)
                 {
                     bytesSR = send(nClientDesc, &bufforFE[i][j], sizeof(bufforFE[i][j]), 0);
-                    cout << "#DEBUG-client_handle: loop send bytes " << bytesSR << endl;
+                    cout << "#DEBUG-client_handle_editor: loop send bytes " << bytesSR << endl;
                     if(bytesSR < 0)
                         return false;
                 }
