@@ -1,6 +1,6 @@
 #include "main.hpp"
 
-void client_handle_activ(int nClientDesc_ACV, int code_msg_ACV)
+void client_handle_activ(int nClientDesc_ACV, int clientSP_ID, int code_msg_ACV)
 {
     int bytesSR;
 
@@ -16,7 +16,7 @@ void client_handle_activ(int nClientDesc_ACV, int code_msg_ACV)
     else if(code_msg_ACV == 444)
     {
         for(int i = 0; i < CLIENT_LIMIT; i++)
-            if(???? == 0) //TODO
+            if(CST[i].clientSPECIAL_ID == clientSP_ID)
             {
                 bytesSR = recv(nClientDesc_ACV, &CST[i].selectStart, sizeof(CST[i].selectStart), 0);
                 cout << "#DEBUG-client_handle_activ: recv bytes " << bytesSR << endl;
@@ -35,7 +35,7 @@ void client_handle_activ(int nClientDesc_ACV, int code_msg_ACV)
             cout << "#DEBUG-client_handle_activ: lot clients, send bytes " << bytesSR << endl;
 
             for(int i = 0; i < CLIENT_LIMIT; i++)
-                if((CST[i].descriptor != -1) && (???? != 0)) //TODO
+                if((CST[i].descriptor != -1) && (CST[i].clientSPECIAL_ID != clientSP_ID))
                 {
                     bytesSR = send(nClientDesc_ACV, &CST[i].selectStart, sizeof(CST[i].selectStart), 0);
                     cout << "#DEBUG-client_handle_activ: send bytes " << bytesSR << endl;

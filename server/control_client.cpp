@@ -78,6 +78,7 @@ void control_client()
                             {
                                 close(waitfor[i].fd);
                                 CST[i].descriptor = -1;
+                                CST[i].clientSPECIAL_ID = -1;
                                 CST[i].timeoutcount = 0;
                             }
                         i = clientsDescriptors.size();
@@ -108,6 +109,7 @@ void control_client()
                                 {
                                     close(waitfor[i].fd);
                                     CST[i].descriptor = -1;
+                                    CST[i].clientSPECIAL_ID = -1;
                                     CST[i].timeoutcount = 0;
                                 }
                         }

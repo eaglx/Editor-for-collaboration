@@ -47,12 +47,13 @@ void client_handle_editor(int nClientDesc_HE, int code_msg_HE);
 void control_client();
 void accept_connections_ed();
 void accept_connections_activ();
-void client_handle_activ(int nClientDesc_ACV, int code_msg_ACV);
+void client_handle_activ(int nClientDesc_ACV, int clientSP_ID, int code_msg_ACV);
 
 /* STRUCT */
-struct ClientSelectText     ???? //TODO: ADD USER SPECIAL ID generate on users side
+struct ClientSelectText
 {
     int descriptor;
+    int clientSPECIAL_ID;
     int selectStart;
     int selectEnd;
     int timeoutcount;

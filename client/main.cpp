@@ -1,5 +1,7 @@
 #include "main.hpp"
 
+int clientSPECIAL_ID;
+
 int socketDescE;
 int socketDescA;
 string servIPaddr;
@@ -80,6 +82,13 @@ bool load_config()
 int main()
 {
     if(!load_config()) exit(-1);
+    /* initialize random seed: */
+    srand (time(NULL));
+    /* generate secret number between 1000 and 9000: */
+    clientSPECIAL_ID = rand() % 9000 + 1000;
+    clientSPECIAL_ID += rand() % 500 + rand() % 500;
+
+    cout << "#DEBUG: client spiecial id " << clientSPECIAL_ID << endl;
 
     signal(SIGINT, signal_callback_handler);
     signal(SIGPIPE, signal_callback_handler_PIPE);

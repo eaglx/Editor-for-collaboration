@@ -1,5 +1,8 @@
 #include "main.hpp"
 
+???????
+//TODO: ADD POLL ORRR CHANGE MANAGE_ACTIV
+
 bool test_connection_th_off;
 void test_connection_th(int client_desc_test)
 {
@@ -42,6 +45,7 @@ void accept_connections_activ()
     int nFoo = 1;
     int code_msg;
     int bytesSR;
+    int userSpecialID;
 
     sockAddrSize = sizeof(struct sockaddr);
 
@@ -85,15 +89,17 @@ void accept_connections_activ()
         test_connection_th_off = false;
         thread th(test_connection_th, nClientDesc);
 
+        recv(nClientDesc, &userSpecialID, sizeof(userSpecialID), 0);
+
         bytesSR = recv(nClientDesc, &code_msg, sizeof(code_msg), 0);
         cout << "#DEBUG-accept_connections_activ: recv bytes " << bytesSR << " code_msg " << code_msg << endl;
-        client_handle_activ(nClientDesc, code_msg);
+        client_handle_activ(nClientDesc, userSpecialID, code_msg);
         bytesSR = recv(nClientDesc, &code_msg, sizeof(code_msg), 0);
         cout << "#DEBUG-accept_connections_activ: recv bytes " << bytesSR << " code_msg " << code_msg << endl;
-        client_handle_activ(nClientDesc, code_msg);
+        client_handle_activ(nClientDesc, userSpecialID, code_msg);
         bytesSR = recv(nClientDesc, &code_msg, sizeof(code_msg), 0);
         cout << "#DEBUG-accept_connections_activ: recv bytes " << bytesSR << " code_msg " << code_msg << endl;
-        client_handle_activ(nClientDesc, code_msg);
+        client_handle_activ(nClientDesc, userSpecialID, code_msg);
 
         test_connection_th_off = true;
         th.join();
