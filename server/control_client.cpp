@@ -109,7 +109,7 @@ void control_client()
                         {
                             try
                             {
-                                if(!manage_client(waitfor[i].fd, codeMsg))
+                                if(!client_handle_editor(waitfor[i].fd, codeMsg))
                                 {
                                     --numberClientsDescriptors;
                                     clientsDescriptors.erase(clientsDescriptors.begin() + i);

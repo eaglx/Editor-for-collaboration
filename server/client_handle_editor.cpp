@@ -1,6 +1,6 @@
 #include "main.hpp"
 
-bool manage_client(int nClientDesc, int code_msg)
+bool client_handle_editor(int nClientDesc, int code_msg)
 {
     int bytesSR;
     char chr;
