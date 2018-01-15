@@ -41,6 +41,11 @@ extern int numberClientsDescriptors;
 extern struct ClientSelectText CST[CLIENT_LIMIT];
 extern bool numberClientsDescriptorsChang;
 
+extern int nClientDesc_HE;
+extern int code_msg_HE;
+extern int nClientDesc_ACV;
+extern int code_msg_ACV;
+
 /* FUNCTIONS */
 void client_handle_editor(int nClientDesc, int code_msg);
 void control_client();
