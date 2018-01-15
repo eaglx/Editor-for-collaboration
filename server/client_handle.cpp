@@ -130,11 +130,11 @@ bool manage_client(int nClientDesc, int code_msg)
             for(int i = 0; i < CLIENT_LIMIT; i++)
                 if((CST[i].descriptor != -1) && (CST[i].descriptor != nClientDesc))
                 {
-                    bytesSR = recv(nClientDesc, &CST[i].selectStart, sizeof(CST[i].selectStart), 0);
-                    cout << "#DEBUG-client_handle: recv bytes " << bytesSR << endl;
+                    bytesSR = send(nClientDesc, &CST[i].selectStart, sizeof(CST[i].selectStart), 0);
+                    cout << "#DEBUG-client_handle: send bytes " << bytesSR << endl;
                     if(bytesSR < 0) return false;
-                    bytesSR = recv(nClientDesc, &CST[i].selectEnd, sizeof(CST[i].selectEnd), 0);
-                    cout << "#DEBUG-client_handle: recv bytes " << bytesSR << endl;
+                    bytesSR = send(nClientDesc, &CST[i].selectEnd, sizeof(CST[i].selectEnd), 0);
+                    cout << "#DEBUG-client_handle: send bytes " << bytesSR << endl;
                     if(bytesSR < 0) return false;
                 }
         }
