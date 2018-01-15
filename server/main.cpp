@@ -1,6 +1,7 @@
 #include "main.hpp"
 
-int id;
+char bufforFE[PAGE_X][PAGE_Y];
+
 bool end_program = false;
 int nSocketDesc;
 
@@ -73,7 +74,7 @@ void control_client()
 
         if(numberClientsDescriptors != 0)
         {
-            readypoll = poll(waitfor, numberClientsDescriptors, 1000);
+            readypoll = poll(waitfor, numberClientsDescriptors, 10000);
             if(readypoll == -1)
             {
                 cout << "#DEBUG: control_client POLL ERROR" << endl;
@@ -303,23 +304,18 @@ int main()
     signal(SIGPIPE, signal_callback_handler_PIPE);
     //signal(SIGPIPE, SIG_IGN);
 
-    id = msgget(123456, 0644|IPC_CREAT);
-    if(id == -1)
-    {
-        cout << "#ERROR: Cannot create IPC!!!" << endl;
-        return 1;
-    }
+    for(int i = 0; i < PAGE_X; i++)
+        for(int j = 0; j < PAGE_Y; j++)
+            bufforFE[i][j] = '\0';
 
     for(int i = 0; i < CLIENT_LIMIT; i++) CST[i].descriptor = -1;
 
-    thread th_1(feditor);
     thread cth(control_client);
 
     while(server()) cout << "#INFO: Server exit from loop!!!!!!!!!!!!!!!" << endl;
 
     cout << "#DEBUG: Server is closed" << endl;
-    msgctl(id, IPC_RMID, NULL);
-    th_1.join();
+
     cth.join();
 
     cout << "#DEBUG: @@@@ EVERYTHING IS SUCCESSIVELY CLOSED @@@@" << endl;

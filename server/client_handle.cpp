@@ -2,22 +2,9 @@
 
 bool manage_client(int nClientDesc, int code_msg)
 {
-    struct msgbuf
-    {
-        long type;
-        char ch;
-        int posX;
-        int posY;
-    };
-
-    struct msgbuf fifo;
-    int status;
-
-    char chr;
-    int posX;
-    int posY;
     int bytesSR;
-
+    char chr;
+    int posX, posY;
     usleep(1000 * 1); //1 sec
 
     cout << "#DEBUG-manage_client: manage code_msg " << code_msg << endl;
@@ -48,7 +35,7 @@ bool manage_client(int nClientDesc, int code_msg)
             for(int i = 0; i < PAGE_X; i++)
                 for(int j = 0; j < PAGE_Y; j++)
                 {
-                    bytesSR = send(nClientDesc, &plik->buffor[i][j], sizeof(plik->buffor[i][j]), 0);
+                    bytesSR = send(nClientDesc, &bufforFE[i][j], sizeof(bufforFE[i][j]), 0);
                     cout << "#DEBUG-client_handle: loop send bytes " << bytesSR << endl;
                     if(bytesSR < 0)
                         return false;
@@ -80,20 +67,10 @@ bool manage_client(int nClientDesc, int code_msg)
         //cout << "#DEBUG-client_handle: recv bytes " << bytesSR << endl;
         if(bytesSR < 0) return false;
 
-        fifo.ch = chr;
-        fifo.posX = posX;
-        fifo.posY = posY;
-        fifo.type = 10;
-
         if(!(posX >= 0) && (posX < PAGE_X)) return false;
         if(!(posY >= 0) && (posY < PAGE_Y)) return false;
 
-        status = msgsnd(id, &fifo, sizeof(fifo) - sizeof(long), 0);
-        if(status != 0)
-        {
-            cout << "#DEBUG: MSGSND ERROR!!!" << endl;
-            return false;
-        }
+        bufforFE[posX][posY] = chr;
 
         for(int i = 0; i < CLIENT_LIMIT; i++)
             if(CST[i].descriptor != nClientDesc)
