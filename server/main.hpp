@@ -34,7 +34,7 @@ extern bool end_program;
 extern condition_variable cv;
 extern mutex cv_m;
 extern bool READY_THREAD_GLOBAL_SYNC;
-extern int id;
+extern int nSocketDesc;
 extern char bufforFE[PAGE_X][PAGE_Y];
 extern vector < int > clientsDescriptors;
 extern int numberClientsDescriptors;
@@ -44,6 +44,7 @@ extern bool numberClientsDescriptorsChang;
 /* FUNCTIONS */
 bool client_handle_editor(int nClientDesc, int code_msg);
 void control_client();
+void accept_connections();
 
 /* STRUCT */
 struct ClientSelectText
