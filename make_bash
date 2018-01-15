@@ -10,7 +10,7 @@ else
 fi
 
 echo "> Compile server ..."
-g++ server/main.cpp server/client_handle.cpp server/editor.cpp -o server/server -Wall -Wextra -std=c++11 -lpthread -g
+g++ server/main.cpp server/client_handle.cpp -o server/server -Wall -Wextra -std=c++11 -lpthread -g
 if [ $? -eq 0 ]; then
     echo "> Server build"
 else
