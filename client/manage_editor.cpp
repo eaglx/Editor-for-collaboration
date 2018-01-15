@@ -71,6 +71,8 @@ void manage_editor()
             continue;
         }
 
+        send(socketDescE, &clientSPECIAL_ID, sizeof(clientSPECIAL_ID), 0);
+
         code_msg = 111;
         bytesSR = send(socketDescE, &code_msg, sizeof(code_msg), 0);
         //cout << "#DEBUG-manage_editor: send bytes before big loop" << bytesSR << endl;

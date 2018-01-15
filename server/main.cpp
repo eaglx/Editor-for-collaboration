@@ -38,7 +38,11 @@ int main()
         for(int j = 0; j < PAGE_Y; j++)
             bufforFE[i][j] = '\0';
 
-    for(int i = 0; i < CLIENT_LIMIT; i++) CST[i].descriptor = -1;
+    for(int i = 0; i < CLIENT_LIMIT; i++)
+    {
+        CST[i].descriptor = -1;
+        CST[i].clientSPECIAL_ID = -1;
+    }
 
     thread acth(accept_connections_ed);
     thread cth(control_client);

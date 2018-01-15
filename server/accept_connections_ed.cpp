@@ -81,6 +81,7 @@ void accept_connections_ed()
                         /* ...handle FIN from client */
                         close(CST[i].descriptor);
                         CST[i].descriptor = -1;
+                        CST[i].clientSPECIAL_ID = -1;
                         ++countCLIENT;
                     }
                     else
@@ -88,6 +89,7 @@ void accept_connections_ed()
                          /* ...handle errors */
                         close(CST[i].descriptor);
                         CST[i].descriptor = -1;
+                        CST[i].clientSPECIAL_ID = -1;
                         ++countCLIENT;
                     }
                 }
@@ -104,6 +106,7 @@ void accept_connections_ed()
                 if(CST[i].descriptor == -1)
                 {
                     CST[i].descriptor = nClientDesc;
+                    recv(nClientDesc, &CST[i].clientSPECIAL_ID, sizeof(CST[i].clientSPECIAL_ID), 0);
                     CST[i].selectStart = 0;
                     CST[i].selectEnd = 0;
                     CST[i].allupdate = false;

@@ -25,6 +25,7 @@
 
 using namespace std;
 
+extern int clientSPECIAL_ID;
 extern int socketDescE;
 extern int socketDescA;
 extern string servIPaddr;
