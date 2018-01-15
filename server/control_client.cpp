@@ -96,7 +96,7 @@ void control_client()
                     if(waitfor[i].revents & POLLIN)
                     {
                         bytesSR = recv(waitfor[i].fd, &codeMsg, sizeof(codeMsg), 0);
-                        cout << "#DEBUG: recv bytes before manage_client " << bytesSR << endl;
+                        //cout << "#DEBUG: recv bytes before manage_client " << bytesSR << endl;
                         if(bytesSR <= 0)
                         {
                             --numberClientsDescriptors;

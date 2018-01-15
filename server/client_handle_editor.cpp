@@ -6,8 +6,8 @@ void client_handle_editor(int nClientDesc_HE, int code_msg_HE)
     char chr;
     int posX, posY;
 
-    cout << "#DEBUG-client_handle_editor: manage code_msg " << code_msg_HE << endl;
-    cout << "#DEBUG-client_handle_editor: manage descriptor " << nClientDesc_HE << endl;
+    //cout << "#DEBUG-client_handle_editor: manage code_msg " << code_msg_HE << endl;
+    //cout << "#DEBUG-client_handle_editor: manage descriptor " << nClientDesc_HE << endl;
     if(code_msg_HE == 111)
     {
         int temp;
@@ -30,12 +30,12 @@ void client_handle_editor(int nClientDesc_HE, int code_msg_HE)
         if(temp == 99)
         {
             bytesSR = send(nClientDesc_HE, &temp, sizeof(temp), 0);
-            cout << "#DEBUG-client_handle_editor: temp send bytes " << bytesSR << endl;
+            //cout << "#DEBUG-client_handle_editor: temp send bytes " << bytesSR << endl;
             for(int i = 0; i < PAGE_X; i++)
                 for(int j = 0; j < PAGE_Y; j++)
                 {
                     bytesSR = send(nClientDesc_HE, &bufforFE[i][j], sizeof(bufforFE[i][j]), 0);
-                    cout << "#DEBUG-client_handle_editor: loop send bytes " << bytesSR << endl;
+                    //cout << "#DEBUG-client_handle_editor: loop send bytes " << bytesSR << endl;
                 }
 
             for(int i = 0; i < CLIENT_LIMIT; i++)
@@ -48,7 +48,7 @@ void client_handle_editor(int nClientDesc_HE, int code_msg_HE)
         else
         {
             bytesSR = send(nClientDesc_HE, &temp, sizeof(temp), 0);
-            cout << "#DEBUG-client_handle_editor: send bytes " << bytesSR << endl;
+            //cout << "#DEBUG-client_handle_editor: send bytes " << bytesSR << endl;
         }
     }
     else if(code_msg_HE == 222)
