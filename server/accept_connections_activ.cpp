@@ -62,4 +62,7 @@ void accept_connections_activ()
 
         close(nClientDesc);
     }
+
+    close(nSocketDesc);
+    cout << "#DEBUG-accept_connections_activ: Closed" << endl;
 }
