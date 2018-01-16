@@ -53,7 +53,6 @@ void accept_connections_activ()
 
     cout << "#DEBUG-accept_connections_activ: accept_connections work." << endl;
 
-    thread tcth(test_connectionACA);
     thread ccACAth(control_clientACA);
 
     while(!end_program)
@@ -70,6 +69,38 @@ void accept_connections_activ()
         this_thread::sleep_for(std::chrono::seconds(1));
         lock_guard<std::mutex> lk2(cv_mACA);
 
+        char c;
+        ssize_t x;
+        for(int i = 0; i < numberClientsDescriptorsACA; i++)
+        {
+            x = recv(clientsDescriptorsACA[i].desc, &c, 1, MSG_PEEK);
+            if (x > 0)
+            {
+                /* ...have data, leave it in socket buffer */
+                cout << "#DEBUG-accept_connections_activ: Client with id exist " << clientsDescriptorsACA[i].id  << endl;
+            }
+            else if (x == 0)
+            {
+                /* ...handle FIN from client */
+                cout << "#DEBUG-accept_connections_activ: Close client with id - FIN" << clientsDescriptorsACA[i].id  << endl;
+                close(clientsDescriptorsACA[i].desc);
+                clientsDescriptorsACA.erase(clientsDescriptorsACA.begin() + i);
+                i = numberClientsDescriptorsACA;
+                --numberClientsDescriptorsACA;
+                numberClientsDescriptorsChangACA = true;
+            }
+            else
+            {
+                 /* ...handle errors */
+                cout << "#DEBUG-accept_connections_activ: Close client with id - error" << clientsDescriptorsACA[i].id  << endl;
+                close(clientsDescriptorsACA[i].desc);
+                clientsDescriptorsACA.erase(clientsDescriptorsACA.begin() + i);
+                i = numberClientsDescriptorsACA;
+                --numberClientsDescriptorsACA;
+                numberClientsDescriptorsChangACA = true;
+            }
+        }
+
         clientsDescriptorsACA.push_back(clientACA());
         clientsDescriptorsACA[numberClientsDescriptorsACA].desc = nClientDesc;
         clientsDescriptorsACA[numberClientsDescriptorsACA].id = userSpecialID;
@@ -84,7 +115,6 @@ void accept_connections_activ()
     close(nSocketDesc);
 
     manage_thread_ACA = true;
-    tcth.join();
     ccACAth.join();
 
     if(waitforACA != NULL) delete waitforACA;

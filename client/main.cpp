@@ -28,6 +28,8 @@ void signal_callback_handler(int signum)
 void signal_callback_handler_PIPE(int signum)
 {
     cout << "#ERROR: caught signal SIGPIPE " << signum << "!!!!!!" << endl;
+    close(socketDescE);
+    close(socketDescA);
 }
 
 void check_files_existance()
@@ -101,7 +103,8 @@ int main()
     cfeth.join();
     meth.join();
     math.join();
-    cout << "#DEBUG-client: Client closed" << endl;
+
+    cout << "#DEBUG-client: Client closed, special id " << clientSPECIAL_ID << endl;
 
     return 0;
 }

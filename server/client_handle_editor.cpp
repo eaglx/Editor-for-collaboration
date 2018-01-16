@@ -1,6 +1,6 @@
 #include "main.hpp"
 
-void client_handle_editor(int nClientDesc_HE, int code_msg_HE)
+bool client_handle_editor(int nClientDesc_HE, int code_msg_HE)
 {
     int bytesSR;
     char chr;
@@ -30,12 +30,15 @@ void client_handle_editor(int nClientDesc_HE, int code_msg_HE)
         if(temp == 99)
         {
             bytesSR = send(nClientDesc_HE, &temp, sizeof(temp), 0);
-            cout << "#DEBUG-client_handle_editor: temp send bytes " << bytesSR << endl;
+            //cout << "#DEBUG-client_handle_editor: temp send bytes " << bytesSR << endl;
+            if(bytesSR < 0) return false;
+            
             for(int i = 0; i < PAGE_X; i++)
                 for(int j = 0; j < PAGE_Y; j++)
                 {
                     bytesSR = send(nClientDesc_HE, &bufforFE[i][j], sizeof(bufforFE[i][j]), 0);
                     //cout << "#DEBUG-client_handle_editor: loop send bytes " << bytesSR << endl;
+                    if(bytesSR < 0) return false;
                 }
 
             for(int i = 0; i < CLIENT_LIMIT; i++)
@@ -49,16 +52,20 @@ void client_handle_editor(int nClientDesc_HE, int code_msg_HE)
         {
             bytesSR = send(nClientDesc_HE, &temp, sizeof(temp), 0);
             //cout << "#DEBUG-client_handle_editor: send bytes " << bytesSR << endl;
+            if(bytesSR < 0) return false;
         }
     }
     else if(code_msg_HE == 222)
     {
         bytesSR = recv(nClientDesc_HE, &chr, sizeof(chr), 0);
         //cout << "#DEBUG-client_handle_editor: recv bytes " << bytesSR << endl;
+        if(bytesSR < 0) return false;
         bytesSR = recv(nClientDesc_HE, &posX, sizeof(posX), 0);
         //cout << "#DEBUG-client_handle_editor: recv bytes " << bytesSR << endl;
+        if(bytesSR < 0) return false;
         bytesSR = recv(nClientDesc_HE, &posY, sizeof(posY), 0);
         //cout << "#DEBUG-client_handle_editor: recv bytes " << bytesSR << endl;
+        if(bytesSR < 0) return false;
 
         if(((posX >= 0) && (posX < PAGE_X)) && ((posY >= 0) && (posY < PAGE_Y)))
         {
@@ -72,5 +79,8 @@ void client_handle_editor(int nClientDesc_HE, int code_msg_HE)
     else
     {
         cout << "#DEBUG-client_handle_editor: DFQ!!!! from " << nClientDesc_HE << endl;
+        cout << "#DEBUG-client_handle_activ: Close client due security reason > " << nClientDesc_HE << endl;
+        return false;
     }
+    return true;
 }
