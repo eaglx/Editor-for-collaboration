@@ -39,6 +39,7 @@ void feditor()
         }
     }
 
-    if(plik != NULL) delete plik;
+    if(plik != NULL) 
+        delete plik;
     cout << "#DEBUG: feditor is shutdown" << endl;
 }

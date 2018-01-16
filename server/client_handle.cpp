@@ -17,7 +17,7 @@ bool manage_client(int nClientDesc, int code_msg)
     int posX;
     int posY;
 
-    usleep(1000 * 1); //1 sec
+    usleep(500000); // 0.5 seconds
 
     if(code_msg == 111)
     {

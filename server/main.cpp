@@ -3,16 +3,13 @@
 int id;
 bool end_program = false;
 int nSocketDesc;
-
 condition_variable cv;
 mutex cv_m;
 bool READY_THREAD_GLOBAL_SYNC = false;
-
 vector < int > clientsDescriptors;
 int numberClientsDescriptors = 0;
 bool numberClientsDescriptorsChang = false;
 pollfd *waitfor = NULL;
-
 struct ClientSelectText CST[CLIENT_LIMIT];
 
 void signal_callback_handler(int signum)

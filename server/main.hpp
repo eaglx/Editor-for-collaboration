@@ -13,19 +13,14 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
-
 #include <sys/ipc.h>
 #include <sys/msg.h>
-
 #include <signal.h>
-
 #include <chrono>
 #include <condition_variable>
 #include <thread>
-
 #include <vector>
 #include <cstring>
-
 #include <sys/poll.h>
 
 #define QUEUE_SIZE 10

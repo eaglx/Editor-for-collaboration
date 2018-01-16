@@ -342,7 +342,7 @@ int main()
         }
         fileIn << "CONNECTION FAILURE, WAIT TO RECONNECT";
         fileIn.close();
-        usleep(1000 * 6); // 6 seconds
+        usleep(4000000); // 4 seconds
     }
     
     close(socketDesc);
