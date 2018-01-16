@@ -31,6 +31,23 @@
 
 using namespace std;
 
+/* STRUCT */
+struct ClientSelectText
+{
+    int descriptor;
+    int clientSPECIAL_ID;
+    int selectStart;
+    int selectEnd;
+    int timeoutcount;
+    bool allupdate;
+};
+
+struct clientACA
+{
+    int desc;
+    int id;
+};
+
 extern bool end_program;
 extern condition_variable cv;
 extern mutex cv_m;
@@ -42,22 +59,22 @@ extern int numberClientsDescriptors;
 extern struct ClientSelectText CST[CLIENT_LIMIT];
 extern bool numberClientsDescriptorsChang;
 
+extern vector < clientACA > clientsDescriptorsACA;
+extern bool numberClientsDescriptorsChangACA;
+extern int numberClientsDescriptorsACA;
+extern bool manage_thread_ACA;
+extern condition_variable cvACA;
+extern mutex cv_mACA;
+extern bool READY_THREAD_GLOBAL_SYNC_ACA;
+extern pollfd *waitforACA;
+
 /* FUNCTIONS */
 void client_handle_editor(int nClientDesc_HE, int code_msg_HE);
 void control_client();
+void control_clientACA();
+void test_connectionACA();
 void accept_connections_ed();
 void accept_connections_activ();
 void client_handle_activ(int nClientDesc_ACV, int clientSP_ID, int code_msg_ACV);
-
-/* STRUCT */
-struct ClientSelectText
-{
-    int descriptor;
-    int clientSPECIAL_ID;
-    int selectStart;
-    int selectEnd;
-    int timeoutcount;
-    bool allupdate;
-};
 
 #endif

@@ -125,14 +125,7 @@ void manage_activ()
             usleep(2000000); // 2 seconds
         }
         close(socketDescA);
-        while(1)
-        {
-            fileIn.open("temp/activusr.txt");
-            if(fileIn.is_open()) break;
-        }
-        fileIn << "CONNECTION FAILURE, WAIT TO RECONNECT";
-        fileIn.close();
         cout << "#DEBUG-manage_activ:CONNECTION FAILURE, WAIT TO RECONNECT" << endl;
-        usleep(6000000); // 6 seconds
+        usleep(4000000); // 4 seconds
     }
 }

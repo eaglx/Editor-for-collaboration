@@ -30,7 +30,7 @@ void client_handle_editor(int nClientDesc_HE, int code_msg_HE)
         if(temp == 99)
         {
             bytesSR = send(nClientDesc_HE, &temp, sizeof(temp), 0);
-            //cout << "#DEBUG-client_handle_editor: temp send bytes " << bytesSR << endl;
+            cout << "#DEBUG-client_handle_editor: temp send bytes " << bytesSR << endl;
             for(int i = 0; i < PAGE_X; i++)
                 for(int j = 0; j < PAGE_Y; j++)
                 {
