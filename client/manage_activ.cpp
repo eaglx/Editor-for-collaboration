@@ -75,6 +75,10 @@ void manage_activ()
             posY = atoi(line.c_str());
             fileOut.close();
 
+            if(posX == posY) posX = posY = 0;
+
+            cout << "#DEBUG-manage_activ: selected positions " << posX << " " << posY << endl;
+
             bytesSR = send(socketDescA, &code_msg, sizeof(code_msg), 0);
             cout << "#DEBUG-manage_activ: 444 send bytes " << bytesSR << endl;
             if(bytesSR < 0) { close(socketDescA); end_program_a = true;  break;}
@@ -109,6 +113,8 @@ void manage_activ()
                     cout << "#DEBUG-manage_activ: 555 recv bytes " << bytesSR << endl;
                     bytesSR = recv(socketDescA, &posY, sizeof(posY), 0);
                     cout << "#DEBUG-manage_activ: 555 recv bytes " << bytesSR << endl;
+
+                    cout << "#DEBUG-manage_activ: selected positions by others " << posX << " " << posY << endl;
 
                     fileIn << posX << '\n';
                     fileIn << posY << '\n';

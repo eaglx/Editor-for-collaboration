@@ -107,8 +107,6 @@ void accept_connections_ed()
                 {
                     CST[i].descriptor = nClientDesc;
                     recv(nClientDesc, &CST[i].clientSPECIAL_ID, sizeof(CST[i].clientSPECIAL_ID), 0);
-                    CST[i].selectStart = 0;
-                    CST[i].selectEnd = 0;
                     CST[i].allupdate = false;
                     CST[i].timeoutcount = 0;
                     i = 100;
