@@ -15,6 +15,7 @@ void pollfd_array_resize_ACA()
         {
             waitforACA[i].fd = clientsDescriptorsACA[i].desc;
             waitforACA[i].events = POLLIN;
+            cout << "#DEBUG-pollfd_array_resize_ACA: Active descriptions " << clientsDescriptors[i] << endl;
         }
     }
 }
@@ -28,11 +29,15 @@ void control_clientACA()
     cout << "#DEBUG-accept_connections_activ: control_clientACA run" << endl;
     while(!manage_thread_ACA)
     {
-        usleep(500000); // 0.5 seconds
-        if(numberClientsDescriptorsACA == 0) continue;
-
         unique_lock<std::mutex> lk2(cv_mACA);
         cvACA.wait(lk2, []{return READY_THREAD_GLOBAL_SYNC_ACA;});
+
+        if(numberClientsDescriptorsACA == 0)
+        {
+            lk2.unlock();
+            cvACA.notify_all();
+            continue;
+        }
 
         if(numberClientsDescriptorsChangACA == true)
         {
@@ -42,7 +47,7 @@ void control_clientACA()
 
         if(numberClientsDescriptorsACA != 0)
         {
-            readypoll = poll(waitforACA, numberClientsDescriptors, 5000);
+            readypoll = poll(waitforACA, numberClientsDescriptorsACA, 1000);
             if(readypoll == -1)
             {
                 cout << "#DEBUG-control_clientACA: POLL ERROR" << endl;
@@ -53,6 +58,23 @@ void control_clientACA()
             else if(readypoll == 0)
             {
                 cout <<"#DEBUG-control_clientACA: POLL TIMEOUT" << endl;
+                for(unsigned int i = 0; i < clientsDescriptorsACA.size(); i++)
+                {
+                    cout <<"#DEBUG-control_clientACA: test client with special id" << clientsDescriptorsACA[i].id  << endl;
+                    bytesSR  = send(clientsDescriptorsACA[i].desc, &codeMsg, sizeof(codeMsg), MSG_NOSIGNAL);
+                    if(bytesSR == -1)
+                    {
+                        cout <<"#DEBUG-control_clientACA: close special id" << clientsDescriptorsACA[i].id  << endl;
+                        close(clientsDescriptorsACA[i].desc);
+                        clientsDescriptorsACA.erase(clientsDescriptorsACA.begin() + i);
+                        numberClientsDescriptorsChangACA = true;
+                        i = numberClientsDescriptorsACA;
+                        --numberClientsDescriptorsACA;
+                    }
+                }
+                lk2.unlock();
+                cvACA.notify_all();
+                continue;
             }
             else
             {
@@ -64,8 +86,23 @@ void control_clientACA()
                             bytesSR = recv(waitforACA[i].fd, &codeMsg, sizeof(codeMsg), 0);
                             if(bytesSR > 0)
                             {
-                                cout << "#DEBUG-control_clientACA: recv bytes " << bytesSR << " code_msg " << codeMsg << endl;
-                                client_handle_activ(waitforACA[i].fd, codeMsg);
+                                //cout << "#DEBUG-control_clientACA: recv bytes " << bytesSR << " code_msg " << codeMsg << endl;
+                                if(!client_handle_activ(waitforACA[i].fd, codeMsg))
+                                {
+                                    cout << "#DEBUG-control_client: control_client Delete client special id - " << clientsDescriptorsACA[i].id << endl;
+                                    close(waitforACA[i].fd);
+                                    clientsDescriptorsACA.erase(clientsDescriptorsACA.begin() + i);
+                                    numberClientsDescriptorsChangACA = true;
+                                    --numberClientsDescriptorsACA;
+                                }
+                            }
+                            else
+                            {
+                                cout << "#DEBUG-control_client: control_client Delete client special id - " << clientsDescriptorsACA[i].id << endl;
+                                close(waitforACA[i].fd);
+                                clientsDescriptorsACA.erase(clientsDescriptorsACA.begin() + i);
+                                numberClientsDescriptorsChangACA = true;
+                                --numberClientsDescriptorsACA;
                             }
                         }
                 }
@@ -76,53 +113,4 @@ void control_clientACA()
         cvACA.notify_all();
     }
     cout << "#DEBUG-accept_connections_activ: control_clientACA stop" << endl;
-}
-
-void test_connectionACA()
-{
-    char c;
-    ssize_t x;
-    cout << "#DEBUG-accept_connections_activ: test_connection_th run" << endl;
-    while(!manage_thread_ACA)
-    {
-        usleep(1000000); // 1 seconds
-        if(numberClientsDescriptorsACA == 0) continue;
-
-        unique_lock<std::mutex> lk2(cv_mACA);
-        cvACA.wait(lk2, []{return READY_THREAD_GLOBAL_SYNC_ACA;});
-
-        for(int i = 0; i < numberClientsDescriptorsACA; i++)
-        {
-            x = recv(clientsDescriptorsACA[i].desc, &c, 1, MSG_PEEK);
-            if (x > 0)
-            {
-                /* ...have data, leave it in socket buffer */
-                cout << "#DEBUG-test_connection_th: Client exist" << endl;
-            }
-            else if (x == 0)
-            {
-                /* ...handle FIN from client */
-                cout << "#DEBUG-test_connection_th: Close client - FIN" << endl;
-                close(clientsDescriptorsACA[i].desc);
-                clientsDescriptorsACA.erase(clientsDescriptorsACA.begin() + i);
-                i = numberClientsDescriptorsACA;
-                --numberClientsDescriptorsACA;
-                numberClientsDescriptorsChangACA = true;
-            }
-            else
-            {
-                 /* ...handle errors */
-                 cout << "#DEBUG-test_connection_th: Close client - error" << endl;
-                close(clientsDescriptorsACA[i].desc);
-                clientsDescriptorsACA.erase(clientsDescriptorsACA.begin() + i);
-                i = numberClientsDescriptorsACA;
-                --numberClientsDescriptorsACA;
-                numberClientsDescriptorsChangACA = true;
-            }
-        }
-
-        lk2.unlock();
-        cvACA.notify_all();
-    }
-    cout << "#DEBUG-accept_connections_activ: test_connection_th stop" << endl;
 }

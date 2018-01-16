@@ -103,8 +103,8 @@ void manage_editor()
         cout <<"#DEBUG-manage_editor: loop started" << endl;
         while(!end_program_e)
         {
+            usleep(200000); // 0.2 seconds
             // **********SEND CHANGES IN EDITED FILE**********
-            usleep(500000); // 0.5 seconds
             stat("temp/out.txt", &attrib);
             foo = gmtime(&(attrib.st_mtime));
             if(lastModifySec == foo->tm_sec) isModify = false;
@@ -164,7 +164,6 @@ void manage_editor()
             }
 
             // **********DOWNLOAD 'EDITED' FILE**********
-            usleep(500000); // 0.5 seconds
             code_msg = 111;
             bytesSR = send(socketDescE, &code_msg, sizeof(code_msg), 0);
             //cout << "#DEBUG-manage_editor: send bytes " << bytesSR << endl;
@@ -213,6 +212,6 @@ void manage_editor()
         fileIn << "CONNECTION FAILURE, WAIT TO RECONNECT";
         fileIn.close();
         cout << "#DEBUG-manage_editor: CONNECTION FAILURE, WAIT TO RECONNECT" << endl;
-        usleep(8000000); // 8 seconds
+        usleep(4000000); // 4 seconds
     }
 }

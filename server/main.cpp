@@ -48,6 +48,8 @@ int main()
     thread cth(control_client);
     thread acath(accept_connections_activ);
 
+    cout << "#DEBUG: @@@@ WAIT FOR THREADS @@@@" << endl;
+
     acth.join();
     acath.join();
     cth.join();
