@@ -24,7 +24,6 @@ void control_clientACA()
     int readypoll;
     int codeMsg;
     int bytesSR;
-    int clientID;
 
     cout << "#DEBUG-accept_connections_activ: control_clientACA run" << endl;
     while(!manage_thread_ACA)
@@ -66,14 +65,7 @@ void control_clientACA()
                             if(bytesSR > 0)
                             {
                                 cout << "#DEBUG-control_clientACA: recv bytes " << bytesSR << " code_msg " << codeMsg << endl;
-                                clientID = -1;
-                                for(unsigned int i = 0; i < clientsDescriptorsACA.size(); i++)
-                                {
-                                    if(clientsDescriptorsACA[i].desc == waitforACA[i].fd)
-                                        clientID = clientsDescriptorsACA[i].id;
-                                }
-                                if(clientID == -1) cout << "#DEBUG-control_clientACA: Problem with find client id " << endl;
-                                else client_handle_activ(waitforACA[i].fd, clientID, codeMsg);
+                                client_handle_activ(waitforACA[i].fd, codeMsg);
                             }
                         }
                 }

@@ -213,6 +213,6 @@ void manage_editor()
         fileIn << "CONNECTION FAILURE, WAIT TO RECONNECT";
         fileIn.close();
         cout << "#DEBUG-manage_editor: CONNECTION FAILURE, WAIT TO RECONNECT" << endl;
-        usleep(4000000); // 4 seconds
+        usleep(8000000); // 8 seconds
     }
 }

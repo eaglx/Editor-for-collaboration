@@ -1,6 +1,6 @@
 #include "main.hpp"
 
-void client_handle_activ(int nClientDesc_ACV, int clientSP_ID, int code_msg_ACV)
+void client_handle_activ(int nClientDesc_ACV, int code_msg_ACV)
 {
     int bytesSR;
 
@@ -15,32 +15,34 @@ void client_handle_activ(int nClientDesc_ACV, int clientSP_ID, int code_msg_ACV)
     }
     else if(code_msg_ACV == 444)
     {
-        for(int i = 0; i < CLIENT_LIMIT; i++)
-            if(CST[i].clientSPECIAL_ID == clientSP_ID)
+        for(unsigned int i = 0; i < clientsDescriptorsACA.size(); i++)
+            if(clientsDescriptorsACA[i].desc == nClientDesc_ACV)
             {
-                bytesSR = recv(nClientDesc_ACV, &CST[i].selectStart, sizeof(CST[i].selectStart), 0);
+                bytesSR = recv(nClientDesc_ACV, &clientsDescriptorsACA[i].selectStart, sizeof(clientsDescriptorsACA[i].selectStart), 0);
                 cout << "#DEBUG-client_handle_activ: recv bytes " << bytesSR << endl;
-                bytesSR = recv(nClientDesc_ACV, &CST[i].selectEnd, sizeof(CST[i].selectEnd), 0);
+                bytesSR = recv(nClientDesc_ACV, &clientsDescriptorsACA[i].selectEnd, sizeof(clientsDescriptorsACA[i].selectEnd), 0);
                 cout << "#DEBUG-client_handle_activ: recv bytes " << bytesSR << endl;
+                cout << "#DEBUG-client_handle_activ: client selected postitions " << clientsDescriptorsACA[i].selectStart << " " << clientsDescriptorsACA[i].selectEnd << endl;
                 i = 100;
             }
     }
     else if(code_msg_ACV == 555)
     {
-        int tempSCD = 0;
+        int tempSCD;
         tempSCD = numberClientsDescriptors - 1;
         if(tempSCD != 0)
         {
             bytesSR = send(nClientDesc_ACV, &tempSCD, sizeof(tempSCD), 0);
             cout << "#DEBUG-client_handle_activ: lot clients, send bytes " << bytesSR << endl;
 
-            for(int i = 0; i < CLIENT_LIMIT; i++)
-                if((CST[i].descriptor != -1) && (CST[i].clientSPECIAL_ID != clientSP_ID))
+            for(unsigned int i = 0; i < clientsDescriptorsACA.size(); i++)
+                if(clientsDescriptorsACA[i].desc != nClientDesc_ACV)
                 {
-                    bytesSR = send(nClientDesc_ACV, &CST[i].selectStart, sizeof(CST[i].selectStart), 0);
+                    bytesSR = send(nClientDesc_ACV, &clientsDescriptorsACA[i].selectStart, sizeof(clientsDescriptorsACA[i].selectStart), 0);
                     cout << "#DEBUG-client_handle_activ: send bytes " << bytesSR << endl;
-                    bytesSR = send(nClientDesc_ACV, &CST[i].selectEnd, sizeof(CST[i].selectEnd), 0);
+                    bytesSR = send(nClientDesc_ACV, &clientsDescriptorsACA[i].selectEnd, sizeof(clientsDescriptorsACA[i].selectEnd), 0);
                     cout << "#DEBUG-client_handle_activ: send bytes " << bytesSR << endl;
+                    cout << "#DEBUG-client_handle_activ: others selected postitions " << clientsDescriptorsACA[i].selectStart << " " << clientsDescriptorsACA[i].selectEnd << endl;
                 }
         }
         else

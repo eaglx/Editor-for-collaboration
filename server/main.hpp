@@ -32,12 +32,10 @@
 using namespace std;
 
 /* STRUCT */
-struct ClientSelectText
+struct ClientStatusTcontrol
 {
     int descriptor;
     int clientSPECIAL_ID;
-    int selectStart;
-    int selectEnd;
     int timeoutcount;
     bool allupdate;
 };
@@ -46,6 +44,8 @@ struct clientACA
 {
     int desc;
     int id;
+    int selectStart;
+    int selectEnd;
 };
 
 extern bool end_program;
@@ -56,7 +56,7 @@ extern int nSocketDesc;
 extern char bufforFE[PAGE_X][PAGE_Y];
 extern vector < int > clientsDescriptors;
 extern int numberClientsDescriptors;
-extern struct ClientSelectText CST[CLIENT_LIMIT];
+extern struct ClientStatusTcontrol CST[CLIENT_LIMIT];
 extern bool numberClientsDescriptorsChang;
 
 extern vector < clientACA > clientsDescriptorsACA;
@@ -75,6 +75,6 @@ void control_clientACA();
 void test_connectionACA();
 void accept_connections_ed();
 void accept_connections_activ();
-void client_handle_activ(int nClientDesc_ACV, int clientSP_ID, int code_msg_ACV);
+void client_handle_activ(int nClientDesc_ACV, int code_msg_ACV);
 
 #endif

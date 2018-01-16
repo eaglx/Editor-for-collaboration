@@ -73,6 +73,8 @@ void accept_connections_activ()
         clientsDescriptorsACA.push_back(clientACA());
         clientsDescriptorsACA[numberClientsDescriptorsACA].desc = nClientDesc;
         clientsDescriptorsACA[numberClientsDescriptorsACA].id = userSpecialID;
+        clientsDescriptorsACA[numberClientsDescriptorsACA].selectStart = 0;
+        clientsDescriptorsACA[numberClientsDescriptorsACA].selectEnd = 0;
         ++numberClientsDescriptorsACA;
         numberClientsDescriptorsChangACA = true;
 

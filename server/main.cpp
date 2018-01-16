@@ -13,7 +13,7 @@ vector < int > clientsDescriptors;
 int numberClientsDescriptors = 0;
 bool numberClientsDescriptorsChang = false;
 
-struct ClientSelectText CST[CLIENT_LIMIT];
+struct ClientStatusTcontrol CST[CLIENT_LIMIT];
 
 void signal_callback_handler(int signum)
 {
