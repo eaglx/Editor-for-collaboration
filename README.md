@@ -1,6 +1,6 @@
 # network_lab_project
 Editor for collaboration. 
-
+Proactor pattern
 Task requirement:
 * server only in C/C++ (C socket);
 * gui for client.
@@ -23,3 +23,6 @@ How to launch:
 
 ## TODO
 * Develop own GUI interface (programming library).
+* Change static char array to vector.
+* Servicing signals to linuxfd, descriptors and poll.
+* (C socket) poll, reactor pattern or proactor pattern.
