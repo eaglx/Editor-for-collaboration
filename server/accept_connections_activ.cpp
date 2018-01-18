@@ -85,7 +85,7 @@ void accept_connections_activ()
                 cout << "#DEBUG-accept_connections_activ: Close client with id - FIN" << clientsDescriptorsACA[i].id  << endl;
                 close(clientsDescriptorsACA[i].desc);
                 clientsDescriptorsACA.erase(clientsDescriptorsACA.begin() + i);
-                i = numberClientsDescriptorsACA;
+                i = 0;
                 --numberClientsDescriptorsACA;
                 numberClientsDescriptorsChangACA = true;
             }
@@ -95,7 +95,7 @@ void accept_connections_activ()
                 cout << "#DEBUG-accept_connections_activ: Close client with id - error" << clientsDescriptorsACA[i].id  << endl;
                 close(clientsDescriptorsACA[i].desc);
                 clientsDescriptorsACA.erase(clientsDescriptorsACA.begin() + i);
-                i = numberClientsDescriptorsACA;
+                i = 0;
                 --numberClientsDescriptorsACA;
                 numberClientsDescriptorsChangACA = true;
             }
