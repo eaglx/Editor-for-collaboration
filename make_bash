@@ -1,14 +1,5 @@
 #!/bin/bash
 
-str=$(sudo dpkg -s python3-pyqt4 | grep -oh "installed")
-reset
-if [ "$str" == "installed" ]; then
-    echo "> Python3-qt4 installed"
-else
-    echo "> Wait we need lib :P Python3-qt4"
-    sudo apt-get install python3-pyqt4
-fi
-
 echo "> Compile server ..."
 g++ server/main.cpp server/client_handle_editor.cpp server/client_handle_activ.cpp server/control_client.cpp server/control_clientACA.cpp server/accept_connections_ed.cpp server/accept_connections_activ.cpp -o server/server -Wall -Wextra -std=c++11 -lpthread -g
 if [ $? -eq 0 ]; then

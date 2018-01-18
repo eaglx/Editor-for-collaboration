@@ -28,6 +28,7 @@ void signal_callback_handler(int signum)
 void signal_callback_handler_PIPE(int signum)
 {
     cout << "#ERROR: caught signal SIGPIPE " << signum << "!!!!!!" << endl;
+    end_program_a = end_program_e = true;
     close(socketDescE);
     close(socketDescA);
 }
