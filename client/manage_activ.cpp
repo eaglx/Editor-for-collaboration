@@ -13,6 +13,7 @@ void manage_activ()
     string line;
     int bytesSR;
 
+    usleep(1000000); // 1 seconds
     while(reconnect_ed)
     {
         socketDescA = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
@@ -144,6 +145,6 @@ void manage_activ()
         fileIn << 0 << '\n';
         fileIn.close();
 
-        usleep(6000000); // 6 seconds
+        usleep(7000000); // 7 seconds
     }
 }
