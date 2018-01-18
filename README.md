@@ -7,7 +7,7 @@ Task requirement:
 
 How to launch:
 * before install python3-pyqt4
-* launch make_bash file
+* launch make
 * start server: ./server/server
 * start client: python3 client/textedit.py
 
