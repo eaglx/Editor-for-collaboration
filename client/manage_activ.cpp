@@ -126,6 +126,6 @@ void manage_activ()
         }
         close(socketDescA);
         cout << "#DEBUG-manage_activ:CONNECTION FAILURE, WAIT TO RECONNECT" << endl;
-        usleep(4000000); // 4 seconds
+        usleep(6000000); // 6 seconds
     }
 }
