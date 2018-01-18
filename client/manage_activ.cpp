@@ -13,7 +13,6 @@ void manage_activ()
     string line;
     int bytesSR;
 
-    usleep(200000); // 0.2 seconds
     while(reconnect_ed)
     {
         socketDescA = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
@@ -126,6 +125,25 @@ void manage_activ()
         }
         close(socketDescA);
         cout << "#DEBUG-manage_activ:CONNECTION FAILURE, WAIT TO RECONNECT" << endl;
+
+        activeUsers = 0;
+        while(1)
+        {
+            fileIn.open("temp/activusr.txt");
+            if(fileIn.is_open()) break;
+        }
+        fileIn << activeUsers;
+        fileIn.close();
+        while(1)
+        {
+            fileIn.open("temp/selecposother.txt");
+            if(fileIn.is_open()) break;
+        }
+        fileIn << 0 << '\n';
+        fileIn << 0 << '\n';
+        fileIn << 0 << '\n';
+        fileIn.close();
+
         usleep(6000000); // 6 seconds
     }
 }
