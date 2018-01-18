@@ -71,7 +71,7 @@ void accept_connections_activ()
 
         char c;
         ssize_t x;
-        for(int i = 0; i < numberClientsDescriptorsACA; i++)
+        for(unsigned int i = 0; i < clientsDescriptorsACA.size(); i++)
         {
             x = recv(clientsDescriptorsACA[i].desc, &c, 1, MSG_PEEK);
             if (x > 0)
@@ -102,10 +102,10 @@ void accept_connections_activ()
         }
 
         clientsDescriptorsACA.push_back(clientACA());
-        clientsDescriptorsACA[numberClientsDescriptorsACA].desc = nClientDesc;
-        clientsDescriptorsACA[numberClientsDescriptorsACA].id = userSpecialID;
-        clientsDescriptorsACA[numberClientsDescriptorsACA].selectStart = 0;
-        clientsDescriptorsACA[numberClientsDescriptorsACA].selectEnd = 0;
+        clientsDescriptorsACA[clientsDescriptorsACA.size() - 1].desc = nClientDesc;
+        clientsDescriptorsACA[clientsDescriptorsACA.size() - 1].id = userSpecialID;
+        clientsDescriptorsACA[clientsDescriptorsACA.size() - 1].selectStart = 0;
+        clientsDescriptorsACA[clientsDescriptorsACA.size() - 1].selectEnd = 0;
         ++numberClientsDescriptorsACA;
         numberClientsDescriptorsChangACA = true;
 
