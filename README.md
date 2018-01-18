@@ -24,5 +24,5 @@ How to launch:
 ## TODO
 * Develop own GUI interface (programming library).
 * Change static char array to vector.
-* Servicing signals to linuxfd, descriptors and poll.
+* Servicing signals to linuxfd, descriptors and poll (remove std::cout).
 * (C socket) poll, reactor pattern or proactor pattern.
