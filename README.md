@@ -1,12 +1,12 @@
 # network_lab_project
 Editor for collaboration. 
-
+Proactor pattern
 Task requirement:
 * server only in C/C++ (C socket);
 * gui for client.
 
 How to launch:
-* install python3-pyqt4
+* before install python3-pyqt4
 * launch make
 * start server: ./server/server
 * start client: python3 client/textedit.py
@@ -20,3 +20,9 @@ How to launch:
 
 ### Screenshot 3
 ![demo_thrid](https://user-images.githubusercontent.com/32968460/34482638-8af9e4a4-efb9-11e7-8eb7-9f56e03d0914.png)
+
+## TODO
+* Develop own GUI interface (programming library).
+* Change static char array to vector.
+* Servicing signals to linuxfd, descriptors and poll (remove std::cout).
+* (C socket) poll, reactor pattern or proactor pattern.

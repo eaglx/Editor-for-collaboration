@@ -24,4 +24,20 @@
 
 using namespace std;
 
+extern int clientSPECIAL_ID;
+extern int socketDescE;
+extern int socketDescA;
+extern string servIPaddr;
+extern int servPORT_E;
+extern int servPORT_A;
+extern bool end_program_e;
+extern bool end_program_a;
+extern bool reconnect_ed;
+extern bool reconnect_acv;
+extern struct tm *foo;
+extern struct stat attrib;
+
+void manage_editor();
+void manage_activ();
+
 #endif

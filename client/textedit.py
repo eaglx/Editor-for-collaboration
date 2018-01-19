@@ -232,7 +232,7 @@ if __name__ == '__main__':
         make_temp_folders()
     else:
         make_temp_folders()
-        
+
     subprocess.Popen(["./client"])
     app = QtGui.QApplication(sys.argv)
     GUI = Window()
