@@ -1,6 +1,6 @@
 # network_lab_project
 Editor for collaboration. 
-Proactor pattern
+
 Task requirement:
 * server only in C/C++ (C socket);
 * gui for client.
