@@ -1,5 +1,13 @@
 #include "main.hpp"
 
+int nSocketDesc;
+bool READY_THREAD_GLOBAL_SYNC = false;
+condition_variable cv;
+mutex cv_m;
+vector < int > clientsDescriptors;
+int numberClientsDescriptors = 0;
+bool numberClientsDescriptorsChang = false;
+
 void accept_connections_ed()
 {
     int nClientDesc;

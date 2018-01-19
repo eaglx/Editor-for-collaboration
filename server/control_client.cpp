@@ -38,8 +38,7 @@ void control_client()
 
         if(numberClientsDescriptors == 0)
         {
-            lk.unlock();
-            cv.notify_all();
+            READY_THREAD_GLOBAL_SYNC = false;
             continue;
         }
 
@@ -55,8 +54,6 @@ void control_client()
             if(readypoll == -1)
             {
                 cout << "#DEBUG-control_client: POLL ERROR" << endl;
-                lk.unlock();
-                cv.notify_all();
                 continue;
             }
             else if(readypoll == 0)
@@ -84,8 +81,6 @@ void control_client()
                                 i = CLIENT_LIMIT;
                             }
                         }
-                        lk.unlock();
-                        cv.notify_all();
                         continue;
                     }
                     else
@@ -134,8 +129,6 @@ void control_client()
                 }
            }
         }
-        lk.unlock();
-        cv.notify_all();
     }
 
     if(waitfor != NULL)

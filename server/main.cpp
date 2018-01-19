@@ -3,20 +3,12 @@
 char bufforFE[PAGE_X][PAGE_Y];
 
 bool end_program = false;
-int nSocketDesc;
-condition_variable cv;
-mutex cv_m;
-bool READY_THREAD_GLOBAL_SYNC = false;
-vector < int > clientsDescriptors;
-int numberClientsDescriptors = 0;
-bool numberClientsDescriptorsChang = false;
 struct ClientStatusTcontrol CST[CLIENT_LIMIT];
 
 void signal_callback_handler(int signum)
 {
   cout << "#DEBUG: Signum = " << signum <<endl;
   end_program = true;
-  READY_THREAD_GLOBAL_SYNC = true;
   cout << "#DEBUG: Start shutdown server" << endl;
 }
 

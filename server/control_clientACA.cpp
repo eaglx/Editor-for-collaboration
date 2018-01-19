@@ -39,8 +39,11 @@ void control_clientACA()
 
         if(numberClientsDescriptorsACA == 0)
         {
-            lk2.unlock();
-            cvACA.notify_all();
+            cout << "#DEBUG-accept_connections_activ: no clients $$$$$$$" << endl;
+            delete waitforACA;
+            waitforACA = NULL;
+            clientsDescriptorsACA.clear();
+            READY_THREAD_GLOBAL_SYNC_ACA = false;
             continue;
         }
 
@@ -92,8 +95,6 @@ void control_clientACA()
                     usleep(4000000); // 4 seconds
                 }
 
-                lk2.unlock();
-                cvACA.notify_all();
                 continue;
             }
             else
@@ -117,7 +118,6 @@ void control_clientACA()
                                             cout <<"#DEBUG-control_clientACA:  control_clientACA Delete client desc " << clientsDescriptorsACA[j].desc  << endl;
                                             clientsDescriptorsACA.erase(clientsDescriptorsACA.begin() + j);
                                         }
-                                    numberClientsDescriptorsChangACA = true;
                                     --numberClientsDescriptorsACA;
                                 }
                             }
@@ -131,16 +131,12 @@ void control_clientACA()
                                         cout <<"#DEBUG-control_clientACA:  control_clientACA Delete client desc " << clientsDescriptorsACA[j].desc  << endl;
                                         clientsDescriptorsACA.erase(clientsDescriptorsACA.begin() + j);
                                     }
-                                numberClientsDescriptorsChangACA = true;
                                 --numberClientsDescriptorsACA;
                             }
                         }
                 }
             }
         }
-
-        lk2.unlock();
-        cvACA.notify_all();
     }
     cout << "#DEBUG-accept_connections_activ: control_clientACA stop" << endl;
 }
