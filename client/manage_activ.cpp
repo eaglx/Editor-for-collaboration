@@ -145,6 +145,6 @@ void manage_activ()
         fileIn << 0 << '\n';
         fileIn.close();
 
-        usleep(7000000); // 7 seconds
+        usleep(10000000); // 10 seconds
     }
 }

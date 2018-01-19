@@ -14,12 +14,12 @@ void pollfd_array_resize_ACA()
     if(numberClientsDescriptorsACA != 0)
     {
         waitforACA = new pollfd[numberClientsDescriptorsACA];
-        for(unsigned int i = 0; i < clientsDescriptorsACA.size(); i++)
+        cout << "#DEBUG-pollfd_array_resize_ACA: Active clients number " << numberClientsDescriptorsACA << endl;
+        for(int i = 0; i < numberClientsDescriptorsACA; i++)
         {
             waitforACA[i].fd = clientsDescriptorsACA[i].desc;
             waitforACA[i].events = POLLIN;
-            cout << "#DEBUG-pollfd_array_resize_ACA: Active descriptions " << clientsDescriptors[i] << endl;
-            cout << "#DEBUG-pollfd_array_resize_ACA: Active clients number " << numberClientsDescriptorsACA << endl;
+            cout << "#DEBUG-pollfd_array_resize_ACA: Active descriptions " << clientsDescriptorsACA[i].desc << endl;
         }
     }
 }
@@ -52,7 +52,7 @@ void control_clientACA()
 
         if(numberClientsDescriptorsACA != 0)
         {
-            readypoll = poll(waitforACA, numberClientsDescriptorsACA, 5000);
+            readypoll = poll(waitforACA, numberClientsDescriptorsACA, 2000);
             if(readypoll == -1)
             {
                 cout << "#DEBUG-control_clientACA: POLL ERROR" << endl;
@@ -63,18 +63,20 @@ void control_clientACA()
             else if(readypoll == 0)
             {
                 cout <<"#DEBUG-control_clientACA: POLL TIMEOUT" << endl;
-                for(unsigned int i = 0; i < clientsDescriptorsACA.size(); i++)
+                for(int i = 0; i < numberClientsDescriptorsACA; i++)
                 {
-                    cout << "#DEBUG-control_clientACA: test client with special id" << clientsDescriptorsACA[i].id  << endl;
-                    cout << "#DEBUG-control_clientACA: test client desc " << clientsDescriptorsACA[i].desc  << endl;
-                    bytesSR  = send(clientsDescriptorsACA[i].desc, &codeMsg, sizeof(codeMsg), MSG_NOSIGNAL);
+                    cout << "#DEBUG-control_clientACA: test client desc " << waitforACA[i].fd  << endl;
+                    bytesSR  = send(waitforACA[i].fd, &codeMsg, sizeof(codeMsg), MSG_NOSIGNAL);
                     if(bytesSR == -1)
                     {
-                        cout << "#DEBUG-control_clientACA: close special id" << clientsDescriptorsACA[i].id  << endl;
+                        cout << "#DEBUG-control_clientACA: close special id " << waitforACA[i].fd  << endl;
                         close(clientsDescriptorsACA[i].desc);
-                        clientsDescriptorsACA.erase(clientsDescriptorsACA.begin() + i);
+                        for(unsigned int j = 0; j < clientsDescriptorsACA.size(); j++)
+                            if(clientsDescriptorsACA[j].desc == waitforACA[i].fd)
+                            {
+                                clientsDescriptorsACA.erase(clientsDescriptorsACA.begin() + j);
+                            }
                         numberClientsDescriptorsChangACA = true;
-                        i = numberClientsDescriptorsACA;
                         --numberClientsDescriptorsACA;
                         timeout = 0;
                     }
@@ -87,6 +89,7 @@ void control_clientACA()
                     clientsDescriptorsACA.clear();
                     numberClientsDescriptorsACA = 0;
                     timeout = 0;
+                    usleep(4000000); // 4 seconds
                 }
 
                 lk2.unlock();
@@ -108,11 +111,11 @@ void control_clientACA()
                                 {
                                     cout <<"#DEBUG-control_clientACA:  control_clientACA Delete client descc" << waitforACA[i].fd << endl;
                                     close(waitforACA[i].fd);
-                                    for(unsigned int i = 0; i < clientsDescriptorsACA.size(); i++)
-                                        if(clientsDescriptorsACA[i].desc == waitforACA[i].fd)
+                                    for(unsigned int j = 0; j < clientsDescriptorsACA.size(); j++)
+                                        if(clientsDescriptorsACA[j].desc == waitforACA[i].fd)
                                         {
-                                            cout <<"#DEBUG-control_clientACA:  control_clientACA Delete client desc " << clientsDescriptorsACA[i].desc  << endl;
-                                            clientsDescriptorsACA.erase(clientsDescriptorsACA.begin() + i);
+                                            cout <<"#DEBUG-control_clientACA:  control_clientACA Delete client desc " << clientsDescriptorsACA[j].desc  << endl;
+                                            clientsDescriptorsACA.erase(clientsDescriptorsACA.begin() + j);
                                         }
                                     numberClientsDescriptorsChangACA = true;
                                     --numberClientsDescriptorsACA;
@@ -122,11 +125,11 @@ void control_clientACA()
                             {
                                 cout <<"#DEBUG-control_clientACA:  control_clientACA Delete client desc " << waitforACA[i].fd  << endl;
                                 close(waitforACA[i].fd);
-                                for(unsigned int i = 0; i < clientsDescriptorsACA.size(); i++)
-                                    if(clientsDescriptorsACA[i].desc == waitforACA[i].fd)
+                                for(unsigned int j = 0; j < clientsDescriptorsACA.size(); j++)
+                                    if(clientsDescriptorsACA[j].desc == waitforACA[i].fd)
                                     {
-                                        cout <<"#DEBUG-control_clientACA:  control_clientACA Delete client desc " << clientsDescriptorsACA[i].desc  << endl;
-                                        clientsDescriptorsACA.erase(clientsDescriptorsACA.begin() + i);
+                                        cout <<"#DEBUG-control_clientACA:  control_clientACA Delete client desc " << clientsDescriptorsACA[j].desc  << endl;
+                                        clientsDescriptorsACA.erase(clientsDescriptorsACA.begin() + j);
                                     }
                                 numberClientsDescriptorsChangACA = true;
                                 --numberClientsDescriptorsACA;

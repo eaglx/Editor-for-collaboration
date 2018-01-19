@@ -71,33 +71,44 @@ void accept_connections_activ()
 
         char c;
         ssize_t x;
-        for(unsigned int i = 0; i < clientsDescriptorsACA.size(); i++)
+        if(waitforACA != NULL)
         {
-            x = recv(clientsDescriptorsACA[i].desc, &c, 1, MSG_PEEK);
-            if (x > 0)
+            for(int i = 0; i < numberClientsDescriptorsACA; i++)
             {
-                /* ...have data, leave it in socket buffer */
-                cout << "#DEBUG-accept_connections_activ: Client with id exist " << clientsDescriptorsACA[i].id  << endl;
-            }
-            else if (x == 0)
-            {
-                /* ...handle FIN from client */
-                cout << "#DEBUG-accept_connections_activ: Close client with id - FIN" << clientsDescriptorsACA[i].id  << endl;
-                close(clientsDescriptorsACA[i].desc);
-                clientsDescriptorsACA.erase(clientsDescriptorsACA.begin() + i);
-                i = 0;
-                --numberClientsDescriptorsACA;
-                numberClientsDescriptorsChangACA = true;
-            }
-            else
-            {
-                 /* ...handle errors */
-                cout << "#DEBUG-accept_connections_activ: Close client with id - error" << clientsDescriptorsACA[i].id  << endl;
-                close(clientsDescriptorsACA[i].desc);
-                clientsDescriptorsACA.erase(clientsDescriptorsACA.begin() + i);
-                i = 0;
-                --numberClientsDescriptorsACA;
-                numberClientsDescriptorsChangACA = true;
+                x = recv(waitforACA[i].fd, &c, 1, MSG_PEEK);
+                if (x > 0)
+                {
+                    /* ...have data, leave it in socket buffer */
+                    cout << "#DEBUG-accept_connections_activ: Client with id exist " << clientsDescriptorsACA[i].id  << endl;
+                }
+                else if (x == 0)
+                {
+                    /* ...handle FIN from client */
+                    cout << "#DEBUG-accept_connections_activ: Close client with id - FIN" << clientsDescriptorsACA[i].id  << endl;
+                    close(waitforACA[i].fd);
+                    for(unsigned int j = 0; j < clientsDescriptorsACA.size(); j++)
+                        if(clientsDescriptorsACA[j].desc == waitforACA[i].fd)
+                        {
+                            cout <<"#DEBUG-control_clientACA:  control_clientACA Delete client desc " << clientsDescriptorsACA[j].desc  << endl;
+                            clientsDescriptorsACA.erase(clientsDescriptorsACA.begin() + j);
+                        }
+                    --numberClientsDescriptorsACA;
+                    numberClientsDescriptorsChangACA = true;
+                }
+                else
+                {
+                     /* ...handle errors */
+                    cout << "#DEBUG-accept_connections_activ: Close client with id - error" << clientsDescriptorsACA[i].id  << endl;
+                    close(waitforACA[i].fd);
+                    for(unsigned int j = 0; j < clientsDescriptorsACA.size(); j++)
+                        if(clientsDescriptorsACA[j].desc == waitforACA[i].fd)
+                        {
+                            cout <<"#DEBUG-control_clientACA:  control_clientACA Delete client desc " << clientsDescriptorsACA[j].desc  << endl;
+                            clientsDescriptorsACA.erase(clientsDescriptorsACA.begin() + j);
+                        }
+                    --numberClientsDescriptorsACA;
+                    numberClientsDescriptorsChangACA = true;
+                }
             }
         }
 
