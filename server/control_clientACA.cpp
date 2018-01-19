@@ -59,8 +59,6 @@ void control_clientACA()
             if(readypoll == -1)
             {
                 cout << "#DEBUG-control_clientACA: POLL ERROR" << endl;
-                lk2.unlock();
-                cvACA.notify_all();
                 continue;
             }
             else if(readypoll == 0)
@@ -72,8 +70,8 @@ void control_clientACA()
                     bytesSR  = send(waitforACA[i].fd, &codeMsg, sizeof(codeMsg), MSG_NOSIGNAL);
                     if(bytesSR == -1)
                     {
-                        cout << "#DEBUG-control_clientACA: close special id " << waitforACA[i].fd  << endl;
-                        close(clientsDescriptorsACA[i].desc);
+                        cout << "#DEBUG-control_clientACA: close client desc " << waitforACA[i].fd  << endl;
+                        close(waitforACA[i].fd);
                         for(unsigned int j = 0; j < clientsDescriptorsACA.size(); j++)
                             if(clientsDescriptorsACA[j].desc == waitforACA[i].fd)
                             {
@@ -86,13 +84,17 @@ void control_clientACA()
                     else ++timeout;
                 }
 
-                if(timeout > 3)
+                if(timeout >= 3)
                 {
-                    for(unsigned int i = 0; i < clientsDescriptorsACA.size(); i++) close(clientsDescriptorsACA[i].desc);
+                    cout <<"#DEBUG-control_clientACA: TIMEOUT, DISCONECT ALL" << endl;
+                    for(int i = 0; i < numberClientsDescriptorsACA; i++) close(waitforACA[i].fd);
                     clientsDescriptorsACA.clear();
                     numberClientsDescriptorsACA = 0;
+                    delete(waitforACA);
+                    waitforACA = NULL;
                     timeout = 0;
-                    usleep(4000000); // 4 seconds
+                    usleep(8000000); // 8 seconds
+                    cout << "#DEBUG-control_clientACA: recontinue after sec sleep ^$$^" << endl;
                 }
 
                 continue;
@@ -119,6 +121,8 @@ void control_clientACA()
                                             clientsDescriptorsACA.erase(clientsDescriptorsACA.begin() + j);
                                         }
                                     --numberClientsDescriptorsACA;
+                                    i = 1000;
+                                    numberClientsDescriptorsChangACA = true;
                                 }
                             }
                             else
@@ -127,11 +131,13 @@ void control_clientACA()
                                 close(waitforACA[i].fd);
                                 for(unsigned int j = 0; j < clientsDescriptorsACA.size(); j++)
                                     if(clientsDescriptorsACA[j].desc == waitforACA[i].fd)
-                                    {
-                                        cout <<"#DEBUG-control_clientACA:  control_clientACA Delete client desc " << clientsDescriptorsACA[j].desc  << endl;
-                                        clientsDescriptorsACA.erase(clientsDescriptorsACA.begin() + j);
-                                    }
+                                        {
+                                            cout <<"#DEBUG-control_clientACA:  control_clientACA Delete client desc " << clientsDescriptorsACA[j].desc  << endl;
+                                            clientsDescriptorsACA.erase(clientsDescriptorsACA.begin() + j);
+                                        }
                                 --numberClientsDescriptorsACA;
+                                i = 1000;
+                                numberClientsDescriptorsChangACA = true;
                             }
                         }
                 }

@@ -9,7 +9,7 @@ bool client_handle_activ(int nClientDesc_ACV, int code_msg_ACV)
 
     if(code_msg_ACV == 333)
     {
-        int temp = numberClientsDescriptors - 1;
+        int temp = numberClientsDescriptorsACA - 1;
         bytesSR = send(nClientDesc_ACV, &temp, sizeof(temp), 0);
         //cout << "#DEBUG-client_handle_activ: send bytes " << bytesSR << endl;
         if(bytesSR < 0) return false;
@@ -32,7 +32,7 @@ bool client_handle_activ(int nClientDesc_ACV, int code_msg_ACV)
     else if(code_msg_ACV == 555)
     {
         int tempSCD;
-        tempSCD = numberClientsDescriptors - 1;
+        tempSCD = numberClientsDescriptorsACA - 1;
         if(tempSCD != 0)
         {
             bytesSR = send(nClientDesc_ACV, &tempSCD, sizeof(tempSCD), 0);

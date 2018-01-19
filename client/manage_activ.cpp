@@ -50,6 +50,7 @@ void manage_activ()
 
             bytesSR = recv(socketDescA, &activeUsers, sizeof(activeUsers),0);
             //cout << "#DEBUG-manage_activ: 333 recv bytes " << bytesSR << endl;
+            if(bytesSR < 0) { close(socketDescA); end_program_a = true;  break;}
             while(1)
             {
                 fileIn.open("temp/activusr.txt");
@@ -95,6 +96,7 @@ void manage_activ()
 
             bytesSR = recv(socketDescA, &activeUsers, sizeof(activeUsers), 0);
             //cout << "#DEBUG-manage_activ: 555 recv bytes " << bytesSR << endl;
+            if(bytesSR < 0) { close(socketDescA); end_program_a = true;  break;}
             while(1)
             {
                 fileIn.open("temp/selecposother.txt");
@@ -106,8 +108,10 @@ void manage_activ()
                 for(int i = 0; i < activeUsers; i++)
                 {
                     bytesSR = recv(socketDescA, &posX, sizeof(posX), 0);
+                    if(bytesSR < 0) { close(socketDescA); end_program_a = true;  break;}
                     //cout << "#DEBUG-manage_activ: 555 recv bytes " << bytesSR << endl;
                     bytesSR = recv(socketDescA, &posY, sizeof(posY), 0);
+                    if(bytesSR < 0) { close(socketDescA); end_program_a = true;  break;}
                     //cout << "#DEBUG-manage_activ: 555 recv bytes " << bytesSR << endl;
 
                     //cout << "#DEBUG-manage_activ: selected positions by others " << posX << " " << posY << endl;
@@ -125,6 +129,7 @@ void manage_activ()
             fileIn.close();
         }
         close(socketDescA);
+        end_program_a = false;
         cout << "#DEBUG-manage_activ:CONNECTION FAILURE, WAIT TO RECONNECT" << endl;
 
         activeUsers = 0;
