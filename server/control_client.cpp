@@ -4,13 +4,13 @@ pollfd *waitfor = NULL;
 
 void pollfd_array_resize()
 {
-    //cout << "#DEBUG: pollfd_array_resize" << endl;
+    cout << "#DEBUG***********: pollfd_array_resize" << endl;
     if(waitfor != NULL)
     {
         delete waitfor;
         waitfor = NULL;
     }
-    //cout << "#DEBUG: numberClientsDescriptors = " << numberClientsDescriptors << endl;
+    cout << "#DEBUG-pollfd_array_resize: numberClientsDescriptors = " << numberClientsDescriptors << endl;
     if(numberClientsDescriptors != 0)
     {
         waitfor = new pollfd[numberClientsDescriptors];
