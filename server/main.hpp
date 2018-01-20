@@ -21,11 +21,11 @@
 #include <cstring>
 #include <sys/poll.h>
 
-#define QUEUE_SIZE 10
+#define QUEUE_SIZE 15
 #define PORT_E 6666
 #define PORT_A 7777
 
-#define PAGE_X 60//26
+#define PAGE_X 200//26
 #define PAGE_Y 45
 #define CLIENT_LIMIT 9
 
