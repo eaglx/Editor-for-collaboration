@@ -19,7 +19,7 @@
 #include <signal.h>
 #include <thread>
 
-#define PAGE_X 200//26
+#define PAGE_X 26
 #define PAGE_Y 45
 
 using namespace std;

@@ -173,14 +173,10 @@ class Window(QtGui.QMainWindow):
                         countNewLine += 1
                     if countNewLine == 26:
                         break
-                #if countNewLine == 26:
-                #    self.text = self.text[:countChars]
-                #elif len(self.text) >= 1170: #45 chars in full line, 26 lines
-                #    self.text = self.text[:1170]
-                if countNewLine == 200:
+                if countNewLine == 26:
                     self.text = self.text[:countChars]
-                elif len(self.text) >= 9000: #45 chars in full line, 200 lines
-                    self.text = self.text[:9000]
+                elif len(self.text) >= 1170: #45 chars in full line, 26 lines
+                    self.text = self.text[:1170]
                 fixSizeString = False
 
         self.textFieldEdit.setPlainText(self.text)

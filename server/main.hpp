@@ -25,7 +25,7 @@
 #define PORT_E 6666
 #define PORT_A 7777
 
-#define PAGE_X 200//26
+#define PAGE_X 26
 #define PAGE_Y 45
 #define CLIENT_LIMIT 9
 
