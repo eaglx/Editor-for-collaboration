@@ -9,7 +9,7 @@ bool client_handle_editor(int nClientDesc_HE, int code_msg_HE)
     //cout << "#DEBUG-client_handle_editor: manage code_msg " << code_msg_HE << endl;
     //cout << "#DEBUG-client_handle_editor: manage descriptor " << nClientDesc_HE << endl;
 
-    usleep(500000); //0.5 sec
+    usleep(500);
 
     if(code_msg_HE == 111)
     {
