@@ -181,6 +181,14 @@ void manage_editor()
                         bytesSR = recv(socketDescE, &buffor[i][j], sizeof(buffor[i][j]),0);
                         //cout << "#DEBUG-manage_editor: recv bytes " << bytesSR << endl;
                     }
+
+                while(1)
+                {
+                    fileIn.open("temp/dataflow.txt");
+                    if(fileIn.is_open()) break;
+                }
+                fileIn << 1;
+                fileIn.close();
             }
             else isModify = false;
 
@@ -198,6 +206,14 @@ void manage_editor()
                 fileIn.close();
 
                 update_file_info(lastModifySec);
+
+                while(1)
+                {
+                    fileIn.open("temp/dataflow.txt");
+                    if(fileIn.is_open()) break;
+                }
+                fileIn << 0;
+                fileIn.close();
             }
 
             ++loopCount;

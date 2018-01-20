@@ -18,14 +18,22 @@ class Window(QtGui.QMainWindow):
         self.__home__()
 
     def __home__(self):
+        self.can_write_button = QtGui.QPushButton('CAN WRITE', self)
+        self.can_write_button.move(20,10)
+        self.can_write_button.setStyleSheet("background-color: #00ff00")
+        self.no_write_button =  QtGui.QPushButton('STOP WRITE', self)
+        self.no_write_button.move(140,10)
+        self.no_write_button.setStyleSheet("background-color: #ff0000")
+        self.no_write_button.hide()
+
         self.textFieldEdit = QtGui.QTextEdit(self)
         self.textFieldEdit.resize(400,500)
-        self.textFieldEdit.move(20,20)
+        self.textFieldEdit.move(20,50)
         self.textFieldEdit.setStyleSheet("color: black; background-color: #FFFFFF")
 
         self.textFieldEditTwo = QtGui.QTextEdit(self)
         self.textFieldEditTwo.resize(200,300)
-        self.textFieldEditTwo.move(430,30)
+        self.textFieldEditTwo.move(430,50)
         self.textFieldEditTwo.setReadOnly(True)
         self.textFieldEditTwo.setStyleSheet("color: black; background-color: #FFFFFF")
 
@@ -43,6 +51,9 @@ class Window(QtGui.QMainWindow):
 
         self.watcherThree = QtCore.QFileSystemWatcher(['temp/activusr.txt'])
         self.watcherThree.fileChanged.connect(self.__active_users__)
+
+        self.watcherDataflow = QtCore.QFileSystemWatcher(['temp/dataflow.txt'])
+        self.watcherDataflow.fileChanged.connect(self.__dataflow_changed__)
 
         self.textFieldEdit.setPlainText(self.text)
         self.textFieldEdit.textChanged.connect(self.__text_field_edit_event_func__)
@@ -162,10 +173,14 @@ class Window(QtGui.QMainWindow):
                         countNewLine += 1
                     if countNewLine == 26:
                         break
-                if countNewLine == 26:
+                #if countNewLine == 26:
+                #    self.text = self.text[:countChars]
+                #elif len(self.text) >= 1170: #45 chars in full line, 26 lines
+                #    self.text = self.text[:1170]
+                if countNewLine == 60:
                     self.text = self.text[:countChars]
-                elif len(self.text) >= 1170: #45 chars in full line, 26 lines
-                    self.text = self.text[:1170]
+                elif len(self.text) >= 2700: #45 chars in full line, 60 lines
+                    self.text = self.text[:2700]
                 fixSizeString = False
 
         self.textFieldEdit.setPlainText(self.text)
@@ -201,15 +216,33 @@ class Window(QtGui.QMainWindow):
             self.textFieldEdit.setTextCursor(copyCursor)
         self.textFieldEdit.textChanged.connect(self.__text_field_edit_event_func__)
 
+    def __dataflow_changed__(self):
+        f = open("temp/dataflow.txt", "r")
+        text = f.read()
+        f.close()
+        try:
+            number = int(text)
+        except:
+            number = 0;
+
+        if number == 0:
+            self.can_write_button.show()
+            self.no_write_button.hide()
+        else:
+            self.can_write_button.hide()
+            self.no_write_button.show()
+
     def closeEvent(self, event):
         self.textFieldEdit.textChanged.disconnect()
         self.watcher.fileChanged.disconnect()
         self.watcherTwo.fileChanged.disconnect()
         self.watcherThree.fileChanged.disconnect()
+        self.watcherDataflow.fileChanged.disconnect()
         os.remove("temp/out.txt")
         os.remove("temp/selecpos.txt")
         os.remove("temp/activusr.txt")
         os.remove("temp/selecposother.txt")
+        os.remove("temp/dataflow.txt")
         os.rmdir("temp")
         super(Window, self).closeEvent(event)
 
@@ -223,6 +256,9 @@ def make_temp_folders():
     f.write("0\n0\n0")  # How many users select text, start & end select
     f.close()
     f = open("temp/activusr.txt", "w")
+    f.write("0")
+    f.close()
+    f = open("temp/dataflow.txt", "w")
     f.write("0")
     f.close()
 
