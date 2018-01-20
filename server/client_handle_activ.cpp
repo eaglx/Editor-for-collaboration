@@ -7,6 +7,8 @@ bool client_handle_activ(int nClientDesc_ACV, int code_msg_ACV)
     //cout << "#DEBUG-client_handle_activ: manage code_msg " << code_msg_ACV << endl;
     //cout << "#DEBUG-client_handle_activ: manage descriptor " << nClientDesc_ACV << endl;
 
+    usleep(500000); //0.5 sec
+
     if(code_msg_ACV == 333)
     {
         int temp = numberClientsDescriptorsACA - 1;
