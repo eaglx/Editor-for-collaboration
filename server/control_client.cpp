@@ -30,6 +30,7 @@ void control_client()
     int readypoll;
     int codeMsg;
     int bytesSR;
+    uint32_t network_byte_order_long;
 
     while(!end_program)
     {
@@ -62,7 +63,10 @@ void control_client()
                 for(unsigned int i = 0; i < clientsDescriptors.size(); i++)
                 {
                     cout <<"#DEBUG-control_client: Test connection to descriptor " << waitfor[i].fd << endl;
-                    codeMsg = send(waitfor[i].fd, &codeMsg, sizeof(codeMsg), MSG_NOSIGNAL);
+
+                    codeMsg = 5;
+                    network_byte_order_long = htonl(codeMsg);
+                    codeMsg = send(waitfor[i].fd, &network_byte_order_long, sizeof(uint32_t), MSG_NOSIGNAL);
                     if ((codeMsg == -1) || (CST[i].timeoutcount == 3))
                     {
                         --numberClientsDescriptors;
@@ -97,7 +101,8 @@ void control_client()
                     for(int i = 0; i < numberClientsDescriptors; i++)
                         if(waitfor[i].revents & POLLIN)
                         {
-                            bytesSR = recv(waitfor[i].fd, &codeMsg, sizeof(codeMsg), 0);
+                            bytesSR = recv(waitfor[i].fd, &network_byte_order_long, sizeof(uint32_t), 0);
+                            codeMsg = ntohl(network_byte_order_long);
                             //cout << "#DEBUG: recv bytes before manage_client " << bytesSR << endl;
                             if(bytesSR < 0)
                             {

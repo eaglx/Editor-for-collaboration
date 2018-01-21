@@ -30,6 +30,7 @@ void control_clientACA()
     int codeMsg;
     int bytesSR;
     int timeout = 0;
+    uint32_t network_byte_order_long;
 
     cout << "#DEBUG-accept_connections_activ: control_clientACA run" << endl;
     while(!manage_thread_ACA)
@@ -67,7 +68,8 @@ void control_clientACA()
                 for(int i = 0; i < numberClientsDescriptorsACA; i++)
                 {
                     cout << "#DEBUG-control_clientACA: test client desc " << waitforACA[i].fd  << endl;
-                    bytesSR  = send(waitforACA[i].fd, &codeMsg, sizeof(codeMsg), MSG_NOSIGNAL);
+                    network_byte_order_long = htonl(codeMsg);
+                    bytesSR  = send(waitforACA[i].fd, &network_byte_order_long, sizeof(uint32_t), MSG_NOSIGNAL);
                     if(bytesSR == -1)
                     {
                         cout << "#DEBUG-control_clientACA: close client desc " << waitforACA[i].fd  << endl;
@@ -106,7 +108,8 @@ void control_clientACA()
                     for(int i = 0; i < numberClientsDescriptorsACA; i++)
                         if(waitforACA[i].revents & POLLIN)
                         {
-                            bytesSR = recv(waitforACA[i].fd, &codeMsg, sizeof(codeMsg), 0);
+                            bytesSR = recv(waitforACA[i].fd, &network_byte_order_long, sizeof(uint32_t), 0);
+                            codeMsg = ntohl(network_byte_order_long);
                             if(bytesSR > 0)
                             {
                                 //cout << "#DEBUG-control_clientACA: recv bytes " << bytesSR << " code_msg " << codeMsg << endl;

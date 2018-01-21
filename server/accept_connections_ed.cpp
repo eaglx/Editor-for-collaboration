@@ -16,6 +16,8 @@ void accept_connections_ed()
     socklen_t sockAddrSize;
     int nFoo = 1;
 
+    uint16_t network_byte_order_short;
+
     sockAddrSize = sizeof(struct sockaddr);
 
     serverAddr.sin_family = AF_INET;
@@ -77,8 +79,8 @@ void accept_connections_ed()
                 else
                 {
                     cout <<"#DEBUG-accept_connections_ed: Test connection to descriptor " << endl;
-                    char c;
-                    ssize_t x = recv(CST[i].descriptor, &c, 1, MSG_PEEK);
+
+                    ssize_t x = recv(CST[i].descriptor, &network_byte_order_short, 1, MSG_PEEK);
                     if (x > 0)
                     {
                         /* ...have data, leave it in socket buffer */

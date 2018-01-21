@@ -6,6 +6,9 @@ bool client_handle_editor(int nClientDesc_HE, int code_msg_HE)
     char chr;
     int posX, posY;
 
+    uint32_t network_byte_order_long;
+    uint16_t network_byte_order_short;
+
     //cout << "#DEBUG-client_handle_editor: manage code_msg " << code_msg_HE << endl;
     //cout << "#DEBUG-client_handle_editor: manage descriptor " << nClientDesc_HE << endl;
 
@@ -32,14 +35,16 @@ bool client_handle_editor(int nClientDesc_HE, int code_msg_HE)
 
         if(temp == 99)
         {
-            bytesSR = send(nClientDesc_HE, &temp, sizeof(temp), 0);
+            network_byte_order_long = htonl(temp);
+            bytesSR = send(nClientDesc_HE, &network_byte_order_long, sizeof(uint32_t), 0);
             //cout << "#DEBUG-client_handle_editor: temp send bytes " << bytesSR << endl;
             if(bytesSR < 0) return false;
 
             for(int i = 0; i < PAGE_X; i++)
                 for(int j = 0; j < PAGE_Y; j++)
                 {
-                    bytesSR = send(nClientDesc_HE, &bufforFE[i][j], sizeof(bufforFE[i][j]), 0);
+                    network_byte_order_short = htons(bufforFE[i][j]);
+                    bytesSR = send(nClientDesc_HE, &network_byte_order_short, sizeof(uint16_t), 0);
                     //cout << "#DEBUG-client_handle_editor: loop send bytes " << bytesSR << endl;
                     if(bytesSR < 0) return false;
                 }
@@ -53,20 +58,26 @@ bool client_handle_editor(int nClientDesc_HE, int code_msg_HE)
         }
         else
         {
-            bytesSR = send(nClientDesc_HE, &temp, sizeof(temp), 0);
+            network_byte_order_long = htonl(temp);
+            bytesSR = send(nClientDesc_HE, &network_byte_order_long, sizeof(uint32_t), 0);
             //cout << "#DEBUG-client_handle_editor: send bytes " << bytesSR << endl;
             if(bytesSR < 0) return false;
         }
     }
     else if(code_msg_HE == 222)
     {
-        bytesSR = recv(nClientDesc_HE, &chr, sizeof(chr), 0);
+        bytesSR = recv(nClientDesc_HE, &network_byte_order_short, sizeof(uint16_t), 0);
+        chr = ntohs(network_byte_order_short);
         //cout << "#DEBUG-client_handle_editor: recv bytes " << bytesSR << endl;
         if(bytesSR < 0) return false;
-        bytesSR = recv(nClientDesc_HE, &posX, sizeof(posX), 0);
+
+        bytesSR = recv(nClientDesc_HE, &network_byte_order_long, sizeof(uint32_t), 0);
+        posX = ntohl(network_byte_order_long);
         //cout << "#DEBUG-client_handle_editor: recv bytes " << bytesSR << endl;
         if(bytesSR < 0) return false;
-        bytesSR = recv(nClientDesc_HE, &posY, sizeof(posY), 0);
+
+        bytesSR = recv(nClientDesc_HE, &network_byte_order_long, sizeof(uint32_t), 0);
+        posY = ntohl(network_byte_order_long);
         //cout << "#DEBUG-client_handle_editor: recv bytes " << bytesSR << endl;
         if(bytesSR < 0) return false;
 

@@ -31,6 +31,9 @@ void manage_editor()
     bool isModify;
     int bytesSR;
 
+    uint32_t network_byte_order_long;
+    uint16_t network_byte_order_short;
+
     while(reconnect_ed)
     {
         end_program_e = false;
@@ -71,19 +74,23 @@ void manage_editor()
             continue;
         }
 
-        send(socketDescE, &clientSPECIAL_ID, sizeof(clientSPECIAL_ID), 0);
+        network_byte_order_long = htonl(clientSPECIAL_ID);
+        send(socketDescE, &network_byte_order_long, sizeof(uint32_t), 0);
 
         code_msg = 111;
-        bytesSR = send(socketDescE, &code_msg, sizeof(code_msg), 0);
+        network_byte_order_long = htonl(code_msg);
+        bytesSR = send(socketDescE, &network_byte_order_long, sizeof(uint32_t), 0);
         //cout << "#DEBUG-manage_editor: send bytes before big loop" << bytesSR << endl;
         if(bytesSR < 0) { close(socketDescE); continue; }
 
-        bytesSR = recv(socketDescE, &code_msg, sizeof(code_msg), 0);
+        bytesSR = recv(socketDescE, &network_byte_order_long, sizeof(uint32_t), 0);
+        code_msg = ntohs(network_byte_order_long);
         //cout << "#DEBUG-manage_editor: recv bytes before big loop" << bytesSR << endl;
         for(int i = 0; i < PAGE_X; i++)
             for(int j = 0; j < PAGE_Y; j++)
             {
-                bytesSR = recv(socketDescE, &buffor[i][j], sizeof(buffor[i][j]), 0);
+                bytesSR = recv(socketDescE, &network_byte_order_short, sizeof(uint16_t), 0);
+                buffor[i][j] = ntohs(network_byte_order_short);
                 //cout << "#DEBUG-manage_editor: recv bytes in small loop " << bytesSR << endl;
             }
         while(1)
@@ -148,16 +155,23 @@ void manage_editor()
                         posY = j;
 
                         code_msg = 222;
-                        bytesSR = send(socketDescE, &code_msg, sizeof(code_msg),0);
+                        network_byte_order_long = htonl(code_msg);
+                        bytesSR = send(socketDescE, &network_byte_order_long, sizeof(uint32_t),0);
                         //cout << "#DEBUG-manage_editor: send bytes " << bytesSR << endl;
                         if(bytesSR < 0) { close(socketDescE); end_program_e = true;  break;}
-                        bytesSR = send(socketDescE, &chr, sizeof(chr),0);
+
+                        network_byte_order_short = htons(chr);
+                        bytesSR = send(socketDescE, &network_byte_order_short, sizeof(uint16_t),0);
                         //cout << "#DEBUG-manage_editor: send bytes " << bytesSR << endl;
                         if(bytesSR < 0) { close(socketDescE); end_program_e = true;  break;}
-                        bytesSR = send(socketDescE, &posX, sizeof(posX),0);
+
+                        network_byte_order_long = htonl(posX);
+                        bytesSR = send(socketDescE, &network_byte_order_long, sizeof(uint32_t),0);
                         //cout << "#DEBUG-manage_editor: send bytes " << bytesSR << endl;
                         if(bytesSR < 0) { close(socketDescE); end_program_e = true;  break;}
-                        bytesSR = send(socketDescE, &posY, sizeof(posY),0);
+
+                        network_byte_order_long = htonl(posY);
+                        bytesSR = send(socketDescE, &network_byte_order_long, sizeof(uint32_t),0);
                         //cout << "#DEBUG-manage_editor: send bytes " << bytesSR << endl;
                         if(bytesSR < 0) { close(socketDescE); end_program_e = true;  break;}
                     }
@@ -165,11 +179,13 @@ void manage_editor()
 
             // **********DOWNLOAD 'EDITED' FILE**********
             code_msg = 111;
-            bytesSR = send(socketDescE, &code_msg, sizeof(code_msg), 0);
+            network_byte_order_long = htonl(code_msg);
+            bytesSR = send(socketDescE, &network_byte_order_long, sizeof(uint32_t), 0);
             //cout << "#DEBUG-manage_editor: send bytes " << bytesSR << endl;
             if(bytesSR < 0) { close(socketDescE); end_program_e = true;  break;}
 
-            bytesSR = recv(socketDescE, &code_msg, sizeof(code_msg),0);
+            bytesSR = recv(socketDescE, &network_byte_order_long, sizeof(uint32_t),0);
+            code_msg = ntohl(network_byte_order_long);
             //cout << "#DEBUG-manage_editor: recv bytes " << bytesSR << endl;
             if(code_msg == 99)
             {
@@ -178,7 +194,8 @@ void manage_editor()
                 for(int i = 0; i < PAGE_X; i++)
                     for(int j = 0; j < PAGE_Y; j++)
                     {
-                        bytesSR = recv(socketDescE, &buffor[i][j], sizeof(buffor[i][j]),0);
+                        bytesSR = recv(socketDescE, &network_byte_order_short, sizeof(uint16_t),0);
+                        buffor[i][j] = ntohs(network_byte_order_short);
                         //cout << "#DEBUG-manage_editor: recv bytes " << bytesSR << endl;
                     }
 

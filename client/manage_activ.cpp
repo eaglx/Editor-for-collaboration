@@ -13,6 +13,8 @@ void manage_activ()
     string line;
     int bytesSR;
 
+    uint32_t network_byte_order_long;
+
     usleep(1000000); // 1 seconds
     while(reconnect_ed)
     {
@@ -36,7 +38,8 @@ void manage_activ()
             continue;
         }
 
-        send(socketDescA, &clientSPECIAL_ID, sizeof(clientSPECIAL_ID), 0);
+        network_byte_order_long = htonl(clientSPECIAL_ID);
+        send(socketDescA, &network_byte_order_long, sizeof(uint32_t), 0);
 
         cout <<"#DEBUG-manage_activ: loop started" << endl;
         while(!end_program_a)
@@ -44,11 +47,13 @@ void manage_activ()
             usleep(200000); // 0.2 seconds
             // **********CHECK ACTIVE OTHER CLIENTS**********
             code_msg = 333;
-            bytesSR = send(socketDescA, &code_msg, sizeof(code_msg), 0);
+            network_byte_order_long = htonl(code_msg);
+            bytesSR = send(socketDescA, &network_byte_order_long, sizeof(uint32_t), 0);
             //cout << "#DEBUG-manage_activ: 333 send bytes " << bytesSR << endl;
             if(bytesSR < 0) { close(socketDescA); end_program_a = true;  break;}
 
-            bytesSR = recv(socketDescA, &activeUsers, sizeof(activeUsers),0);
+            bytesSR = recv(socketDescA, &network_byte_order_long, sizeof(uint32_t),0);
+            activeUsers = ntohl(network_byte_order_long);
             //cout << "#DEBUG-manage_activ: 333 recv bytes " << bytesSR << endl;
             if(bytesSR < 0) { close(socketDescA); end_program_a = true;  break;}
             while(1)
@@ -76,25 +81,29 @@ void manage_activ()
             if(posX == posY) posX = posY = 0;
 
             //cout << "#DEBUG-manage_activ: selected positions " << posX << " " << posY << endl;
-
-            bytesSR = send(socketDescA, &code_msg, sizeof(code_msg), 0);
+            network_byte_order_long = htonl(code_msg);
+            bytesSR = send(socketDescA, &network_byte_order_long, sizeof(uint32_t), 0);
             //cout << "#DEBUG-manage_activ: 444 send bytes " << bytesSR << endl;
             if(bytesSR < 0) { close(socketDescA); end_program_a = true;  break;}
-            bytesSR = send(socketDescA, &posX, sizeof(posX), 0);
+            network_byte_order_long = htonl(posX);
+            bytesSR = send(socketDescA, &posX, sizeof(uint32_t), 0);
             //cout << "#DEBUG-manage_activ: 444 send bytes " << bytesSR << endl;
             if(bytesSR < 0) { close(socketDescA); end_program_a = true;  break;}
-            bytesSR = send(socketDescA, &posY, sizeof(posY), 0);
+            network_byte_order_long = htonl(posY);
+            bytesSR = send(socketDescA, &posY, sizeof(uint32_t), 0);
             //cout << "#DEBUG-manage_activ: 444 send bytes " << bytesSR << endl;
             if(bytesSR < 0) { close(socketDescA); end_program_a = true;  break;}
 
             // **********DOWNLOAD SELECTED TEXT BY OTHERS**********
             code_msg = 555;
             activeUsers = 0;
-            bytesSR = send(socketDescA, &code_msg, sizeof(code_msg), 0);
+            network_byte_order_long = htonl(code_msg);
+            bytesSR = send(socketDescA, &network_byte_order_long, sizeof(uint32_t), 0);
             //cout << "#DEBUG-manage_activ: 555 send bytes " << bytesSR << endl;
             if(bytesSR < 0) { close(socketDescA); end_program_a = true;  break;}
 
-            bytesSR = recv(socketDescA, &activeUsers, sizeof(activeUsers), 0);
+            bytesSR = recv(socketDescA, &network_byte_order_long, sizeof(uint32_t), 0);
+            activeUsers = ntohl(network_byte_order_long);
             //cout << "#DEBUG-manage_activ: 555 recv bytes " << bytesSR << endl;
             if(bytesSR < 0) { close(socketDescA); end_program_a = true;  break;}
             while(1)
@@ -107,10 +116,12 @@ void manage_activ()
                 fileIn << activeUsers << '\n';
                 for(int i = 0; i < activeUsers; i++)
                 {
-                    bytesSR = recv(socketDescA, &posX, sizeof(posX), 0);
+                    bytesSR = recv(socketDescA, &network_byte_order_long, sizeof(uint32_t), 0);
+                    posX = ntohl(network_byte_order_long);
                     if(bytesSR < 0) { close(socketDescA); end_program_a = true;  break;}
                     //cout << "#DEBUG-manage_activ: 555 recv bytes " << bytesSR << endl;
-                    bytesSR = recv(socketDescA, &posY, sizeof(posY), 0);
+                    bytesSR = recv(socketDescA, &network_byte_order_long, sizeof(uint32_t), 0);
+                    posY = ntohl(network_byte_order_long);
                     if(bytesSR < 0) { close(socketDescA); end_program_a = true;  break;}
                     //cout << "#DEBUG-manage_activ: 555 recv bytes " << bytesSR << endl;
 

@@ -21,6 +21,9 @@ void accept_connections_activ()
     int bytesSR;
     int userSpecialID;
 
+    uint32_t network_byte_order_long;
+    uint16_t network_byte_order_short;
+
     sockAddrSize = sizeof(struct sockaddr);
 
     serverAddr.sin_family = AF_INET;
@@ -62,20 +65,20 @@ void accept_connections_activ()
         cout << "#DEBUG-accept_connections_activ: nClientDesc -> " << nClientDesc << endl;
         cout << "#DEBUG-accept_connections_activ: Client -> " << inet_ntoa((struct in_addr) clientAddr.sin_addr) << endl;
 
-        bytesSR = recv(nClientDesc, &userSpecialID, sizeof(userSpecialID), 0);
+        bytesSR = recv(nClientDesc, &network_byte_order_long, sizeof(uint32_t), 0);
+        userSpecialID = ntohl(network_byte_order_long);
         cout << "#DEBUG-accept_connections_activ: recv bytes " << bytesSR << endl;
 
         READY_THREAD_GLOBAL_SYNC_ACA = false;
         this_thread::sleep_for(std::chrono::seconds(1));
         lock_guard<std::mutex> lk2(cv_mACA);
 
-        char c;
         ssize_t x;
         if(waitforACA != NULL)
         {
             for(int i = 0; i < numberClientsDescriptorsACA; i++)
             {
-                x = recv(waitforACA[i].fd, &c, 1, MSG_PEEK);
+                x = recv(waitforACA[i].fd, &network_byte_order_short, 1, MSG_PEEK);
                 if (x > 0)
                 {
                     /* ...have data, leave it in socket buffer */
