@@ -20,6 +20,13 @@ void signal_callback_handler(int signum)
   cout << "#DEBUG-client: Signum = " << signum <<endl;
   end_program_a = end_program_e = true;
   reconnect_acv = reconnect_ed = false;
+
+  uint32_t network_byte_order_long;
+  int code_msg = 666;
+  network_byte_order_long = htonl(code_msg);
+  send(socketDescE, &network_byte_order_long, sizeof(uint32_t), 0);
+  send(socketDescA, &network_byte_order_long, sizeof(uint32_t), 0);
+
   close(socketDescE);
   close(socketDescA);
   cout << "#DEBUG-client: Start shutdown client" << endl;

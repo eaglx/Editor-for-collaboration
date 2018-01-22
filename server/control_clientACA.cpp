@@ -113,9 +113,9 @@ void control_clientACA()
                             if(bytesSR > 0)
                             {
                                 //cout << "#DEBUG-control_clientACA: recv bytes " << bytesSR << " code_msg " << codeMsg << endl;
-                                if(!client_handle_activ(waitforACA[i].fd, codeMsg))
+                                if(client_handle_activ(waitforACA[i].fd, codeMsg) == 3)
                                 {
-                                    /*cout <<"#DEBUG-control_clientACA:  control_clientACA Delete client descc" << waitforACA[i].fd << endl;
+                                    cout <<"#DEBUG-control_clientACA:  control_clientACA Delete client descc" << waitforACA[i].fd << endl;
                                     close(waitforACA[i].fd);
                                     for(unsigned int j = 0; j < clientsDescriptorsACA.size(); j++)
                                         if(clientsDescriptorsACA[j].desc == waitforACA[i].fd)
@@ -125,8 +125,7 @@ void control_clientACA()
                                         }
                                     --numberClientsDescriptorsACA;
                                     i = 1000;
-                                    numberClientsDescriptorsChangACA = true;*/
-                                    ;
+                                    numberClientsDescriptorsChangACA = true;
                                 }
                             }
                             else

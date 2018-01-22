@@ -1,6 +1,6 @@
 #include "main.hpp"
 
-bool client_handle_editor(int nClientDesc_HE, int code_msg_HE)
+int client_handle_editor(int nClientDesc_HE, int code_msg_HE)
 {
     int bytesSR;
     char chr;
@@ -38,7 +38,7 @@ bool client_handle_editor(int nClientDesc_HE, int code_msg_HE)
             network_byte_order_long = htonl(temp);
             bytesSR = send(nClientDesc_HE, &network_byte_order_long, sizeof(uint32_t), 0);
             //cout << "#DEBUG-client_handle_editor: temp send bytes " << bytesSR << endl;
-            if(bytesSR < 0) return false;
+            if(bytesSR < 0) return 1;
 
             for(int i = 0; i < PAGE_X; i++)
                 for(int j = 0; j < PAGE_Y; j++)
@@ -46,7 +46,7 @@ bool client_handle_editor(int nClientDesc_HE, int code_msg_HE)
                     network_byte_order_short = htons(bufforFE[i][j]);
                     bytesSR = send(nClientDesc_HE, &network_byte_order_short, sizeof(uint16_t), 0);
                     //cout << "#DEBUG-client_handle_editor: loop send bytes " << bytesSR << endl;
-                    if(bytesSR < 0) return false;
+                    if(bytesSR < 0) return 1;
                 }
 
             for(int i = 0; i < CLIENT_LIMIT; i++)
@@ -61,7 +61,7 @@ bool client_handle_editor(int nClientDesc_HE, int code_msg_HE)
             network_byte_order_long = htonl(temp);
             bytesSR = send(nClientDesc_HE, &network_byte_order_long, sizeof(uint32_t), 0);
             //cout << "#DEBUG-client_handle_editor: send bytes " << bytesSR << endl;
-            if(bytesSR < 0) return false;
+            if(bytesSR < 0) return 1;
         }
     }
     else if(code_msg_HE == 222)
@@ -69,17 +69,17 @@ bool client_handle_editor(int nClientDesc_HE, int code_msg_HE)
         bytesSR = recv(nClientDesc_HE, &network_byte_order_short, sizeof(uint16_t), 0);
         chr = ntohs(network_byte_order_short);
         //cout << "#DEBUG-client_handle_editor: recv bytes " << bytesSR << endl;
-        if(bytesSR < 0) return false;
+        if(bytesSR < 0) return 1;
 
         bytesSR = recv(nClientDesc_HE, &network_byte_order_long, sizeof(uint32_t), 0);
         posX = ntohl(network_byte_order_long);
         //cout << "#DEBUG-client_handle_editor: recv bytes " << bytesSR << endl;
-        if(bytesSR < 0) return false;
+        if(bytesSR < 0) return 1;
 
         bytesSR = recv(nClientDesc_HE, &network_byte_order_long, sizeof(uint32_t), 0);
         posY = ntohl(network_byte_order_long);
         //cout << "#DEBUG-client_handle_editor: recv bytes " << bytesSR << endl;
-        if(bytesSR < 0) return false;
+        if(bytesSR < 0) return 1;
 
         if(((posX >= 0) && (posX < PAGE_X)) && ((posY >= 0) && (posY < PAGE_Y)))
         {
@@ -87,14 +87,19 @@ bool client_handle_editor(int nClientDesc_HE, int code_msg_HE)
 
             for(int i = 0; i < CLIENT_LIMIT; i++)
                 if(CST[i].descriptor != nClientDesc_HE)
-                    CST[i].allupdate = false;
+                    CST[i].allupdate = 1;
         }
+    }
+    else if(code_msg_HE == 666)
+    {
+        cout << "#DEBUG-client_handle_editor: Client finished " << endl;
+        return 3;
     }
     else
     {
         cout << "#DEBUG-client_handle_editor: DFQ!!!! from " << nClientDesc_HE << endl;
         //cout << "#DEBUG-client_handle_activ: Close client due security reason > " << nClientDesc_HE << endl;
-        return false;
+        return 4;
     }
-    return true;
+    return 0;
 }

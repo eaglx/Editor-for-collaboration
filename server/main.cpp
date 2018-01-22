@@ -9,19 +9,19 @@ void signal_callback_handler(int signum)
 {
   cout << "#DEBUG: Signum = " << signum <<endl;
   end_program = true;
-  cout << "#DEBUG: Start shutdown server" << endl;
+  //cout << "#DEBUG: Start shutdown server" << endl;
 }
 
-void signal_callback_handler_PIPE(int signum)
+/*void signal_callback_handler_PIPE(int signum)
 {
     cout << "#ERROR: caught signal SIGPIPE " << signum << "!!!!!!" << endl;
-}
+}*/
 
 int main()
 {
     signal(SIGINT, signal_callback_handler);
-    signal(SIGPIPE, signal_callback_handler_PIPE);
-    //signal(SIGPIPE, SIG_IGN);
+    //signal(SIGPIPE, signal_callback_handler_PIPE);
+    signal(SIGPIPE, SIG_IGN);
 
     for(int i = 0; i < PAGE_X; i++)
         for(int j = 0; j < PAGE_Y; j++)

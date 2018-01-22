@@ -69,11 +69,11 @@ extern bool READY_THREAD_GLOBAL_SYNC_ACA;
 extern pollfd *waitforACA;
 
 /* FUNCTIONS */
-bool client_handle_editor(int nClientDesc_HE, int code_msg_HE);
+int client_handle_editor(int nClientDesc_HE, int code_msg_HE);
 void control_client();
 void control_clientACA();
 void accept_connections_ed();
 void accept_connections_activ();
-bool client_handle_activ(int nClientDesc_ACV, int code_msg_ACV);
+int client_handle_activ(int nClientDesc_ACV, int code_msg_ACV);
 
 #endif
