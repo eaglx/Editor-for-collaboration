@@ -16,6 +16,7 @@ void accept_connections_ed()
     socklen_t sockAddrSize;
     int nFoo = 1;
 
+    uint32_t network_byte_order_long;
     uint16_t network_byte_order_short;
 
     sockAddrSize = sizeof(struct sockaddr);
@@ -116,7 +117,8 @@ void accept_connections_ed()
                 if(CST[i].descriptor == -1)
                 {
                     CST[i].descriptor = nClientDesc;
-                    recv(nClientDesc, &CST[i].clientSPECIAL_ID, sizeof(CST[i].clientSPECIAL_ID), 0);
+                    recv(nClientDesc, &network_byte_order_long, sizeof(uint32_t), 0);
+                    CST[i].clientSPECIAL_ID = ntohl(network_byte_order_long);
                     CST[i].allupdate = false;
                     CST[i].timeoutcount = 0;
                     i = 100;

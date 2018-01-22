@@ -85,12 +85,14 @@ void manage_activ()
             bytesSR = send(socketDescA, &network_byte_order_long, sizeof(uint32_t), 0);
             //cout << "#DEBUG-manage_activ: 444 send bytes " << bytesSR << endl;
             if(bytesSR < 0) { close(socketDescA); end_program_a = true;  break;}
+
             network_byte_order_long = htonl(posX);
-            bytesSR = send(socketDescA, &posX, sizeof(uint32_t), 0);
+            bytesSR = send(socketDescA, &network_byte_order_long, sizeof(uint32_t), 0);
             //cout << "#DEBUG-manage_activ: 444 send bytes " << bytesSR << endl;
             if(bytesSR < 0) { close(socketDescA); end_program_a = true;  break;}
+
             network_byte_order_long = htonl(posY);
-            bytesSR = send(socketDescA, &posY, sizeof(uint32_t), 0);
+            bytesSR = send(socketDescA, &network_byte_order_long, sizeof(uint32_t), 0);
             //cout << "#DEBUG-manage_activ: 444 send bytes " << bytesSR << endl;
             if(bytesSR < 0) { close(socketDescA); end_program_a = true;  break;}
 
