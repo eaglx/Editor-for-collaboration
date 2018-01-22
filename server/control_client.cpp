@@ -123,11 +123,12 @@ void control_client()
                             {
                                 if(!client_handle_editor(waitfor[i].fd, codeMsg))
                                 {
-                                    cout << "#DEBUG-control_client: control_client Delete client id - " << waitfor[i].fd << endl;
+                                    /*cout << "#DEBUG-control_client: control_client Delete client id - " << waitfor[i].fd << endl;
                                     close(waitfor[i].fd);
                                     CST[i].descriptor = -1;
                                     CST[i].clientSPECIAL_ID = -1;
-                                    CST[i].timeoutcount = 0;
+                                    CST[i].timeoutcount = 0;*/
+                                    ;
                                 }
                             }
                         }

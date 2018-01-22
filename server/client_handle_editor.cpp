@@ -93,7 +93,7 @@ bool client_handle_editor(int nClientDesc_HE, int code_msg_HE)
     else
     {
         cout << "#DEBUG-client_handle_editor: DFQ!!!! from " << nClientDesc_HE << endl;
-        cout << "#DEBUG-client_handle_activ: Close client due security reason > " << nClientDesc_HE << endl;
+        //cout << "#DEBUG-client_handle_activ: Close client due security reason > " << nClientDesc_HE << endl;
         return false;
     }
     return true;

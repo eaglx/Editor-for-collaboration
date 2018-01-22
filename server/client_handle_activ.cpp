@@ -74,7 +74,7 @@ bool client_handle_activ(int nClientDesc_ACV, int code_msg_ACV)
     else
     {
         cout << "#DEBUG-client_handle_activ: DFQ!!!! from " << nClientDesc_ACV << endl;
-        cout << "#DEBUG-client_handle_activ: Close client due security reason > " << nClientDesc_ACV << endl;
+        //cout << "#DEBUG-client_handle_activ: Close client due security reason > " << nClientDesc_ACV << endl;
         return false;
     }
     return true;
