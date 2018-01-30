@@ -17,6 +17,8 @@ void signal_callback_handler(int signum)
     endProgram = true;
 }
 
+void string_resize(int x) { while((x + 1) > int(fileBufferLines.size())) { string s = ""; fileBufferLines.push_back(s); } }
+
 void pollfd_array_resize()
 {
     cout << "#DEBUG-control_client: pollfd_array_resize" << endl;
@@ -102,25 +104,13 @@ void control_client()
                         deserialize_msg(bufferMSG, &msgInfo);
                         if(msgInfo.flag == FLAG_INSERT_BEFORE)
                         {
-                            if(fileBufferLines.empty()) { fileBufferLines.push_back(String s); }
-
-                            if(msgInfo.posX > int(fileBufferLines.size())
-                            {
-                                while(msgInfo.posX > int(fileBufferLines.size())
-                                    fileBufferLines.push_back(String s);
-                            }
-                            fileBufferLines[msgInfo.posX].insert(msgInfo.posY, msgInfo.chr);
+                            if((msgInfo.posX + 1) > int(fileBufferLines.size())) { string_resize((msgInfo.posX + 1)); }
+                            fileBufferLines[msgInfo.posX].insert(msgInfo.posY, string(1,msgInfo.chr));
                         }
                         else if(msgInfo.flag == FLAG_REPLACE)
                         {
-                            if(fileBufferLines.empty()) { fileBufferLines.push_back(String s); }
-
-                            if(msgInfo.posX > int(fileBufferLines.size())
-                            {
-                                while(msgInfo.posX > int(fileBufferLines.size())
-                                    fileBufferLines.push_back(String s);
-                            }
-                            fileBufferLines[msgInfo.posX].replace(msgInfo.posY, msgInfo.posY+1, msgInfo.chr);
+                            if((msgInfo.posX + 1) > int(fileBufferLines.size())) { string_resize((msgInfo.posX + 1)); }
+                            fileBufferLines[msgInfo.posX].replace(msgInfo.posY, msgInfo.posY+1, string(1,msgInfo.chr));
                         }
                         else
                         {
@@ -175,6 +165,9 @@ int accept_clients()
     serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);
     serverAddr.sin_port = htons(PORT);
 
+    string temp;
+    char *buffer;
+
     nSocketDesc = socket(AF_INET, SOCK_STREAM, 0);
     if(nSocketDesc < 0)
     {
@@ -206,12 +199,22 @@ int accept_clients()
         {
             cout << "#INFO: Client descriptor: " << nClientDesc << endl;
             cout << "#INFO: Client IP: " << inet_ntoa((struct in_addr) clientAddr.sin_addr) << endl;
+            unique_lock<std::mutex> lck(mtx);
+            while (!ready) cv.wait(lck);
+            temp = "";
+            for(unsigned int fbl; fbl < fileBufferLines.size(); fbl++) { temp = temp + fileBufferLines[fbl] + '\n'; }
+            buffer = new char[temp.size()];
+            for(unsigned int k = 0; k < temp.size(); k++) { buffer[k] = temp[k]; }
+            if(send_all(nClientDesc, buffer, temp.size()) < SEND_ERROR)
+            {
+                cout << "#DEBUG-accept_clients: Send error" << endl;
+                delete [] buffer;
+                continue;
+            }
+            delete [] buffer;
             clientsDescriptors.push_back(nClientDesc);
             ++numberClientsDescriptors;
             numberClientsDescriptorsChang = true;
-            unique_lock<std::mutex> lck(mtx);
-            while (!ready) cv.wait(lck);
-            //TODO: send strings 1. First send size to inform client. 2. Send data
         }
         this_thread::sleep_for(std::chrono::seconds(1));
     }
@@ -227,6 +230,7 @@ int main()
     signal(SIGPIPE, SIG_IGN);
 
     cout << "#DEBUG: @@@@ SERVER STARTED @@@@" << endl;
+    string_resize(0);
     thread controlClientThread(control_client);
     while(accept_clients());
     controlClientThread.join();
