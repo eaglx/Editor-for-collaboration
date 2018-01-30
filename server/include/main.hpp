@@ -28,14 +28,21 @@
 #define FLAG_INSERT_BEFORE 111
 #define FLAG_REPLACE 222
 
+#define SEND_ALL_DATA 0
+#define SEND_ERROR -1
+#define RECIVE_ZERO 0
+#define RECIVE_ERROR -1
+
 using namespace std;
 
-struct MESSAGE_INFO
+#define PACKETSIZE sizeof(MESSAGE_INFO)
+
+typedef struct MESSAGE_INFO
 {
     int flag;
-    char chr;
     int posX;
     int posY;
+    char chr;
 };
 
 #endif

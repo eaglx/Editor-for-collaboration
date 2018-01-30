@@ -1,4 +1,4 @@
-#include "main.hpp"
+#include "include/main.hpp"
 
 volatile bool endProgram = false;
 int nSocketDesc;
@@ -41,6 +41,7 @@ void control_client()
     int dataSizeSendORRecv;
     bool canRemoveDesc;
     MESSAGE_INFO msgInfo;
+    char bufferMSG[PACKETSIZE];
 
     cout << "#DEBUG: control_client lounched" << endl;
     while(!endProgram)
@@ -61,11 +62,13 @@ void control_client()
         if(readypoll == -1)
         {
             cout << "#DEBUG: control_client POLL ERROR" << endl;
+            //TODO: do something or not?
             continue;
         }
         else if(readypoll == 0)
         {
             cout <<"#DEBUG: control_client POLL TIMEOUT" << endl;
+            //TODO: do something or not?
         }
         else
         {
@@ -75,13 +78,13 @@ void control_client()
             {
                 if(pollfdClientStruct[i].revents & POLLIN)
                 {
-                    dataSizeSendORRecv = recv(pollfdClientStruct[i].fd, &msgInfo, sizeof(msgInfo), 0);
-                    if(dataSizeSendORRecv == -1)
+                    dataSizeSendORRecv = recv_all(pollfdClientStruct[i].fd, &bufferMSG);
+                    if(dataSizeSendORRecv == RECIVE_ERROR)
                     {
                         cout <<"#DEBUG: While recv from descriptor " << pollfdClientStruct[i].fd << " get error." << endl;
                         cout << strerror(errno) << " :: " << errno << endl;
                     }
-                    else if(dataSizeSendORRecv == 0)
+                    else if(dataSizeSendORRecv == RECIVE_ZERO)
                     {
                         cout <<"#DEBUG: Client with descriptor " << pollfdClientStruct[i].fd << " closed the connection." << endl;
                         close(pollfdClientStruct[i].fd);
@@ -91,7 +94,23 @@ void control_client()
                     }
                     else
                     {
-                        ; // Work with recv data
+                        deserialize_msg(bufferMSG, msgInfo);
+                        if(msgInfo.flag == FLAG_INSERT_BEFORE)
+                        {
+                            ;
+                        }
+                        else if(msgInfo.flag == FLAG_REPLACE)
+                        {
+                            ;
+                        }
+                        else
+                        {
+                            cout <<"#DEBUG: Recive wrong flag " << msgInfo.flag << endl;
+                            continue;
+                        }
+                        serialize_msg(msgInfo, bufferMSG);
+
+                        for(int cli = 0; cli < numberClientsDescriptors; cli++) { send_all(pollfdClientStruct[cli].fd, void *bufferMSG, sizeof(bufferMSG)); }
                     }
                 }
             }
