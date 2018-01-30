@@ -7,6 +7,10 @@ Editor for collaboration.
 
 ## History 
 
+### Release 0.03.x
+
+#### How to launch:
+
 ### Release 0.01 and Release 0.02.x.x
 
 #### How to launch:
