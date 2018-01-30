@@ -25,6 +25,9 @@
 #define QUEUE_SIZE 20
 #define PORT 6666
 
+#define FLAG_INSERT_BEFORE 111
+#define FLAG_REPLACE 222
+
 using namespace std;
 
 struct MESSAGE_INFO
