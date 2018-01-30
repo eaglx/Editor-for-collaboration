@@ -11,7 +11,7 @@ void serialize_msg(MESSAGE_INFO *msgPacket, char *data)
     *p = msgPacket->chr; p++;
 }
 
-void deserialize_msg(char *data, MESSAGE_INFO* msgPacket)
+void deserialize_msg(char *data, MESSAGE_INFO *msgPacket)
 {
     int *q = (int *)data;
 	msgPacket->flag = *q; q++;

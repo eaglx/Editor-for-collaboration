@@ -4,11 +4,13 @@
 #include <algorithm>
 #include <arpa/inet.h>
 #include <chrono>
+#include <condition_variable>
 #include <cstdlib>
 #include <cstring>
 #include <errno.h>
 #include <fcntl.h>
 #include <iostream>
+#include <mutex>
 #include <netinet/in.h>
 #include <stdio.h>
 #include <string>
@@ -37,12 +39,17 @@ using namespace std;
 
 #define PACKETSIZE sizeof(MESSAGE_INFO)
 
-typedef struct MESSAGE_INFO
+struct MESSAGE_INFO
 {
     int flag;
     int posX;
     int posY;
     char chr;
 };
+
+int send_all(int, void *, size_t);
+int recv_all(int, void *);
+void serialize_msg(MESSAGE_INFO *, char *);
+void deserialize_msg(char *, MESSAGE_INFO *);
 
 #endif

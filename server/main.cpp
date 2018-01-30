@@ -6,6 +6,9 @@ vector < int > clientsDescriptors;
 int numberClientsDescriptors = 0;
 bool numberClientsDescriptorsChang = false;
 pollfd *pollfdClientStruct = NULL;
+mutex mtx;
+condition_variable cv;
+volatile bool ready = false;
 
 void signal_callback_handler(int signum)
 {
@@ -72,13 +75,14 @@ void control_client()
         }
         else
         {
+            ready = false;
             canRemoveDesc = false;
             numberClientsDescriptors_temp = numberClientsDescriptors;
             for(int i = 0; i < numberClientsDescriptors; i++)
             {
                 if(pollfdClientStruct[i].revents & POLLIN)
                 {
-                    dataSizeSendORRecv = recv_all(pollfdClientStruct[i].fd, &bufferMSG);
+                    dataSizeSendORRecv = recv_all(pollfdClientStruct[i].fd, bufferMSG);
                     if(dataSizeSendORRecv == RECIVE_ERROR)
                     {
                         cout <<"#DEBUG: While recv from descriptor " << pollfdClientStruct[i].fd << " get error." << endl;
@@ -94,7 +98,7 @@ void control_client()
                     }
                     else
                     {
-                        deserialize_msg(bufferMSG, msgInfo);
+                        deserialize_msg(bufferMSG, &msgInfo);
                         if(msgInfo.flag == FLAG_INSERT_BEFORE)
                         {
                             ;
@@ -108,18 +112,26 @@ void control_client()
                             cout <<"#DEBUG: Recive wrong flag " << msgInfo.flag << endl;
                             continue;
                         }
-                        serialize_msg(msgInfo, bufferMSG);
-
-                        for(int cli = 0; cli < numberClientsDescriptors; cli++) { send_all(pollfdClientStruct[cli].fd, void *bufferMSG, sizeof(bufferMSG)); }
+                        serialize_msg(&msgInfo, bufferMSG);
+                        for(int cli = 0; cli < numberClientsDescriptors; cli++)
+                        {
+                            dataSizeSendORRecv = send_all(pollfdClientStruct[cli].fd, bufferMSG, sizeof(bufferMSG)/sizeof(bufferMSG[0]));
+                            if(dataSizeSendORRecv == SEND_ERROR)
+                                cout << "#DEBUG: Send error" << endl;
+                            else if(dataSizeSendORRecv == SEND_ALL_DATA)
+                                cout << "#DEBUG: Data send" << endl;
+                        }
                     }
                 }
             }
-
             if(canRemoveDesc)
             {
                 numberClientsDescriptors = numberClientsDescriptors_temp;
                 numberClientsDescriptorsChang = true;
             }
+            std::unique_lock<std::mutex> lck(mtx);
+            ready = true;
+            cv.notify_all();
         }
     }
 
@@ -179,6 +191,9 @@ int accept_clients()
             clientsDescriptors.push_back(nClientDesc);
             ++numberClientsDescriptors;
             numberClientsDescriptorsChang = true;
+            unique_lock<std::mutex> lck(mtx);
+            while (!ready) cv.wait(lck);
+            //TODO: send strings
         }
         this_thread::sleep_for(std::chrono::seconds(1));
     }

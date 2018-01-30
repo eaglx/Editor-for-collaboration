@@ -1,6 +1,6 @@
 CC = g++
 CFLAGS = -Wall -Wextra -std=c++11 -lpthread -g
-SERVER_SOURCES = server/main.cpp
+SERVER_SOURCES = server/main.cpp server/sendrecv.cpp server/serialize.cpp
 SERVER_OBJECTS = $(SERVER_SOURCES:.cpp=.o)
 SERVER_EXEC = server/server.exe
 
