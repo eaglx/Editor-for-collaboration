@@ -9,6 +9,7 @@ pollfd *pollfdClientStruct = NULL;
 mutex mtx;
 condition_variable cv;
 volatile bool ready = false;
+vector<string> fileBufferLines;
 
 void signal_callback_handler(int signum)
 {
@@ -101,11 +102,25 @@ void control_client()
                         deserialize_msg(bufferMSG, &msgInfo);
                         if(msgInfo.flag == FLAG_INSERT_BEFORE)
                         {
-                            ;
+                            if(fileBufferLines.empty()) { fileBufferLines.push_back(String s); }
+
+                            if(msgInfo.posX > int(fileBufferLines.size())
+                            {
+                                while(msgInfo.posX > int(fileBufferLines.size())
+                                    fileBufferLines.push_back(String s);
+                            }
+                            fileBufferLines[msgInfo.posX].insert(msgInfo.posY, msgInfo.chr);
                         }
                         else if(msgInfo.flag == FLAG_REPLACE)
                         {
-                            ;
+                            if(fileBufferLines.empty()) { fileBufferLines.push_back(String s); }
+
+                            if(msgInfo.posX > int(fileBufferLines.size())
+                            {
+                                while(msgInfo.posX > int(fileBufferLines.size())
+                                    fileBufferLines.push_back(String s);
+                            }
+                            fileBufferLines[msgInfo.posX].replace(msgInfo.posY, msgInfo.posY+1, msgInfo.chr);
                         }
                         else
                         {
@@ -196,7 +211,7 @@ int accept_clients()
             numberClientsDescriptorsChang = true;
             unique_lock<std::mutex> lck(mtx);
             while (!ready) cv.wait(lck);
-            //TODO: send strings
+            //TODO: send strings 1. First send size to inform client. 2. Send data
         }
         this_thread::sleep_for(std::chrono::seconds(1));
     }
@@ -217,6 +232,7 @@ int main()
     controlClientThread.join();
     close(nSocketDesc);
     clientsDescriptors.clear();
+    fileBufferLines.clear();
     cout << "#DEBUG: @@@@ SERVER IS SUCCESSIVELY CLOSED @@@@" << endl;
     return 0;
 }
