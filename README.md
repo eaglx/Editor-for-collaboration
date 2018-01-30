@@ -5,15 +5,15 @@ Editor for collaboration.
 * server only in C/C++ (C socket);
 * gui for client.
 
-## How to launch:
+## History 
+
+### Release 0.01 and Release 0.02.x.x
+
+#### How to launch:
 * Before install python3-pyqt4 (Release 0.01 and Release 0.02.x.x).
 1. Launch make to build.
 2. Start server.
 3. Start client.
-
-## Demo 
-
-### Release 0.01 and Release 0.02.x.x
 
 #### Screenshot 1
 ![demo_screen](https://user-images.githubusercontent.com/32968460/34411660-63ba9440-ebd8-11e7-8215-6958b7eef73e.png)
