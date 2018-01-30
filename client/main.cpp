@@ -13,8 +13,6 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <time.h>
-void serialize_msg(MESSAGE_INFO *, char *);
-void deserialize_msg(char *, MESSAGE_INFO *);
 #define PACKETSIZE sizeof(MESSAGE_INFO)
 struct MESSAGE_INFO
 {
@@ -23,6 +21,8 @@ struct MESSAGE_INFO
     int posY;
     char chr;
 };
+void serialize_msg(MESSAGE_INFO *, char *);
+void deserialize_msg(char *, MESSAGE_INFO *);
 #define FLAG_INSERT_BEFORE 111
 #define FLAG_REPLACE 222
 #define SEND_ALL_DATA 0
@@ -30,17 +30,29 @@ struct MESSAGE_INFO
 #define RECIVE_ZERO 0
 #define RECIVE_ERROR -1
 
+using namespace std;
 
 int main()
 {
     int socketDesc;
     struct sockaddr_in serverAddr;
-    int nFoo = 1;
+    MESSAGE_INFO msg;
+    char bufferMSG[PACKETSIZE];
+    char buffer[50];
+    string str;
+    int byteGet;
+    int length;
+
+    socketDesc = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
+    if(socketDesc < 0)
+    {
+        cout << "#ERROR-client: Failed create socket!!!" << endl;
+        return -1;
+    }
+
     serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_port = htons(6666);
-    MESSAGE_INFO msg;
-    char bufferMSG[PACKETSIZE];
 
     if(connect(socketDesc, (struct sockaddr *) &serverAddr, sizeof(serverAddr)) < 0)
     {
@@ -49,6 +61,72 @@ int main()
     }
 
     // 1. Download data. 2. Send insert (x2). 3. Print data.
+
+    cout << "DOWNLOAD DATA" << endl;
+    str = "";
+    while(true)
+    {
+        byteGet = recv(socketDesc, &buffer, sizeof(char) * 50, 0);
+        cout << "recv bytes " << byteGet << endl;
+        if(byteGet < 0)
+        {
+            cout <<"#ERROR-client: recv" << endl;
+            close(socketDesc);
+            return -2;
+        }
+        else if(byteGet == 0) break;
+
+        str = str + string(buffer);
+        if(byteGet < int(sizeof(char) * 50)) break;
+    }
+
+    cout << "RECIVE DATA PRINT" << endl;
+    cout << str << endl;
+    cout << "****************************" << endl;
+
+    cout << "START INSERT CHAR" << endl;
+    msg.flag = FLAG_REPLACE;
+    msg.posX = 0;
+    msg.posY = 0;
+    msg.chr = 'A';
+    serialize_msg(&msg, bufferMSG);
+    length = sizeof(bufferMSG)/sizeof(bufferMSG[0]);
+    char *ptr = (char*) bufferMSG;
+    while(length > 0)
+    {
+        byteGet = send(socketDesc, ptr, length, 0);
+        if(byteGet < 0)
+        {
+            cout <<"#ERROR-client: send" << endl;
+            close(socketDesc);
+            return -3;
+        }
+        ptr += byteGet;
+        length -= byteGet;
+    }
+    cout << "START RECIVE MSG" << endl;
+    ptr = (char*) bufferMSG;
+    length = sizeof(bufferMSG)/sizeof(bufferMSG[0]);
+    while(true)
+    {
+        byteGet = recv(socketDesc, bufferMSG, length, 0);
+        if(byteGet < 0)
+        {
+            cout <<"#ERROR-client: recv" << endl;
+            close(socketDesc);
+            return -2;
+        }
+        else if(byteGet == 0) break;
+        ptr += byteGet;
+        length -= byteGet;
+        if(length == 0) break;
+    }
+    deserialize_msg(bufferMSG, &msg);
+    cout << "MSG RECIVED: " << endl;
+    cout << msg.flag << endl;
+    cout << msg.posX << endl;
+    cout << msg.posY << endl;
+    cout << msg.chr << endl;
 
     close(socketDesc);
     return 0;

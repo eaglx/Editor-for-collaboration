@@ -17,7 +17,7 @@ void signal_callback_handler(int signum)
     endProgram = true;
 }
 
-void string_resize(int x) { while((x + 1) > int(fileBufferLines.size())) { string s = ""; fileBufferLines.push_back(s); } }
+void string_resize(int x) { while((x + 1) > int(fileBufferLines.size())) { string s = "  "; fileBufferLines.push_back(s); } }
 
 void pollfd_array_resize()
 {
@@ -85,7 +85,7 @@ void control_client()
             {
                 if(pollfdClientStruct[i].revents & POLLIN)
                 {
-                    dataSizeSendORRecv = recv_all(pollfdClientStruct[i].fd, bufferMSG);
+                    dataSizeSendORRecv = recv_all(pollfdClientStruct[i].fd, bufferMSG, sizeof(bufferMSG)/sizeof(bufferMSG[0]));
                     if(dataSizeSendORRecv == RECIVE_ERROR)
                     {
                         cout <<"#DEBUG: While recv from descriptor " << pollfdClientStruct[i].fd << " get error." << endl;
@@ -202,10 +202,10 @@ int accept_clients()
             unique_lock<std::mutex> lck(mtx);
             while (!ready) cv.wait(lck);
             temp = "";
-            for(unsigned int fbl; fbl < fileBufferLines.size(); fbl++) { temp = temp + fileBufferLines[fbl] + '\n'; }
+            for(unsigned int fbl = 0; fbl < fileBufferLines.size(); fbl++) { temp = temp + fileBufferLines[fbl]; temp = temp + "$#$"; }
             buffer = new char[temp.size()];
             for(unsigned int k = 0; k < temp.size(); k++) { buffer[k] = temp[k]; }
-            cout << "#DEBUG-accept_clients: Start send data" << endl;
+            cout << "#DEBUG-accept_clients: Start send data with size " << temp.size() << endl;
             if(send_all(nClientDesc, buffer, temp.size()) < SEND_ERROR)
             {
                 cout << "#DEBUG-accept_clients: Send error" << endl;
@@ -232,7 +232,7 @@ int main()
     signal(SIGPIPE, SIG_IGN);
 
     cout << "#DEBUG: @@@@ SERVER STARTED @@@@" << endl;
-    string_resize(0);
+    fileBufferLines.push_back(string("  "));
     thread controlClientThread(control_client);
     while(accept_clients());
     controlClientThread.join();

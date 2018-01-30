@@ -48,7 +48,7 @@ struct MESSAGE_INFO
 };
 
 int send_all(int, void *, size_t);
-int recv_all(int, void *);
+int recv_all(int, void *, size_t);
 void serialize_msg(MESSAGE_INFO *, char *);
 void deserialize_msg(char *, MESSAGE_INFO *);
 
