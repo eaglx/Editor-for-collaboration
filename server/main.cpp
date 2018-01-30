@@ -8,7 +8,7 @@ bool numberClientsDescriptorsChang = false;
 pollfd *pollfdClientStruct = NULL;
 mutex mtx;
 condition_variable cv;
-volatile bool ready = false;
+volatile bool ready = true;
 vector<string> fileBufferLines;
 
 void signal_callback_handler(int signum)
@@ -205,12 +205,14 @@ int accept_clients()
             for(unsigned int fbl; fbl < fileBufferLines.size(); fbl++) { temp = temp + fileBufferLines[fbl] + '\n'; }
             buffer = new char[temp.size()];
             for(unsigned int k = 0; k < temp.size(); k++) { buffer[k] = temp[k]; }
+            cout << "#DEBUG-accept_clients: Start send data" << endl;
             if(send_all(nClientDesc, buffer, temp.size()) < SEND_ERROR)
             {
                 cout << "#DEBUG-accept_clients: Send error" << endl;
                 delete [] buffer;
                 continue;
             }
+            cout << "#DEBUG-accept_clients:Finish send data" << endl;
             delete [] buffer;
             clientsDescriptors.push_back(nClientDesc);
             ++numberClientsDescriptors;
