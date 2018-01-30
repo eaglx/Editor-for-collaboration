@@ -117,7 +117,10 @@ void control_client()
                         {
                             dataSizeSendORRecv = send_all(pollfdClientStruct[cli].fd, bufferMSG, sizeof(bufferMSG)/sizeof(bufferMSG[0]));
                             if(dataSizeSendORRecv == SEND_ERROR)
+                            {
                                 cout << "#DEBUG: Send error" << endl;
+                                cout << strerror(errno) << " :: " << errno << endl;
+                            }
                             else if(dataSizeSendORRecv == SEND_ALL_DATA)
                                 cout << "#DEBUG: Data send" << endl;
                         }
@@ -213,6 +216,7 @@ int main()
     while(accept_clients());
     controlClientThread.join();
     close(nSocketDesc);
+    clientsDescriptors.clear();
     cout << "#DEBUG: @@@@ SERVER IS SUCCESSIVELY CLOSED @@@@" << endl;
     return 0;
 }
