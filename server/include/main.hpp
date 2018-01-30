@@ -47,8 +47,6 @@ struct MESSAGE_INFO
     char chr;
 };
 
-extern vector<string> lines;
-
 int send_all(int, void *, size_t);
 int recv_all(int, void *);
 void serialize_msg(MESSAGE_INFO *, char *);
