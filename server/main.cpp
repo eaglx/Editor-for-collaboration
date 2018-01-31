@@ -145,7 +145,6 @@ void control_client()
             std::unique_lock<std::mutex> lck(myMutex);
             ready = true;
             myCV.notify_all();
-            /*
             cout << "**********************************" << endl;
             cout << "#DEBUG: SAVED DATA PRINT" << endl;
             for(unsigned int fbl = 0; fbl < fileBufferLines.size(); fbl++)
@@ -153,7 +152,6 @@ void control_client()
                 cout << fileBufferLines[fbl] << endl;
             }
             cout << "**********************************" << endl;
-            */
         }
     }
 
