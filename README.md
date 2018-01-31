@@ -12,15 +12,19 @@ Editor for collaboration.
 #### How to launch:
 1. Launch make to build the server.
 2. Start the server.
-3. To build the client use QtCreator or Visual Studio (for now).
+3. To build the client use QtCreator or in the terminal (in the client's folder) enter:
+    1. qmake.
+    2. make.
+
+#### Screenshot 1
 
 ### Release 0.01 and Release 0.02.x.x
 
 #### How to launch:
-* Before install python3-pyqt4 (Release 0.01 and Release 0.02.x.x).
-1. Launch make to build server and client.
-2. Start the server.
-3. Start the client.
+1. Install python3-pyqt4.
+2. Launch make to build server and client.
+3. Start the server.
+4. Start the client.
 
 #### Screenshot 1
 ![demo_screen](https://user-images.githubusercontent.com/32968460/34411660-63ba9440-ebd8-11e7-8215-6958b7eef73e.png)
