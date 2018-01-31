@@ -12,6 +12,7 @@ Editor for collaboration.
 #### How to launch:
 1. Launch make to build the server.
 2. Start the server.
+3. To build the client use QtCreator or Visual Studio (for now).
 
 ### Release 0.01 and Release 0.02.x.x
 
