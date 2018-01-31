@@ -14,7 +14,10 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    connectdatamanage.cpp
+    connectdatamanage.cpp \
+    serializedata.cpp
+
+CONFIG += c++11
 
 HEADERS  += mainwindow.h \
     connectdatamanage.h

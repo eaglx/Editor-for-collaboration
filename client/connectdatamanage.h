@@ -13,6 +13,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <sys/stat.h>
+#include <thread>
 
 #define FLAG_INSERT_BEFORE 111
 #define FLAG_REPLACE 222
@@ -31,27 +32,9 @@ struct MESSAGE_INFO
     char chr;
 };
 
-class ConnectDataManage
-{
-public:
-    ConnectDataManage();
-    ~ConnectDataManage();
-
-public:
-    int socketDesc;
-    struct sockaddr_in serverAddr;
-    MESSAGE_INFO msg;
-    char bufferMSG[PACKETSIZE];
-    char buffer[50];
-    int byteGet;
-    int length;
-
-public:
-    bool connect_to_server();
-    void disconnect_client();
-    void serialize_msg(MESSAGE_INFO *, char *);
-    void deserialize_msg(char *, MESSAGE_INFO *);
-};
+void listen_from_server(int);
+void send_to_server(int);
+void serialize_msg(MESSAGE_INFO *, char *);
+void deserialize_msg(char *, MESSAGE_INFO *);
 
 #endif // CONNECTDATAMANAGE
-

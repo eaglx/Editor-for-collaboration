@@ -4,6 +4,9 @@
 #include <QMainWindow>
 #include <QDebug>
 
+#include <string>
+extern std::string strBuffer;
+
 namespace Ui {
 class MainWindow;
 }
