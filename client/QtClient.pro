@@ -13,8 +13,10 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    connectdatamanage.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    connectdatamanage.h
 
 FORMS    += mainwindow.ui
