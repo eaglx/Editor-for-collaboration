@@ -5,6 +5,8 @@
 std::string strBuffer;
 std::ofstream logFile;
 volatile bool isEndProgram = false;
+QString dataFromQTextEdit;
+QString dataFromQTextEditBUFFERED;
 
 int main(int argc, char *argv[])
 {

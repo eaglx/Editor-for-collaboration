@@ -5,6 +5,7 @@ void listen_from_server(int socketDesc, MainWindow *w)
     logFile << "#INFO: thread listen_from_server started\n";
     usleep(4000000);
     w->sendMessage(5);
+
     /*
     MESSAGE_INFO msg;
     char bufferMSG[PACKETSIZE];
@@ -22,9 +23,9 @@ void listen_from_server(int socketDesc, MainWindow *w)
         byteGet = recv(socketDesc, bufferMSG, length, 0);
         if(byteGet < 0)
         {
-            cout <<"#ERROR-client: recv" << endl;
-            close(socketDesc);
-            return -2;
+            logFile << "#ERROR: thread listen_from_server recv";
+            //close(socketDesc);
+            //return -2;
         }
         else if(byteGet == 0) break;
         ptr += byteGet;
@@ -33,7 +34,7 @@ void listen_from_server(int socketDesc, MainWindow *w)
     }
     deserialize_msg(bufferMSG, &msg);
     */
-    logFile << "#INFO: thread listen_from_server stoped\n";
+    logFile << "#INFO: thread listen_from_server stopped\n";
 }
 
 void send_to_server(int socketDesc, MainWindow *w)
@@ -63,13 +64,13 @@ void send_to_server(int socketDesc, MainWindow *w)
         byteGet = send(socketDesc, ptr, length, 0);
         if(byteGet < 0)
         {
-            cout <<"#ERROR-client: send" << endl;
-            close(socketDesc);
-            return -3;
+            logFile << "#ERROR: thread send_to_server send\n";
+            //close(socketDesc);
+            //return -3;
         }
         ptr += byteGet;
         length -= byteGet;
     }
     */
-    logFile << "#INFO: thread send_to_server stoped\n";
+    logFile << "#INFO: thread send_to_server stopped\n";
 }

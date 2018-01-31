@@ -13,7 +13,7 @@ void MainWindow::internalMessage(int internalFlag)
     if(internalFlag == 5)
         ui->textEdit->insertPlainText("HELLO\n");
     else if(internalFlag == 10)
-        ui->textEdit->insertPlainText("WORLD\n");
+        ui->textEdit->setReadOnly(true);
     connect(ui->textEdit, SIGNAL(textChanged()), this, SLOT(onTextChanged()));
 }
 
@@ -21,12 +21,8 @@ void MainWindow::onTextChanged()
 {
     /* Code that executes on text change here */
     // QTextCursor  cursor = ui->textEdit->textCursor(); // Get cursor position
-    QString data = ui->textEdit->toPlainText();
-
-    qDebug() << data;
-
-    // disconnect(ui->textEdit, 0, this, 0);
-    // connect(ui->textEdit, SIGNAL(textChanged()), this, SLOT(onTextChanged()));
+    dataFromQTextEdit = ui->textEdit->toPlainText();
+    qDebug() << dataFromQTextEdit;
 }
 
 MainWindow::MainWindow(QWidget *parent) :

@@ -7,6 +7,8 @@
 #include <string>
 extern std::string strBuffer;
 extern std::ofstream logFile;
+extern QString dataFromQTextEdit;
+extern QString dataFromQTextEditBUFFERED;
 extern volatile bool isEndProgram;
 
 namespace Ui {
