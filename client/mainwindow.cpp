@@ -3,10 +3,14 @@
 
 void MainWindow::onTextChanged()
 {
-    // Code that executes on text change here
-    disconnect(ui->textEdit, 0, this, 0);
-    ui->textEdit->setText("Hello World");
-    connect(ui->textEdit, SIGNAL(textChanged()), this, SLOT(onTextChanged()));
+    /* Code that executes on text change here */
+    // QTextCursor  cursor = ui->textEdit->textCursor(); // Get cursor position
+    QString data = ui->textEdit->toPlainText();
+
+    qDebug() << data;
+
+    // disconnect(ui->textEdit, 0, this, 0);
+    // connect(ui->textEdit, SIGNAL(textChanged()), this, SLOT(onTextChanged()));
 }
 
 MainWindow::MainWindow(QWidget *parent) :
