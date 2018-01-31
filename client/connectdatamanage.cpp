@@ -36,8 +36,11 @@ void listen_from_server(int socketDesc, MainWindow *w)
     logFile << "#INFO: thread listen_from_server stoped\n";
 }
 
-void send_to_server(int socketDesc)
+void send_to_server(int socketDesc, MainWindow *w)
 {
+    logFile << "#INFO: thread send_to_server started\n";
+    usleep(4000000);
+    w->sendMessage(10);
     /*
     MESSAGE_INFO msg;
     char bufferMSG[PACKETSIZE];
@@ -68,4 +71,5 @@ void send_to_server(int socketDesc)
         length -= byteGet;
     }
     */
+    logFile << "#INFO: thread send_to_server stoped\n";
 }

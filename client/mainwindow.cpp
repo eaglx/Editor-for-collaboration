@@ -10,7 +10,10 @@ void MainWindow::internalMessage(int internalFlag)
 {
     qDebug() << "internalMessage " << internalFlag << "\n";
     disconnect(ui->textEdit, 0, this, 0);
-    ui->textEdit->setText("Hello");
+    if(internalFlag == 5)
+        ui->textEdit->insertPlainText("HELLO\n");
+    else if(internalFlag == 10)
+        ui->textEdit->insertPlainText("WORLD\n");
     connect(ui->textEdit, SIGNAL(textChanged()), this, SLOT(onTextChanged()));
 }
 

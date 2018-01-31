@@ -38,7 +38,7 @@ struct MESSAGE_INFO
 };
 
 void listen_from_server(int, MainWindow *);
-void send_to_server(int);
+void send_to_server(int, MainWindow *);
 void serialize_msg(MESSAGE_INFO *, char *);
 void deserialize_msg(char *, MESSAGE_INFO *);
 
