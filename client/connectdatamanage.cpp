@@ -1,7 +1,10 @@
 #include "connectdatamanage.h"
 
-void listen_from_server(int socketDesc)
+void listen_from_server(int socketDesc, MainWindow *w)
 {
+    logFile << "#INFO: thread listen_from_server started\n";
+    usleep(4000000);
+    w->sendMessage(5);
     /*
     MESSAGE_INFO msg;
     char bufferMSG[PACKETSIZE];
@@ -30,6 +33,7 @@ void listen_from_server(int socketDesc)
     }
     deserialize_msg(bufferMSG, &msg);
     */
+    logFile << "#INFO: thread listen_from_server stoped\n";
 }
 
 void send_to_server(int socketDesc)

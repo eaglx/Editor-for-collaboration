@@ -115,6 +115,11 @@ void control_client()
                         {
                             fileBufferLines[msgInfo.posX].append(string(1,msgInfo.chr));
                         }
+                        else if(msgInfo.flag == FLAG_DEL_ALL)
+                        {
+                            fileBufferLines.clear();
+                            fileBufferLines.push_back(string(""));
+                        }
                         else
                         {
                             cout <<"#DEBUG: Recive wrong flag " << msgInfo.flag << endl;

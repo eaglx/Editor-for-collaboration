@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
     if(socketDesc < 0)
     {
         logFile << "#ERROR: Failed create socket!!!\n";
-        logFile.close();
+        //logFile.close();
         //return -1;
     }
 
@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
     if(connect(socketDesc, (struct sockaddr *) &serverAddr, sizeof(serverAddr)) < 0)
     {
         logFile << "#ERROR: Cannot connect to server!!!\n";
-        logFile.close();
+        //logFile.close();
         //return -2;
     }
     /*
@@ -62,14 +62,14 @@ int main(int argc, char *argv[])
         }
     */
 
-    //std::thread listenTH(listen_from_server, socketDesc);
+    std::thread listenTH(listen_from_server, socketDesc, &w);
     //std::thread sendTH(send_to_server, socketDesc);
     w.show();
     returnedValueEventLoop = a.exec();
     logFile << "#INFO: Event loop return value " << returnedValueEventLoop << "\n";
     isEndProgram = true;
     logFile << "#INFO: Wait for threads\n";
-    //listenTH.join();
+    listenTH.join();
     //sendTH.join();
     close(socketDesc);
     logFile << "#INFO: The client successfully closed\n";

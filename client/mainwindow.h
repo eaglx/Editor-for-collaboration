@@ -21,8 +21,15 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+signals:
+    void messageSent(int);
+
+public slots:
+    void sendMessage(int);
+
 private slots:
     void onTextChanged();
+    void internalMessage(int);
 
 private:
     Ui::MainWindow *ui;
