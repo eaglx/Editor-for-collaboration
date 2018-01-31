@@ -6,6 +6,7 @@
 
 #include <string>
 extern std::string strBuffer;
+extern std::ofstream logFile;
 extern volatile bool isEndProgram;
 
 namespace Ui {

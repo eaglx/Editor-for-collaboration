@@ -14,6 +14,7 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <thread>
+#include <fstream>
 
 #define FLAG_INSERT_BEFORE 111
 #define FLAG_REPLACE 222

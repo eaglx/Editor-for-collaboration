@@ -3,6 +3,7 @@
 #include "connectdatamanage.h"
 
 std::string strBuffer;
+std::ofstream logFile;
 volatile bool isEndProgram = false;
 
 int main(int argc, char *argv[])
@@ -16,12 +17,18 @@ int main(int argc, char *argv[])
     char buffer[50];
     int byteGet;
 
+    logFile.open("log.txt");
+    if (!logFile.is_open())
+    {
+        return -1;
+    }
+
     socketDesc = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
     if(socketDesc < 0)
     {
-        // Save to file log
-        // << "#ERROR-client: Failed create socket!!!";
-        return -1;
+        logFile << "#ERROR: Failed create socket!!!\n";
+        logFile.close();
+        //return -1;
     }
 
     serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
@@ -30,21 +37,22 @@ int main(int argc, char *argv[])
 
     if(connect(socketDesc, (struct sockaddr *) &serverAddr, sizeof(serverAddr)) < 0)
     {
-        // Save to file log
-        // << "#ERROR-client: Cannot connect to server!!!";
-        return -2;
+        logFile << "#ERROR: Cannot connect to server!!!\n";
+        logFile.close();
+        //return -2;
     }
-
+    /*
     strBuffer = "";
     for(int i = 0; i < 50; i++) { buffer[i] = '\0'; }
         while(true)
         {
             byteGet = recv(socketDesc, &buffer, sizeof(char) * 50, 0);
-            //cout << "recv bytes " << byteGet << endl;
+            logFile << "#INFO: recv bytes " << byteGet << "\n";
             if(byteGet < 0)
             {
-                //cout << "#ERROR-client: recv" << endl;
+                logFile << "#ERROR: recv\n";
                 close(socketDesc);
+                logFile.close();
                 return -2;
             }
             else if(byteGet == 0) break;
@@ -52,14 +60,19 @@ int main(int argc, char *argv[])
             strBuffer = strBuffer + std::string(buffer);
             if(byteGet < int(sizeof(char) * 50)) break;
         }
+    */
 
     //std::thread listenTH(listen_from_server, socketDesc);
     //std::thread sendTH(send_to_server, socketDesc);
     w.show();
-    returnedValueEventLoop = a.exec(); // Event loop is launched.
+    returnedValueEventLoop = a.exec();
+    logFile << "#INFO: Event loop return value " << returnedValueEventLoop << "\n";
     isEndProgram = true;
+    logFile << "#INFO: Wait for threads\n";
     //listenTH.join();
     //sendTH.join();
     close(socketDesc);
+    logFile << "#INFO: The client successfully closed\n";
+    logFile.close();
     return returnedValueEventLoop;
 }
