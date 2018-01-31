@@ -65,6 +65,7 @@ int main()
 
     cout << "DOWNLOAD DATA" << endl;
     str = "";
+    for(int i = 0; i < 50; i++) { buffer[i] = '\0'; }
     while(true)
     {
         byteGet = recv(socketDesc, &buffer, sizeof(char) * 50, 0);
@@ -85,8 +86,8 @@ int main()
     cout << str << endl;
     cout << "****************************" << endl;
 
-    cout << "START INSERT CHAR" << endl;
-    msg.flag = FLAG_REPLACE;
+    cout << "START APPEND CHAR" << endl;
+    msg.flag = FLAG_APPEND;
     msg.posX = 0;
     msg.posY = 0;
     msg.chr = 'A';
@@ -105,6 +106,7 @@ int main()
         ptr += byteGet;
         length -= byteGet;
     }
+    /*
     cout << "START RECIVE MSG" << endl;
     ptr = (char*) bufferMSG;
     length = sizeof(bufferMSG)/sizeof(bufferMSG[0]);
@@ -128,6 +130,9 @@ int main()
     cout << msg.posX << endl;
     cout << msg.posY << endl;
     cout << msg.chr << endl;
+    */
+
+    cout << "FINISH CLIENT" << endl;
 
     close(socketDesc);
     return 0;

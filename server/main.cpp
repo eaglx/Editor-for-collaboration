@@ -123,14 +123,16 @@ void control_client()
                         serialize_msg(&msgInfo, bufferMSG);
                         for(int cli = 0; cli < numberClientsDescriptors; cli++)
                         {
-                            dataSizeSendORRecv = send_all(ClientStruct[cli].fd, bufferMSG, sizeof(bufferMSG)/sizeof(bufferMSG[0]));
-                            if(dataSizeSendORRecv == SEND_ERROR)
+                            if(ClientStruct[cli].fd != ClientStruct[i].fd)
                             {
-                                cout << "#DEBUG: Send error" << endl;
-                                cout << strerror(errno) << " :: " << errno << endl;
+                                dataSizeSendORRecv = send_all(ClientStruct[cli].fd, bufferMSG, sizeof(bufferMSG)/sizeof(bufferMSG[0]));
+                                if(dataSizeSendORRecv == SEND_ERROR)
+                                {
+                                    cout << "#DEBUG: Send error" << endl;
+                                    cout << strerror(errno) << " :: " << errno << endl;
+                                }
+                                else if(dataSizeSendORRecv == SEND_ALL_DATA) { cout << "#DEBUG: Data send" << endl; }
                             }
-                            else if(dataSizeSendORRecv == SEND_ALL_DATA)
-                                cout << "#DEBUG: Data send" << endl;
                         }
                     }
                 }
@@ -143,6 +145,15 @@ void control_client()
             std::unique_lock<std::mutex> lck(myMutex);
             ready = true;
             myCV.notify_all();
+            /*
+            cout << "**********************************" << endl;
+            cout << "#DEBUG: SAVED DATA PRINT" << endl;
+            for(unsigned int fbl = 0; fbl < fileBufferLines.size(); fbl++)
+            {
+                cout << fileBufferLines[fbl] << endl;
+            }
+            cout << "**********************************" << endl;
+            */
         }
     }
 
