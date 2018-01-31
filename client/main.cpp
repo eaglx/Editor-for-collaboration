@@ -3,11 +3,13 @@
 #include "connectdatamanage.h"
 
 std::string strBuffer;
+volatile bool isEndProgram = false;
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     MainWindow w;
+    int returnedValueEventLoop;
 
     int socketDesc;
     struct sockaddr_in serverAddr;
@@ -53,12 +55,11 @@ int main(int argc, char *argv[])
 
     //std::thread listenTH(listen_from_server, socketDesc);
     //std::thread sendTH(send_to_server, socketDesc);
-
     w.show();
-
+    returnedValueEventLoop = a.exec(); // Event loop is launched.
+    isEndProgram = true;
     //listenTH.join();
     //sendTH.join();
     close(socketDesc);
-
-    return a.exec();
+    return returnedValueEventLoop;
 }
