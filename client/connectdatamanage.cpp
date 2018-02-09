@@ -49,6 +49,8 @@ void listen_from_server(MainWindow *w)
             }
             else if(msg.flag == FLAG_REPLACE)
             {
+                while(unsigned(msg.posX) > dataFromServer.size())
+                    dataFromServer.resize(dataFromServer.size() + 1, ' ');
                 dataFromServer.replace(msg.posX, msg.posX+1, std::string(1, msg.chr));
             }
             else if(msg.flag == FLAG_APPEND)
@@ -58,11 +60,13 @@ void listen_from_server(MainWindow *w)
             else if(msg.flag == FLAG_RM)
             {
                 dataFromServer = dataFromServer.substr(0, (dataFromServer.size() - 1));
+                if(dataFromServer.length() == 0)
+                    dataFromServer = " ";
             }
             else if(msg.flag == FLAG_DEL_ALL)
             {
                 dataFromServer.clear();
-                dataFromServer = "";
+                dataFromServer = " ";
             }
             else
             {

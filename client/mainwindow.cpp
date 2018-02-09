@@ -10,11 +10,21 @@ void MainWindow::sendMessage(int internalFlag)
 void MainWindow::internalMessage(int internalFlag)
 {
     qDebug() << "internalMessage: " << internalFlag;
-    // QTextCursor  cursor = ui->textEdit->textCursor(); // Get cursor position
+    QTextCursor cursor = ui->textEdit->textCursor(); // Get cursor position
+
+    int lenDataFromSerwer = dataFromServer.length();
+    int curPos = cursor.position();
+
     disconnect(ui->textEdit, 0, this, 0);
     if(internalFlag == FLAG_UPDATE_FROM_SERV)
         ui->textEdit->setPlainText(QString::fromStdString(dataFromServer));
     qDebug() << "dataFromServer: \n" << QString::fromStdString(dataFromServer);
+
+    if(lenDataFromSerwer < curPos)
+        cursor.setPosition(lenDataFromSerwer);
+    else
+        cursor.setPosition(curPos);
+    ui->textEdit->setTextCursor(cursor);
     connect(ui->textEdit, SIGNAL(textChanged()), this, SLOT(onTextChanged()));
 }
 
@@ -55,12 +65,12 @@ void MainWindow::onTextChanged()
 
     //delete chars
     if(lenServer > lenQText) {
-        diffSearch(lenQText);
-        for(int i = lenQText; i < lenServer; i++) {
-            qDebug() << "FLAG_RM";
-            send_to_server(FLAG_RM, 0, ' ');
+            diffSearch(lenQText);
+            for(int i = lenServer; i >= lenQText; i--) {
+                qDebug() << "FLAG_RM";
+                send_to_server(FLAG_RM, 0, ' ');
+            }
         }
-    }
 
 }
 
