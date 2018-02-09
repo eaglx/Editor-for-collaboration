@@ -64,15 +64,15 @@ int main(int argc, char *argv[])
         }
     */
 
-    std::thread listenTH(listen_from_server, socketDesc, &w);
-    std::thread sendTH(send_to_server, socketDesc, &w);
+    //std::thread listenTH(listen_from_server, socketDesc, &w);
+    //std::thread sendTH(send_to_server, socketDesc, &w);
     w.show();
     returnedValueEventLoop = a.exec();
     logFile << "#INFO: Event loop return value " << returnedValueEventLoop << "\n";
     isEndProgram = true;
     logFile << "#INFO: Wait for threads\n";
-    listenTH.join();
-    sendTH.join();
+    //listenTH.join();
+    //sendTH.join();
     close(socketDesc);
     logFile << "#INFO: The client successfully closed\n";
     logFile.close();

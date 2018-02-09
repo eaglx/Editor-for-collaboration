@@ -37,7 +37,6 @@ struct MESSAGE_INFO
 {
     int flag;
     int posX;
-    int posY;
     char chr;
 };
 
