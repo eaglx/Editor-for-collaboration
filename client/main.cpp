@@ -7,6 +7,9 @@ volatile bool isEndProgram = false;
 std::string dataFromQTextEdit;
 std::string dataFromServer;
 int socketDesc;
+std::mutex myMutex;
+std::condition_variable myConditionVariable;
+volatile bool readyM_CV = true;
 
 int main(int argc, char *argv[])
 {
@@ -83,11 +86,11 @@ int main(int argc, char *argv[])
     w.show();
     returnedValueEventLoop = a.exec();
     logFile << "#INFO: Event loop return value " << returnedValueEventLoop << "\n";
+    logFile.close();
     isEndProgram = true;
     close(socketDesc);
-    logFile << "#INFO: Wait for threads\n";
+    qDebug() << "#INFO: Wait for threads\n";
     listenTH.join();
-    logFile << "#INFO: The client successfully closed\n";
-    logFile.close();
+    qDebug() << "#INFO: The client successfully closed\n";
     return returnedValueEventLoop;
 }

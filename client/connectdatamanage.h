@@ -18,6 +18,8 @@
 #include <sys/stat.h>
 #include <thread>
 #include <fstream>
+#include <mutex>
+#include <condition_variable>
 
 #define FLAG_INSERT_BEFORE 111
 #define FLAG_REPLACE 222
@@ -36,6 +38,9 @@
 #define PACKETSIZE sizeof(MESSAGE_INFO)
 
 extern int socketDesc;
+extern std::mutex myMutex;
+extern std::condition_variable myConditionVariable;
+extern volatile bool readyM_CV;
 
 struct MESSAGE_INFO
 {

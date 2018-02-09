@@ -14,10 +14,12 @@ void listen_from_server(MainWindow *w)
     myPoll[1].fd = socketDesc;
     myPoll[1].events = POLLIN;
 #define POLL_FD_NUMBERS 1
-#define POLL_TIMEOUT 10000
+#define POLL_TIMEOUT 1000
     while(!isEndProgram)
     {
         readypoll = poll(myPoll, POLL_FD_NUMBERS, POLL_TIMEOUT);
+        std::unique_lock<std::mutex> lk(myMutex);
+        myConditionVariable.wait(lk, []{return readyM_CV;});
         if(readypoll <= 0) { continue; }
         else
         {
@@ -78,6 +80,8 @@ void send_to_server(int flag, int pos, char chr)
     int byteSend;
     int length;
 
+    readyM_CV = false;
+    std::lock_guard<std::mutex> lk(myMutex);
     msg.flag = flag;
     msg.posX = pos;
     msg.chr = chr;
@@ -96,4 +100,6 @@ void send_to_server(int flag, int pos, char chr)
         ptr += byteSend;
         length -= byteSend;
     }
+    readyM_CV = true;
+    myConditionVariable.notify_all();
 }

@@ -118,7 +118,7 @@ void control_client()
                         else if(msgInfo.flag == FLAG_DEL_ALL)
                         {
                             fileBuffer.clear();
-                            fileBuffer = "";
+                            fileBuffer = " ";
                         }
                         else
                         {
@@ -239,7 +239,7 @@ int main()
     signal(SIGPIPE, SIG_IGN);
 
     cout << "#DEBUG: @@@@ SERVER STARTED @@@@" << endl;
-    fileBuffer = "";
+    fileBuffer = " ";
     thread controlClientThread(control_client);
     while(accept_clients());
     controlClientThread.join();
