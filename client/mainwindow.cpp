@@ -9,7 +9,7 @@ void MainWindow::sendMessage(int internalFlag)
 
 void MainWindow::internalMessage(int internalFlag)
 {
-    qDebug() << "internalMessage: " << internalFlag << "\n";
+    qDebug() << "internalMessage: " << internalFlag;
     // QTextCursor  cursor = ui->textEdit->textCursor(); // Get cursor position
     disconnect(ui->textEdit, 0, this, 0);
     if(internalFlag == FLAG_UPDATE_FROM_SERV)
@@ -21,6 +21,7 @@ void diffSearch(int len)
 {
     for(int i = 0; i < len; i++) {
         if(dataFromServer[i] != dataFromQTextEdit[i]) {
+            qDebug() << "FLAG_REPLACE";
             send_to_server(FLAG_REPLACE, i, dataFromQTextEdit[i]);
         }
     }
@@ -45,6 +46,7 @@ void MainWindow::onTextChanged()
         diffSearch(lenServer);
 
         for(int i = lenServer; i < lenQText; i++) {
+            qDebug() << "FLAG_APPEND";
             send_to_server(FLAG_APPEND, 0, dataFromQTextEdit[i]);
         }
     }
@@ -53,6 +55,7 @@ void MainWindow::onTextChanged()
     if(lenServer > lenQText) {
         diffSearch(lenQText);
         for(int i = lenQText; i < lenServer; i++) {
+            qDebug() << "FLAG_RM";
             send_to_server(FLAG_RM, 0, ' ');
         }
     }

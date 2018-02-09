@@ -84,6 +84,8 @@ int main(int argc, char *argv[])
         dataFromServer = dataFromServer + std::string(buffer);
         if(byteGet < int(sizeof(char) * BUFF_SIZE)) break;
     }
+    qDebug() << "#INFO: Data on server: ";
+    qDebug() << QString::fromStdString(dataFromServer);
     std::thread listenTH(listen_from_server, &w);
     w.show();
     returnedValueEventLoop = a.exec();
@@ -91,8 +93,8 @@ int main(int argc, char *argv[])
     logFile.close();
     isEndProgram = true;
     close(socketDesc);
-    qDebug() << "#INFO: Wait for threads\n";
+    qDebug() << "#INFO: Wait for threads";
     listenTH.join();
-    qDebug() << "#INFO: The client successfully closed\n";
+    qDebug() << "#INFO: The client successfully closed";
     return returnedValueEventLoop;
 }
