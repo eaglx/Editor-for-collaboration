@@ -83,12 +83,12 @@ void control_client()
                     dataSizeSendORRecv = recv_all(ClientStruct[i].fd, bufferMSG, sizeof(bufferMSG)/sizeof(bufferMSG[0]));
                     if(dataSizeSendORRecv == RECIVE_ERROR)
                     {
-                        cout <<"#DEBUG: While recv from descriptor " << ClientStruct[i].fd << " get error." << endl;
+                        cout << "#DEBUG: While recv from descriptor " << ClientStruct[i].fd << " get error." << endl;
                         cout << strerror(errno) << " :: " << errno << endl;
                     }
                     else if(dataSizeSendORRecv == RECIVE_ZERO)
                     {
-                        cout <<"#DEBUG: Client with descriptor " << ClientStruct[i].fd << " closed the connection." << endl;
+                        cout << "#DEBUG: Client with descriptor " << ClientStruct[i].fd << " closed the connection." << endl;
                         close(ClientStruct[i].fd);
                         canRemoveDesc = true;
                         --numberClientsDescriptors_temp;
@@ -99,15 +99,21 @@ void control_client()
                         deserialize_msg(bufferMSG, &msgInfo);
                         if(msgInfo.flag == FLAG_INSERT_BEFORE)
                         {
-                            fileBuffer.insert(msgInfo.posX, string(1,msgInfo.chr));
+                            fileBuffer.insert(msgInfo.posX, string(1, msgInfo.chr));
                         }
                         else if(msgInfo.flag == FLAG_REPLACE)
                         {
-                            fileBuffer.replace(msgInfo.posX, msgInfo.posX+1, string(1,msgInfo.chr));
+                            fileBuffer.replace(msgInfo.posX, msgInfo.posX+1, string(1, msgInfo.chr));
                         }
                         else if(msgInfo.flag == FLAG_APPEND)
                         {
-                            fileBuffer.append(string(1,msgInfo.chr));
+                            if(fileBuffer.length != (msgInfo.posX - 1))
+                                cout << "#DEBUG: Append in wrong place " << endl;
+                            fileBuffer.append(string(1, msgInfo.chr));
+                        }
+                        else if(msgInfo.flag == FLAG_RM)
+                        {
+                            fileBuffer.substr(0, (fileBuffer.size() - 1));
                         }
                         else if(msgInfo.flag == FLAG_DEL_ALL)
                         {
@@ -116,7 +122,7 @@ void control_client()
                         }
                         else
                         {
-                            cout <<"#DEBUG: Recive wrong flag " << msgInfo.flag << endl;
+                            cout << "#DEBUG: Recive wrong flag " << msgInfo.flag << endl;
                             continue;
                         }
                         serialize_msg(&msgInfo, bufferMSG);

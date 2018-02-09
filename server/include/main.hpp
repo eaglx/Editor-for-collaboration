@@ -30,7 +30,8 @@
 #define FLAG_INSERT_BEFORE 111
 #define FLAG_REPLACE 222
 #define FLAG_APPEND 333
-#define FLAG_DEL_ALL 444
+#define FLAG_RM 444
+#define FLAG_DEL_ALL 555
 
 #define SEND_ALL_DATA 0
 #define SEND_ERROR -1
