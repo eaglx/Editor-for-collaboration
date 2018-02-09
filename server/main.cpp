@@ -107,13 +107,13 @@ void control_client()
                         }
                         else if(msgInfo.flag == FLAG_APPEND)
                         {
-                            if(fileBuffer.length != (msgInfo.posX - 1))
+                            if(fileBuffer.length() != unsigned(msgInfo.posX - 1))
                                 cout << "#DEBUG: Append in wrong place " << endl;
                             fileBuffer.append(string(1, msgInfo.chr));
                         }
                         else if(msgInfo.flag == FLAG_RM)
                         {
-                            fileBuffer.substr(0, (fileBuffer.size() - 1));
+                            fileBuffer = fileBuffer.substr(0, (fileBuffer.size() - 1));
                         }
                         else if(msgInfo.flag == FLAG_DEL_ALL)
                         {
