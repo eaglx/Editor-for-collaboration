@@ -6,7 +6,7 @@
 
 #include <string>
 
-#define FLAG_UPDATE_FROM_SERV 111
+#define FLAG_UPDATE_FROM_SERV 1
 
 extern std::ofstream logFile;
 extern std::string dataFromQTextEdit;

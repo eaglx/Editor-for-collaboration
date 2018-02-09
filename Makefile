@@ -19,3 +19,6 @@ $(SERVER_EXEC): $(SERVER_OBJECTS)
 clean:
 	rm server/*.o
 	rm server/server.exe
+
+run:
+	./server/server.exe

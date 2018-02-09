@@ -132,10 +132,10 @@ void control_client()
                             dataSizeSendORRecv = send_all(ClientStruct[cli].fd, bufferMSG, sizeof(bufferMSG)/sizeof(bufferMSG[0]));
                             if(dataSizeSendORRecv == SEND_ERROR)
                             {
-                                cout << "#DEBUG: Send error" << endl;
+                                cout << "#DEBUG: Send error to " << ClientStruct[cli].fd << endl;
                                 cout << strerror(errno) << " :: " << errno << endl;
                             }
-                            else if(dataSizeSendORRecv == SEND_ALL_DATA) { cout << "#DEBUG: Data send" << endl; }
+                            else if(dataSizeSendORRecv == SEND_ALL_DATA) { cout << "#DEBUG: Data send to " << ClientStruct[cli].fd << endl; }
                         }
                     }
                 }
@@ -240,7 +240,7 @@ int main()
     signal(SIGPIPE, SIG_IGN);
 
     cout << "#DEBUG: @@@@ SERVER STARTED @@@@" << endl;
-    fileBuffer = " ";
+    fileBuffer = "ala";
     thread controlClientThread(control_client);
     while(accept_clients());
     controlClientThread.join();

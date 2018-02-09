@@ -11,16 +11,17 @@ void listen_from_server(MainWindow *w)
     pollfd myPoll[1];
     int readypoll;
 
+    w->sendMessage(FLAG_UPDATE_FROM_SERV);
     myPoll[1].fd = socketDesc;
     myPoll[1].events = POLLIN;
-#define POLL_FD_NUMBERS 1
+#define POLL_FD_NUMBERS 2
 #define POLL_TIMEOUT 1000
     while(!isEndProgram)
     {
         readypoll = poll(myPoll, POLL_FD_NUMBERS, POLL_TIMEOUT);
         std::unique_lock<std::mutex> lk(myMutex);
         myConditionVariable.wait(lk, []{return readyM_CV;});
-        if(sendDATA) { sendDATA = false; continue; }
+        if(sendDATA == true) { sendDATA = false; continue; }
         if(readypoll <= 0) { continue; }
         else
         {

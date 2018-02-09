@@ -13,7 +13,8 @@ void MainWindow::internalMessage(int internalFlag)
     // QTextCursor  cursor = ui->textEdit->textCursor(); // Get cursor position
     disconnect(ui->textEdit, 0, this, 0);
     if(internalFlag == FLAG_UPDATE_FROM_SERV)
-        ui->textEdit->insertPlainText(QString::fromStdString(dataFromServer));
+        ui->textEdit->setPlainText(QString::fromStdString(dataFromServer));
+    qDebug() << "dataFromServer: \n" << QString::fromStdString(dataFromServer);
     connect(ui->textEdit, SIGNAL(textChanged()), this, SLOT(onTextChanged()));
 }
 
@@ -31,7 +32,8 @@ void diffSearch(int len)
 void MainWindow::onTextChanged()
 {
     dataFromQTextEdit = ui->textEdit->toPlainText().toUtf8().constData();
-    //qDebug() << QString::fromStdString(dataFromQTextEdit);
+    qDebug() << "dataFromQTextEdit: \n" << QString::fromStdString(dataFromQTextEdit);
+    qDebug() << "dataFromServer: \n" << QString::fromStdString(dataFromServer);
 
     int lenServer = dataFromServer.length();
     int lenQText = dataFromQTextEdit.length();
@@ -69,7 +71,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     connect(ui->textEdit, SIGNAL(textChanged()), this, SLOT(onTextChanged()));
     connect(this, SIGNAL(messageSent(int)), this, SLOT(internalMessage(int)));
-    MainWindow::sendMessage(FLAG_UPDATE_FROM_SERV);
 }
 
 MainWindow::~MainWindow()
