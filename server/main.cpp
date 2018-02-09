@@ -9,15 +9,13 @@ pollfd *ClientStruct = NULL;
 mutex myMutex;
 condition_variable myCV;
 volatile bool ready = true;
-vector<string> fileBufferLines;
+string fileBuffer;
 
 void signal_callback_handler(int signum)
 {
     cout << "#DEBUG: Signum = " << signum <<endl;
     endProgram = true;
 }
-
-void string_resize(int x) { while((x + 1) > int(fileBufferLines.size())) { string s = ""; fileBufferLines.push_back(s); } }
 
 void pollfd_array_resize()
 {
@@ -35,7 +33,7 @@ void pollfd_array_resize()
         {
             ClientStruct[i].fd = clientsDescriptors[i];
             ClientStruct[i].events = POLLIN;
-            cout << "#DEBUG-control_client: Active descriptions " << clientsDescriptors[i] << endl;
+            cout << "#DEBUG-control_client: Active descriptor " << clientsDescriptors[i] << endl;
         }
     }
 }
@@ -52,11 +50,7 @@ void control_client()
     cout << "#DEBUG: control_client lounched" << endl;
     while(!endProgram)
     {
-        if(numberClientsDescriptors == 0)
-        {
-            //this_thread::sleep_for(std::chrono::seconds(1));
-            continue;
-        }
+        if(numberClientsDescriptors == 0) { continue; }
 
         if(isClientsDescriptorsChange == true)
         {
@@ -64,7 +58,7 @@ void control_client()
             pollfd_array_resize();
         }
 
-        #define POLL_TIMEOUT 10000
+        #define POLL_TIMEOUT -1
         readypoll = poll(ClientStruct, numberClientsDescriptors, POLL_TIMEOUT);
         if(readypoll == -1)
         {
@@ -72,11 +66,11 @@ void control_client()
             //TODO: do something or not?
             continue;
         }
-        else if(readypoll == 0)
+        /*else if(readypoll == 0)
         {
             cout <<"#DEBUG: control_client POLL TIMEOUT" << endl;
             //TODO: do something or not?
-        }
+        }*/
         else
         {
             ready = false;
@@ -103,23 +97,22 @@ void control_client()
                     else
                     {
                         deserialize_msg(bufferMSG, &msgInfo);
-                        if((msgInfo.posX + 1) > int(fileBufferLines.size())) { string_resize((msgInfo.posX + 1)); }
                         if(msgInfo.flag == FLAG_INSERT_BEFORE)
                         {
-                            fileBufferLines[msgInfo.posX].insert(msgInfo.posY, string(1,msgInfo.chr));
+                            fileBuffer.insert(msgInfo.posX, string(1,msgInfo.chr));
                         }
                         else if(msgInfo.flag == FLAG_REPLACE)
                         {
-                            fileBufferLines[msgInfo.posX].replace(msgInfo.posY, msgInfo.posY+1, string(1,msgInfo.chr));
+                            fileBuffer.replace(msgInfo.posX, msgInfo.posX+1, string(1,msgInfo.chr));
                         }
                         else if(msgInfo.flag == FLAG_APPEND)
                         {
-                            fileBufferLines[msgInfo.posX].append(string(1,msgInfo.chr));
+                            fileBuffer.append(string(1,msgInfo.chr));
                         }
                         else if(msgInfo.flag == FLAG_DEL_ALL)
                         {
-                            fileBufferLines.clear();
-                            fileBufferLines.push_back(string(""));
+                            fileBuffer.clear();
+                            fileBuffer = "";
                         }
                         else
                         {
@@ -153,10 +146,7 @@ void control_client()
             myCV.notify_all();
             cout << "**********************************" << endl;
             cout << "#DEBUG: SAVED DATA PRINT" << endl;
-            for(unsigned int fbl = 0; fbl < fileBufferLines.size(); fbl++)
-            {
-                cout << fileBufferLines[fbl] << endl;
-            }
+            cout << fileBuffer << endl;
             cout << "**********************************" << endl;
         }
     }
@@ -183,7 +173,6 @@ int accept_clients()
     serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);
     serverAddr.sin_port = htons(PORT);
 
-    string temp;
     char *buffer;
 
     nSocketDesc = socket(AF_INET, SOCK_STREAM, 0);
@@ -219,12 +208,10 @@ int accept_clients()
             cout << "#INFO: Client IP: " << inet_ntoa((struct in_addr) clientAddr.sin_addr) << endl;
             unique_lock<std::mutex> lck(myMutex);
             while (!ready) myCV.wait(lck);
-            temp = "";
-            for(unsigned int fbl = 0; fbl < fileBufferLines.size(); fbl++) { temp = temp + fileBufferLines[fbl]; temp = temp + "\n"; }
-            buffer = new char[temp.size()];
-            for(unsigned int k = 0; k < temp.size(); k++) { buffer[k] = temp[k]; }
-            cout << "#DEBUG-accept_clients: Start send data with size " << temp.size() << endl;
-            if(send_all(nClientDesc, buffer, temp.size()) < SEND_ERROR)
+            buffer = new char[fileBuffer.size()];
+            for(unsigned int k = 0; k < fileBuffer.size(); k++) { buffer[k] = fileBuffer[k]; }
+            cout << "#DEBUG-accept_clients: Start send data with size " << fileBuffer.size() << endl;
+            if(send_all(nClientDesc, buffer, fileBuffer.size()) < SEND_ERROR)
             {
                 cout << "#DEBUG-accept_clients: Send error" << endl;
                 delete [] buffer;
@@ -236,7 +223,6 @@ int accept_clients()
             ++numberClientsDescriptors;
             isClientsDescriptorsChange = true;
         }
-        //this_thread::sleep_for(std::chrono::seconds(1));
     }
 
     cout << "#INFO: accept_clients stop" << endl;
@@ -250,13 +236,13 @@ int main()
     signal(SIGPIPE, SIG_IGN);
 
     cout << "#DEBUG: @@@@ SERVER STARTED @@@@" << endl;
-    fileBufferLines.push_back(string(""));
+    fileBuffer = "";
     thread controlClientThread(control_client);
     while(accept_clients());
     controlClientThread.join();
     close(nSocketDesc);
     clientsDescriptors.clear();
-    fileBufferLines.clear();
+    fileBuffer.clear();
     cout << "#DEBUG: @@@@ SERVER IS SUCCESSIVELY CLOSED @@@@" << endl;
     return 0;
 }
