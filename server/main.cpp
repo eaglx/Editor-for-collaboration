@@ -128,16 +128,13 @@ void control_client()
                         serialize_msg(&msgInfo, bufferMSG);
                         for(int cli = 0; cli < numberClientsDescriptors; cli++)
                         {
-                            if(ClientStruct[cli].fd != ClientStruct[i].fd)
+                            dataSizeSendORRecv = send_all(ClientStruct[cli].fd, bufferMSG, sizeof(bufferMSG)/sizeof(bufferMSG[0]));
+                            if(dataSizeSendORRecv == SEND_ERROR)
                             {
-                                dataSizeSendORRecv = send_all(ClientStruct[cli].fd, bufferMSG, sizeof(bufferMSG)/sizeof(bufferMSG[0]));
-                                if(dataSizeSendORRecv == SEND_ERROR)
-                                {
-                                    cout << "#DEBUG: Send error" << endl;
-                                    cout << strerror(errno) << " :: " << errno << endl;
-                                }
-                                else if(dataSizeSendORRecv == SEND_ALL_DATA) { cout << "#DEBUG: Data send" << endl; }
+                                cout << "#DEBUG: Send error" << endl;
+                                cout << strerror(errno) << " :: " << errno << endl;
                             }
+                            else if(dataSizeSendORRecv == SEND_ALL_DATA) { cout << "#DEBUG: Data send" << endl; }
                         }
                     }
                 }

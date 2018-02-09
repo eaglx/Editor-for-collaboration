@@ -47,8 +47,8 @@ int main(int argc, char *argv[])
     if(socketDesc < 0)
     {
         logFile << "#ERROR: Failed create socket!!!\n";
-        //logFile.close();
-        //return -1;
+        logFile.close();
+        return -2;
     }
 
     serverAddr.sin_addr.s_addr = inet_addr(ip_addr.c_str());
@@ -58,38 +58,35 @@ int main(int argc, char *argv[])
     if(connect(socketDesc, (struct sockaddr *) &serverAddr, sizeof(serverAddr)) < 0)
     {
         logFile << "#ERROR: Cannot connect to server!!!\n";
-        //logFile.close();
-        //return -2;
+        logFile.close();
+        return -3;
     }
-    /*
-    strBuffer = "";
+    dataFromServer = "";
     for(int i = 0; i < 50; i++) { buffer[i] = '\0'; }
-        while(true)
+    while(true)
+    {
+        byteGet = recv(socketDesc, &buffer, sizeof(char) * 50, 0);
+        logFile << "#INFO: recv bytes " << byteGet << "\n";
+        if(byteGet < 0)
         {
-            byteGet = recv(socketDesc, &buffer, sizeof(char) * 50, 0);
-            logFile << "#INFO: recv bytes " << byteGet << "\n";
-            if(byteGet < 0)
-            {
-                logFile << "#ERROR: recv\n";
-                close(socketDesc);
-                logFile.close();
-                return -2;
-            }
-            else if(byteGet == 0) break;
-
-            strBuffer = strBuffer + std::string(buffer);
-            if(byteGet < int(sizeof(char) * 50)) break;
+            logFile << "#ERROR: recv\n";
+            close(socketDesc);
+            logFile.close();
+            return -4;
         }
-    */
+        else if(byteGet == 0) break;
 
+        dataFromServer = dataFromServer + std::string(buffer);
+        if(byteGet < int(sizeof(char) * 50)) break;
+    }
     std::thread listenTH(listen_from_server, &w);
     w.show();
     returnedValueEventLoop = a.exec();
     logFile << "#INFO: Event loop return value " << returnedValueEventLoop << "\n";
     isEndProgram = true;
+    close(socketDesc);
     logFile << "#INFO: Wait for threads\n";
     listenTH.join();
-    close(socketDesc);
     logFile << "#INFO: The client successfully closed\n";
     logFile.close();
     return returnedValueEventLoop;

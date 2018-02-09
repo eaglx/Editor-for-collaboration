@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "connectdatamanage.h"
 
 void MainWindow::sendMessage(int internalFlag)
 {
@@ -8,12 +9,11 @@ void MainWindow::sendMessage(int internalFlag)
 
 void MainWindow::internalMessage(int internalFlag)
 {
-    qDebug() << "internalMessage " << internalFlag << "\n";
+    qDebug() << "internalMessage: " << internalFlag << "\n";
+    // QTextCursor  cursor = ui->textEdit->textCursor(); // Get cursor position
     disconnect(ui->textEdit, 0, this, 0);
-    if(internalFlag == 5)
-        ui->textEdit->insertPlainText("HELLO\n");
-    else if(internalFlag == 10)
-        ui->textEdit->setReadOnly(true);
+    if(internalFlag == FLAG_UPDATE_FROM_SERV)
+        ui->textEdit->insertPlainText(QString::fromStdString(dataFromServer));
     connect(ui->textEdit, SIGNAL(textChanged()), this, SLOT(onTextChanged()));
 }
 
@@ -21,20 +21,24 @@ void diffSearch(int len)
 {
     for(int i = 0; i < len; i++) {
         if(dataFromServer[i] != dataFromQTextEdit[i]) {
-            //replace(dataFromQTextEdit[i]);      //TODO
+            send_to_server(FLAG_REPLACE, i, dataFromQTextEdit[i]);
         }
     }
 }
 
+/* Code that executes on text change here */
 void MainWindow::onTextChanged()
 {
-    /* Code that executes on text change here */
-    // QTextCursor  cursor = ui->textEdit->textCursor(); // Get cursor position
     dataFromQTextEdit = ui->textEdit->toPlainText().toUtf8().constData();
-    qDebug() << QString::fromStdString(dataFromQTextEdit);
+    //qDebug() << QString::fromStdString(dataFromQTextEdit);
 
     int lenServer = dataFromServer.length();
     int lenQText = dataFromQTextEdit.length();
+
+    if((lenServer != 0) && (lenQText == 0))
+    {
+        send_to_server(FLAG_DEL_ALL, 0, ' ');
+    }
 
     //change one char
     if(lenServer == lenQText) {
@@ -46,7 +50,7 @@ void MainWindow::onTextChanged()
         diffSearch(lenServer);
 
         for(int i = lenServer; i < lenQText; i++) {
-            //append(dataFromQTextEdit[i]);   //TODO
+            send_to_server(FLAG_APPEND, 0, dataFromQTextEdit[i]);
         }
     }
 
@@ -54,7 +58,7 @@ void MainWindow::onTextChanged()
     if(lenServer > lenQText) {
         diffSearch(lenQText);
         for(int i = lenQText; i < lenServer; i++) {
-             //delete_(i);            //TODO
+            send_to_server(FLAG_RM, 0, ' ');
         }
     }
 
@@ -67,6 +71,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     connect(ui->textEdit, SIGNAL(textChanged()), this, SLOT(onTextChanged()));
     connect(this, SIGNAL(messageSent(int)), this, SLOT(internalMessage(int)));
+    MainWindow::sendMessage(FLAG_UPDATE_FROM_SERV);
 }
 
 MainWindow::~MainWindow()

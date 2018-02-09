@@ -12,6 +12,7 @@
 #include <sys/socket.h>
 #include <sys/time.h>
 #include <sys/types.h>
+#include <sys/poll.h>
 #include <sys/wait.h>
 #include <unistd.h>
 #include <sys/stat.h>
@@ -44,7 +45,7 @@ struct MESSAGE_INFO
 };
 
 void listen_from_server(MainWindow *);
-bool send_to_server();
+void send_to_server(int, int, char);
 void serialize_msg(MESSAGE_INFO *, char *);
 void deserialize_msg(char *, MESSAGE_INFO *);
 

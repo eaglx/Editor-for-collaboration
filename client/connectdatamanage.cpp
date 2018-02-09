@@ -3,69 +3,97 @@
 void listen_from_server(MainWindow *w)
 {
     logFile << "#INFO: thread listen_from_server started\n";
-    w->sendMessage(5);
-
-    /*
     MESSAGE_INFO msg;
     char bufferMSG[PACKETSIZE];
-    std::string strBuffer;
     int byteGet;
     int length;
-    */
+    bool errorRecv = false;
+    pollfd myPoll[1];
+    int readypoll;
 
-    /*
-     * Example
-    ptr = (char*) bufferMSG;
-    length = sizeof(bufferMSG)/sizeof(bufferMSG[0]);
-    while(true)
+    myPoll[1].fd = socketDesc;
+    myPoll[1].events = POLLIN;
+#define POLL_FD_NUMBERS 1
+#define POLL_TIMEOUT 10000
+    while(!isEndProgram)
     {
-        byteGet = recv(socketDesc, bufferMSG, length, 0);
-        if(byteGet < 0)
+        readypoll = poll(myPoll, POLL_FD_NUMBERS, POLL_TIMEOUT);
+        if(readypoll <= 0) { continue; }
+        else
         {
-            logFile << "#ERROR: thread listen_from_server recv";
-            //close(socketDesc);
-            //return -2;
+            length = sizeof(bufferMSG)/sizeof(bufferMSG[0]);
+            while(true)
+            {
+                byteGet = recv(myPoll[1].fd, bufferMSG, length, 0);
+                if(byteGet < 0)
+                {
+                    logFile << "#ERROR: thread listen_from_server recv";
+                    //close(socketDesc);
+                    //return -2;
+                    break;
+                    errorRecv = true;
+                }
+                else if(byteGet == 0) { break; errorRecv = true; }
+                length -= byteGet;
+                if(length == 0) break;
+            }
+            if(errorRecv) { errorRecv = false; continue; }
+            deserialize_msg(bufferMSG, &msg);
+            if(msg.flag == FLAG_INSERT_BEFORE)
+            {
+                dataFromServer.insert(msg.posX, std::string(1, msg.chr));
+            }
+            else if(msg.flag == FLAG_REPLACE)
+            {
+                dataFromServer.replace(msg.posX, msg.posX+1, std::string(1, msg.chr));
+            }
+            else if(msg.flag == FLAG_APPEND)
+            {
+                dataFromServer.append(std::string(1, msg.chr));
+            }
+            else if(msg.flag == FLAG_RM)
+            {
+                dataFromServer = dataFromServer.substr(0, (dataFromServer.size() - 1));
+            }
+            else if(msg.flag == FLAG_DEL_ALL)
+            {
+                dataFromServer.clear();
+                dataFromServer = "";
+            }
+            else
+            {
+                logFile << "#INFO: thread listen_from_server recv wrong flag!\n";
+                continue;
+            }
+            w->sendMessage(FLAG_UPDATE_FROM_SERV);
         }
-        else if(byteGet == 0) break;
-        ptr += byteGet;
-        length -= byteGet;
-        if(length == 0) break;
-    }
-    deserialize_msg(bufferMSG, &msg);
-    */
+     }
     logFile << "#INFO: thread listen_from_server stopped\n";
 }
 
-bool send_to_server()
+void send_to_server(int flag, int pos, char chr)
 {
-    /*
     MESSAGE_INFO msg;
     char bufferMSG[PACKETSIZE];
-    std::string strBuffer;
-    int byteGet;
+    int byteSend;
     int length;
-    */
 
-    /*
-     * Example:
-    msg.flag = FLAG_APPEND;
-    msg.posX = 0;
-    msg.posY = 0;
-    msg.chr = 'A';
+    msg.flag = flag;
+    msg.posX = pos;
+    msg.chr = chr;
     serialize_msg(&msg, bufferMSG);
     length = sizeof(bufferMSG)/sizeof(bufferMSG[0]);
     char *ptr = (char*) bufferMSG;
     while(length > 0)
     {
-        byteGet = send(socketDesc, ptr, length, 0);
-        if(byteGet < 0)
+        byteSend = send(socketDesc, ptr, length, 0);
+        if(byteSend < 0)
         {
-            logFile << "#ERROR: thread send_to_server send\n";
+            logFile << "#ERROR: send_to_server send\n";
             //close(socketDesc);
             //return -3;
         }
-        ptr += byteGet;
-        length -= byteGet;
+        ptr += byteSend;
+        length -= byteSend;
     }
-    */
 }
