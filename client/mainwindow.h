@@ -8,7 +8,7 @@
 
 extern std::ofstream logFile;
 extern std::string dataFromQTextEdit;
-extern std::string dataFromQTextEditBUFFERED;
+extern std::string dataFromServer;
 extern volatile bool isEndProgram;
 
 namespace Ui {

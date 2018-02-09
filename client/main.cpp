@@ -5,7 +5,7 @@
 std::ofstream logFile;
 volatile bool isEndProgram = false;
 std::string dataFromQTextEdit;
-std::string dataFromQTextEditBUFFERED;
+std::string dataFromServer;
 int socketDesc;
 
 int main(int argc, char *argv[])
