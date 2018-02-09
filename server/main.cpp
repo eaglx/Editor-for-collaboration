@@ -236,7 +236,7 @@ int accept_clients()
             ++numberClientsDescriptors;
             isClientsDescriptorsChange = true;
         }
-        this_thread::sleep_for(std::chrono::seconds(1));
+        //this_thread::sleep_for(std::chrono::seconds(1));
     }
 
     cout << "#INFO: accept_clients stop" << endl;
