@@ -19,9 +19,28 @@ int main(int argc, char *argv[])
     char buffer[50];
     int byteGet;
 
+    std::ifstream configFile("config_file.conf");
+    std::string ip_addr;
+    int servPORT;
+    std::string temp;
+
     logFile.open("log.txt");
     if (!logFile.is_open())
     {
+        return -1;
+    }
+
+    if(configFile.is_open())
+    {
+      getline(configFile, ip_addr);
+      getline(configFile, temp);
+      servPORT = atoi(temp.c_str());
+      configFile.close();
+      logFile << "#DEBUG: configurations loaded\n";
+    }
+    else
+    {
+        logFile <<"#ERROR: no config found!\n";
         return -1;
     }
 
@@ -33,9 +52,9 @@ int main(int argc, char *argv[])
         //return -1;
     }
 
-    serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+    serverAddr.sin_addr.s_addr = inet_addr(ip_addr.c_str());
     serverAddr.sin_family = AF_INET;
-    serverAddr.sin_port = htons(6666);
+    serverAddr.sin_port = htons(servPORT);
 
     if(connect(socketDesc, (struct sockaddr *) &serverAddr, sizeof(serverAddr)) < 0)
     {
