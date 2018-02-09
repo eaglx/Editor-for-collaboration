@@ -21,8 +21,8 @@ void MainWindow::onTextChanged()
 {
     /* Code that executes on text change here */
     // QTextCursor  cursor = ui->textEdit->textCursor(); // Get cursor position
-    dataFromQTextEdit = ui->textEdit->toPlainText();
-    qDebug() << dataFromQTextEdit;
+    dataFromQTextEdit = ui->textEdit->toPlainText().toUtf8().constData();
+    qDebug() << QString::fromStdString(dataFromQTextEdit);
 }
 
 MainWindow::MainWindow(QWidget *parent) :

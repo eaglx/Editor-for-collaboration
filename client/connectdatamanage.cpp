@@ -1,9 +1,8 @@
 #include "connectdatamanage.h"
 
-void listen_from_server(int socketDesc, MainWindow *w)
+void listen_from_server(MainWindow *w)
 {
     logFile << "#INFO: thread listen_from_server started\n";
-    usleep(4000000);
     w->sendMessage(5);
 
     /*
@@ -37,11 +36,8 @@ void listen_from_server(int socketDesc, MainWindow *w)
     logFile << "#INFO: thread listen_from_server stopped\n";
 }
 
-void send_to_server(int socketDesc, MainWindow *w)
+bool send_to_server()
 {
-    logFile << "#INFO: thread send_to_server started\n";
-    usleep(4000000);
-    w->sendMessage(10);
     /*
     MESSAGE_INFO msg;
     char bufferMSG[PACKETSIZE];
@@ -72,5 +68,4 @@ void send_to_server(int socketDesc, MainWindow *w)
         length -= byteGet;
     }
     */
-    logFile << "#INFO: thread send_to_server stopped\n";
 }

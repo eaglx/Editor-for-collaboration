@@ -34,6 +34,8 @@
 #define RECIVE_ERROR -1
 #define PACKETSIZE sizeof(MESSAGE_INFO)
 
+extern int socketDesc;
+
 struct MESSAGE_INFO
 {
     int flag;
@@ -41,8 +43,8 @@ struct MESSAGE_INFO
     char chr;
 };
 
-void listen_from_server(int, MainWindow *);
-void send_to_server(int, MainWindow *);
+void listen_from_server(MainWindow *);
+bool send_to_server();
 void serialize_msg(MESSAGE_INFO *, char *);
 void deserialize_msg(char *, MESSAGE_INFO *);
 
