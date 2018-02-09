@@ -35,11 +35,6 @@ void MainWindow::onTextChanged()
     int lenServer = dataFromServer.length();
     int lenQText = dataFromQTextEdit.length();
 
-    if((lenServer != 0) && (lenQText == 0))
-    {
-        send_to_server(FLAG_DEL_ALL, 0, ' ');
-    }
-
     //change one char
     if(lenServer == lenQText) {
         diffSearch(lenServer);
