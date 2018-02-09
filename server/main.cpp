@@ -54,7 +54,7 @@ void control_client()
     {
         if(numberClientsDescriptors == 0)
         {
-            this_thread::sleep_for(std::chrono::seconds(1));
+            //this_thread::sleep_for(std::chrono::seconds(1));
             continue;
         }
 
@@ -64,7 +64,8 @@ void control_client()
             pollfd_array_resize();
         }
 
-        readypoll = poll(ClientStruct, numberClientsDescriptors, 10000);
+        #define POLL_TIMEOUT 10000
+        readypoll = poll(ClientStruct, numberClientsDescriptors, POLL_TIMEOUT);
         if(readypoll == -1)
         {
             cout << "#DEBUG: control_client POLL ERROR" << endl;
