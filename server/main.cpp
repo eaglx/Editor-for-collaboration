@@ -100,24 +100,33 @@ void control_client()
                         cout << "#DEBUG: Recive flag " << msgInfo.flag << " from " <<  ClientStruct[i].fd << endl;
                         if(msgInfo.flag == FLAG_INSERT_BEFORE)
                         {
+                            cout << "#DEBUG: FLAG_INSERT_BEFORE" << endl;
                             fileBuffer.insert(msgInfo.posX, string(1, msgInfo.chr));
                         }
                         else if(msgInfo.flag == FLAG_REPLACE)
                         {
+                            cout << "#DEBUG: FLAG_REPLACE" << endl;
+                            while(unsigned(msgInfo.posX) > fileBuffer.size())
+                                fileBuffer.resize(fileBuffer.size() + 1, ' ');
                             fileBuffer.replace(msgInfo.posX, msgInfo.posX+1, string(1, msgInfo.chr));
                         }
                         else if(msgInfo.flag == FLAG_APPEND)
                         {
+                            cout << "#DEBUG: FLAG_APPEND" << endl;
                             if(fileBuffer.length() != unsigned(msgInfo.posX - 1))
                                 cout << "#DEBUG: Append in wrong place " << endl;
                             fileBuffer.append(string(1, msgInfo.chr));
                         }
                         else if(msgInfo.flag == FLAG_RM)
                         {
+                            cout << "#DEBUG: FLAG_RM" << endl;
                             fileBuffer = fileBuffer.substr(0, (fileBuffer.size() - 1));
+                            if(fileBuffer.length() == 0)
+                                fileBuffer = " ";
                         }
                         else if(msgInfo.flag == FLAG_DEL_ALL)
                         {
+                            cout << "#DEBUG: FLAG_DEL_ALL" << endl;
                             fileBuffer.clear();
                             fileBuffer = " ";
                         }
@@ -240,7 +249,7 @@ int main()
     signal(SIGPIPE, SIG_IGN);
 
     cout << "#DEBUG: @@@@ SERVER STARTED @@@@" << endl;
-    fileBuffer = "ala";
+    fileBuffer = " ";
     thread controlClientThread(control_client);
     while(accept_clients());
     controlClientThread.join();
