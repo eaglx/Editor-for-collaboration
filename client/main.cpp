@@ -10,6 +10,7 @@ int socketDesc;
 std::mutex myMutex;
 std::condition_variable myConditionVariable;
 volatile bool readyM_CV = true;
+volatile bool sendDATA = false;
 
 int main(int argc, char *argv[])
 {

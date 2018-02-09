@@ -41,6 +41,7 @@ extern int socketDesc;
 extern std::mutex myMutex;
 extern std::condition_variable myConditionVariable;
 extern volatile bool readyM_CV;
+extern volatile bool sendDATA;
 
 struct MESSAGE_INFO
 {

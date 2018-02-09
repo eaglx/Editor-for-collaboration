@@ -20,6 +20,7 @@ void listen_from_server(MainWindow *w)
         readypoll = poll(myPoll, POLL_FD_NUMBERS, POLL_TIMEOUT);
         std::unique_lock<std::mutex> lk(myMutex);
         myConditionVariable.wait(lk, []{return readyM_CV;});
+        if(sendDATA) { sendDATA = false; continue; }
         if(readypoll <= 0) { continue; }
         else
         {
@@ -82,6 +83,7 @@ void send_to_server(int flag, int pos, char chr)
 
     readyM_CV = false;
     std::lock_guard<std::mutex> lk(myMutex);
+    sendDATA = true;
     msg.flag = flag;
     msg.posX = pos;
     msg.chr = chr;
