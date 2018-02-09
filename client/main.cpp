@@ -18,7 +18,8 @@ int main(int argc, char *argv[])
     int returnedValueEventLoop;
 
     struct sockaddr_in serverAddr;
-    char buffer[50];
+#define BUFF_SIZE 50
+    char buffer[BUFF_SIZE];
     int byteGet;
 
     std::ifstream configFile("config_file.conf");
@@ -65,10 +66,10 @@ int main(int argc, char *argv[])
         return -3;
     }
     dataFromServer = "";
-    for(int i = 0; i < 50; i++) { buffer[i] = '\0'; }
+    for(int i = 0; i < BUFF_SIZE; i++) { buffer[i] = '\0'; }
     while(true)
     {
-        byteGet = recv(socketDesc, &buffer, sizeof(char) * 50, 0);
+        byteGet = recv(socketDesc, &buffer, sizeof(char) * BUFF_SIZE, 0);
         logFile << "#INFO: recv bytes " << byteGet << "\n";
         if(byteGet < 0)
         {
@@ -80,7 +81,7 @@ int main(int argc, char *argv[])
         else if(byteGet == 0) break;
 
         dataFromServer = dataFromServer + std::string(buffer);
-        if(byteGet < int(sizeof(char) * 50)) break;
+        if(byteGet < int(sizeof(char) * BUFF_SIZE)) break;
     }
     std::thread listenTH(listen_from_server, &w);
     w.show();

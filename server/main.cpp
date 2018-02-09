@@ -97,6 +97,7 @@ void control_client()
                     else
                     {
                         deserialize_msg(bufferMSG, &msgInfo);
+                        cout << "#DEBUG: Recive flag " << msgInfo.flag << " from " <<  ClientStruct[i].fd << endl;
                         if(msgInfo.flag == FLAG_INSERT_BEFORE)
                         {
                             fileBuffer.insert(msgInfo.posX, string(1, msgInfo.chr));
