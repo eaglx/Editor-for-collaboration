@@ -66,7 +66,7 @@ void MainWindow::onTextChanged()
     //delete chars
     if(lenServer > lenQText) {
             diffSearch(lenQText);
-            for(int i = lenServer; i >= lenQText; i--) {
+            for(int i = lenServer - 1; i >= lenQText; i--) {
                 qDebug() << "FLAG_RM";
                 send_to_server(FLAG_RM, 0, ' ');
             }
