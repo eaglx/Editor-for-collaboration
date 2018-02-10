@@ -46,6 +46,7 @@ void control_client()
     bool canRemoveDesc;
     MESSAGE_INFO msgInfo;
     char bufferMSG[PACKETSIZE];
+    ofstream myfile;
 
     cout << "#DEBUG: control_client lounched" << endl;
     while(!endProgram)
@@ -131,6 +132,14 @@ void control_client()
                             fileBuffer.clear();
                             fileBuffer = " ";
                         }
+                        else if(msgInfo.flag == FLAG_START_SELECTION)
+                        {
+                            //TODO
+                        }
+                        else if(msgInfo.flag == FLAG_END_SELECTION)
+                        {
+                            //TODO
+                        }
                         else
                         {
                             cout << "#DEBUG: Recive wrong flag " << msgInfo.flag << endl;
@@ -147,6 +156,9 @@ void control_client()
                             }
                             else if(dataSizeSendORRecv == SEND_ALL_DATA) { cout << "#DEBUG: Data send to " << ClientStruct[cli].fd << endl; }
                         }
+                        myfile.open("cache.dump");
+                        myfile << fileBuffer;
+                        myfile.close();
                     }
                 }
             }
@@ -250,7 +262,18 @@ int main()
     signal(SIGPIPE, SIG_IGN);
 
     cout << "#DEBUG: @@@@ SERVER STARTED @@@@" << endl;
-    fileBuffer = " ";
+    ifstream myfile("cache.dump");
+    if (myfile.is_open())
+    {
+        string line;
+        fileBuffer = " ";
+        while ( getline (myfile, line) )
+        {
+          fileBuffer = fileBuffer + line;
+        }
+        myfile.close();
+    }
+    else fileBuffer = " ";
     thread controlClientThread(control_client);
     while(accept_clients());
     controlClientThread.join();
@@ -258,5 +281,6 @@ int main()
     clientsDescriptors.clear();
     fileBuffer.clear();
     cout << "#DEBUG: @@@@ SERVER IS SUCCESSIVELY CLOSED @@@@" << endl;
+    remove("cache.dump");
     return 0;
 }
