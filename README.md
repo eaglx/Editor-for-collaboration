@@ -11,7 +11,7 @@ Editor for collaboration.
 
 #### How to launch:
 1. Launch make to build the server.
-2. Start the server.
+2. Start the server (type 'make run').
 3. To build the client use QtCreator or in the terminal (in the client's folder) enter:
     1. qmake.
     2. make.
