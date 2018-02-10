@@ -243,6 +243,7 @@ int accept_clients()
                 delete [] buffer;
                 continue;
             }
+            if(fileBuffer == "?/?/#") { fileBuffer = ""; }
             cout << "#DEBUG-accept_clients:Finish send data" << endl;
             delete [] buffer;
             clientsDescriptors.push_back(nClientDesc);
@@ -252,7 +253,6 @@ int accept_clients()
     }
 
     cout << "#INFO: accept_clients stop" << endl;
-
     return 0;
 }
 
