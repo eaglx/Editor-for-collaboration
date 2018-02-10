@@ -123,14 +123,14 @@ void control_client()
                         {
                             //cout << "#DEBUG: FLAG_RM" << endl;
                             fileBuffer = fileBuffer.substr(0, (fileBuffer.size() - 1));
-                            if(fileBuffer.length() == 0)
-                                fileBuffer = " ";
+                            //if(fileBuffer.length() == 0)
+                                //fileBuffer = "";
                         }
                         else if(msgInfo.flag == FLAG_DEL_ALL)
                         {
                             //cout << "#DEBUG: FLAG_DEL_ALL" << endl;
                             fileBuffer.clear();
-                            fileBuffer = " ";
+                            fileBuffer = "";
                         }
                         else if(msgInfo.flag == FLAG_START_SELECTION)
                         {
@@ -230,6 +230,10 @@ int accept_clients()
             cout << "#INFO: Client IP: " << inet_ntoa((struct in_addr) clientAddr.sin_addr) << endl;
             unique_lock<std::mutex> lck(myMutex);
             while (!ready) myCV.wait(lck);
+            if(fileBuffer.length() == 0)
+            {
+                fileBuffer = "?/?/#";
+            }
             buffer = new char[fileBuffer.size()];
             for(unsigned int k = 0; k < fileBuffer.size(); k++) { buffer[k] = fileBuffer[k]; }
             cout << "#DEBUG-accept_clients: Start send data with size " << fileBuffer.size() << endl;
@@ -262,14 +266,14 @@ int main()
     if (myfile.is_open())
     {
         string line;
-        fileBuffer = " ";
+        fileBuffer = "";
         while ( getline (myfile, line) )
         {
           fileBuffer = fileBuffer + line;
         }
         myfile.close();
     }
-    else fileBuffer = " ";
+    else fileBuffer = "#Hey#";
     thread controlClientThread(control_client);
     while(accept_clients());
     controlClientThread.join();
