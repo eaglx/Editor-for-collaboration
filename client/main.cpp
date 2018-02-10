@@ -84,6 +84,9 @@ int main(int argc, char *argv[])
         dataFromServer = dataFromServer + std::string(buffer);
         if(byteGet < int(sizeof(char) * BUFF_SIZE)) break;
     }
+    if(dataFromServer == "?/?/#") {
+        dataFromServer = "";
+    }
     qDebug() << "#INFO: Data on server: ";
     qDebug() << QString::fromStdString(dataFromServer);
     std::thread listenTH(listen_from_server, &w);

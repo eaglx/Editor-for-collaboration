@@ -60,13 +60,13 @@ void listen_from_server(MainWindow *w)
             else if(msg.flag == FLAG_RM)
             {
                 dataFromServer = dataFromServer.substr(0, (dataFromServer.size() - 1));
-                if(dataFromServer.length() == 0)
-                    dataFromServer = " ";
+                //if(dataFromServer.length() == 0)
+                //    dataFromServer = "#Hey#";
             }
             else if(msg.flag == FLAG_DEL_ALL)
             {
                 dataFromServer.clear();
-                dataFromServer = " ";
+                dataFromServer = "";
             }
             else
             {
