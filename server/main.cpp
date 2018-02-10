@@ -122,7 +122,8 @@ void control_client()
                         else if(msgInfo.flag == FLAG_RM)
                         {
                             //cout << "#DEBUG: FLAG_RM" << endl;
-                            fileBuffer = fileBuffer.substr(0, (fileBuffer.size() - 1));
+                            if(fileBuffer.length() > 0)
+                                fileBuffer = fileBuffer.substr(0, (fileBuffer.size() - 1));
                             //if(fileBuffer.length() == 0)
                                 //fileBuffer = "";
                         }
