@@ -58,7 +58,7 @@ void control_client()
             pollfd_array_resize();
         }
 
-        #define POLL_TIMEOUT -1
+        #define POLL_TIMEOUT 10000
         readypoll = poll(ClientStruct, numberClientsDescriptors, POLL_TIMEOUT);
         if(readypoll == -1)
         {
@@ -66,11 +66,12 @@ void control_client()
             //TODO: do something or not?
             continue;
         }
-        /*else if(readypoll == 0)
+        else if(readypoll == 0)
         {
-            cout <<"#DEBUG: control_client POLL TIMEOUT" << endl;
+            //cout <<"#DEBUG: control_client POLL TIMEOUT" << endl;
             //TODO: do something or not?
-        }*/
+            continue;
+        }
         else
         {
             ready = false;
