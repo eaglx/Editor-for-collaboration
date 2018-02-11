@@ -19,6 +19,9 @@ Editor for collaboration.
 #### Screenshot 1
 ![demo_screen](https://user-images.githubusercontent.com/32968460/36067861-91066de0-0ec7-11e8-841c-1a8e230fc482.png)
 
+#### Screenshot 2
+![demo_screen](https://user-images.githubusercontent.com/32968460/36072138-ca17f5ce-0f1a-11e8-8d3d-dbd8458b6834.png)
+
 ### Release 0.01 and Release 0.02.x.x
 
 #### How to launch:
