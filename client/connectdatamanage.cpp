@@ -49,9 +49,9 @@ void listen_from_server(MainWindow *w)
             }
             else if(msg.flag == FLAG_REPLACE)
             {
-                while(unsigned(msg.posX) > dataFromServer.size())
-                    dataFromServer.resize(dataFromServer.size() + 1, ' ');
-                dataFromServer.replace(msg.posX, msg.posX+1, std::string(1, msg.chr));
+                //while(unsigned(msg.posX + 1) > dataFromServer.size())
+                    //dataFromServer.resize(dataFromServer.size() + 1);
+                dataFromServer[msg.posX] =  msg.chr; //.replace(msg.posX, msg.posX+1, std::string(1, msg.chr));
             }
             else if(msg.flag == FLAG_APPEND)
             {

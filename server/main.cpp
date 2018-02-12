@@ -108,9 +108,9 @@ void control_client()
                         else if(msgInfo.flag == FLAG_REPLACE)
                         {
                             //cout << "#DEBUG: FLAG_REPLACE" << endl;
-                            while(unsigned(msgInfo.posX) > fileBuffer.size())
-                                fileBuffer.resize(fileBuffer.size() + 1, ' ');
-                            fileBuffer.replace(msgInfo.posX, msgInfo.posX+1, string(1, msgInfo.chr));
+                            //while(unsigned(msgInfo.posX + 1) > fileBuffer.size())
+                                //fileBuffer.resize(fileBuffer.size() + 1);
+                            fileBuffer[msgInfo.posX] = msgInfo.chr; //.replace(msgInfo.posX, msgInfo.posX+1, string(1, msgInfo.chr));
                         }
                         else if(msgInfo.flag == FLAG_APPEND)
                         {
