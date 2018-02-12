@@ -46,7 +46,13 @@ void control_client()
     bool canRemoveDesc;
     MESSAGE_INFO msgInfo;
     char bufferMSG[PACKETSIZE];
+    #define BUFF_SIZE 50
+    char buffer[BUFF_SIZE];
     ofstream myfile;
+    int byteGet;
+    bool bSENDSTRING = false;
+    int fromPositionSend = 0;
+    int howManyChars;
 
     cout << "#DEBUG: control_client lounched" << endl;
     while(!endProgram)
@@ -123,7 +129,7 @@ void control_client()
                         {
                             //cout << "#DEBUG: FLAG_RM" << endl;
                             if(fileBuffer.length() > 0)
-                                fileBuffer = fileBuffer.substr(0, (fileBuffer.size() - 1));
+                                fileBuffer = fileBuffer.substr(0, (fileBuffer.size() - msgInfo.posX));
                             //if(fileBuffer.length() == 0)
                                 //fileBuffer = "";
                         }
@@ -132,6 +138,27 @@ void control_client()
                             //cout << "#DEBUG: FLAG_DEL_ALL" << endl;
                             fileBuffer.clear();
                             fileBuffer = "";
+                        }
+                        else if(msgInfo.flag == FLAG_SEND_STRING)
+                        {
+                            for(int kb = 0; kb < BUFF_SIZE; kb++) { buffer[kb] = '\0'; }
+                            fromPositionSend = fileBuffer.length();
+                            howManyChars = msgInfo.posX;
+                            while(true)
+                            {
+                                byteGet = recv(ClientStruct[i].fd, &buffer, sizeof(char) * BUFF_SIZE, 0);
+                                cout << "#INFO: recv bytes " << byteGet << "\n";
+                                if(byteGet < 0)
+                                {
+                                    cout << "#ERROR: recv\n";
+                                    break;
+                                }
+                                else if(byteGet == 0) break;
+
+                                fileBuffer = fileBuffer + std::string(buffer);
+                                if(byteGet < int(sizeof(char) * BUFF_SIZE)) break;
+                            }
+                            bSENDSTRING = true;
                         }
                         else if(msgInfo.flag == FLAG_START_SELECTION)
                         {
@@ -160,6 +187,17 @@ void control_client()
                                 cout << strerror(errno) << " :: " << errno << endl;
                             }
                             else if(dataSizeSendORRecv == SEND_ALL_DATA) { cout << "#DEBUG: Data send to " << ClientStruct[cli].fd << endl; }
+
+                            if(bSENDSTRING)
+                            {
+                                char *buffer = new char[howManyChars];
+                                int bkl = 0;
+                                for(int kl = fromPositionSend; kl < howManyChars; kl++) { buffer[bkl++] = fileBuffer[kl]; }
+                                if(send_all(ClientStruct[cli].fd, buffer, howManyChars) == SEND_ERROR) { cout << "#DEBUG: Send error FLAG_SEND_STRING" << endl; }
+                                delete [] buffer;
+                                fromPositionSend = 0;
+                                bSENDSTRING = false;
+                            }
                         }
                         myfile.open("cache.dump");
                         myfile << fileBuffer;
