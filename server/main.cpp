@@ -116,6 +116,10 @@ void control_client()
                         {
                             cout << "#INFO: ECONNRESET" << endl;
                         }
+                        else if(errno == EPIPE)
+                        {
+                            cout << "#INFO: EPIPE" << endl;
+                        }
                     }
                     else if(dataSizeSendORRecv == RECIVE_ZERO)
                     {
@@ -206,6 +210,11 @@ void control_client()
                             if(errno == ECONNRESET)
                             {
                                 cout << "#INFO: ECONNRESET" << endl;
+                                delete_DEAD_client(ClientStruct[i].fd, canRemoveDesc, numberClientsDescriptors_temp);
+                            }
+                            else if(errno == EPIPE)
+                            {
+                                cout << "#INFO: EPIPE" << endl;
                                 delete_DEAD_client(ClientStruct[i].fd, canRemoveDesc, numberClientsDescriptors_temp);
                             }
 
