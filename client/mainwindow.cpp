@@ -59,9 +59,16 @@ void MainWindow::onTextChanged()
 
     //delete chars
     if(lenServer > lenQText) {
-            diffSearch(lenQText);
-            for(int i = lenServer - 1; i >= lenQText; i--) {
-                send_to_server(FLAG_RM, 0, ' ');
+            if(lenQText == 0)
+            {
+                send_to_server(FLAG_DEL_ALL, 0, ' ');
+            }
+            else
+            {
+                diffSearch(lenQText);
+                for(int i = lenServer - 1; i >= lenQText; i--) {
+                    send_to_server(FLAG_RM, 0, ' ');
+                }
             }
         }
 

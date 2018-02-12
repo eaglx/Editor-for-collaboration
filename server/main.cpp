@@ -141,6 +141,10 @@ void control_client()
                         {
                             //TODO
                         }
+                        else if(msgInfo.flag == FLAG_SELECTION_OFF)
+                        {
+                            //TODO
+                        }
                         else
                         {
                             cout << "#DEBUG: Recive wrong flag " << msgInfo.flag << endl;
