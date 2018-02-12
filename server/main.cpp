@@ -112,6 +112,10 @@ void control_client()
                     if(dataSizeSendORRecv == RECIVE_ERROR)
                     {
                         error_read_client(ClientStruct[i].fd);
+                        if(errno == ECONNRESET)
+                        {
+                            cout << "#INFO: ECONNRESET" << endl;
+                        }
                     }
                     else if(dataSizeSendORRecv == RECIVE_ZERO)
                     {
@@ -140,6 +144,11 @@ void control_client()
                                 delete_DEAD_client(ClientStruct[i].fd, canRemoveDesc, numberClientsDescriptors_temp);
                                 delete [] buff_tm;
                                 continue;
+                            }
+
+                            if(errno == ECONNRESET)
+                            {
+                                cout << "#INFO: ECONNRESET" << endl;
                             }*/
                             fileBuffer[msgInfo.posX] = msgInfo.chr;
                             // TODO
@@ -159,6 +168,11 @@ void control_client()
                                 delete_DEAD_client(ClientStruct[i].fd, canRemoveDesc, numberClientsDescriptors_temp);
                                 delete [] buff_tm;
                                 continue;
+                            }
+
+                            if(errno == ECONNRESET)
+                            {
+                                cout << "#INFO: ECONNRESET" << endl;
                             }*/
                             fileBuffer.append(string(1, msgInfo.chr));
                             // TODO
@@ -188,6 +202,12 @@ void control_client()
                                 cout << strerror(errno) << " :: " << errno << endl;
                             }
                             else if(dataSizeSendORRecv == SEND_ALL_DATA) { cout << "#DEBUG: Data send to " << ClientStruct[cli].fd << endl; }
+
+                            if(errno == ECONNRESET)
+                            {
+                                cout << "#INFO: ECONNRESET" << endl;
+                                delete_DEAD_client(ClientStruct[i].fd, canRemoveDesc, numberClientsDescriptors_temp);
+                            }
 
                             /*if((msgInfo.flag == FLAG_REPLACE) || (msgInfo.flag == FLAG_APPEND))
                             {
