@@ -17,8 +17,8 @@ void MainWindow::internalMessage(int internalFlag)
     disconnect(ui->textEdit, 0, this, 0);
     if(internalFlag == FLAG_UPDATE_FROM_SERV)
         ui->textEdit->setPlainText(QString::fromStdString(dataFromServer));
-    //else if(internalFlag == FLAG_UPDATE_SELECTION)
-    //TODO
+    else if(internalFlag == FLAG_UPDATE_SELECTION)
+        ; //TODO
 
     if(lenDataFromSerwer < curPos)
         cursor.setPosition(lenDataFromSerwer);
@@ -53,29 +53,25 @@ void MainWindow::onTextChanged()
 
     //add new chars
     if(lenQText > lenServer) {
-        int lenToAdd = lenQText - lenServer;
-        std::string toSend = "";
-
         diffSearch(lenServer);
 
-        toSend.append(dataFromQTextEdit,lenServer,lenToAdd);
-
-        send_to_server(FLAG_SEND_STRING, lenToAdd, ' ');
-        send_to_server(toSend);
+        for(int i = lenServer; i < lenQText; i++) {
+            send_to_server(FLAG_APPEND, 0, dataFromQTextEdit[i]);
+        }
     }
 
     //delete chars
     if(lenServer > lenQText) {
-
-        int lenToRM = lenServer - lenQText;
-        if(lenQText == 0)
+            if(lenQText == 0)
             {
                 send_to_server(FLAG_DEL_ALL, 0, ' ');
             }
             else
             {
                 diffSearch(lenQText);
-                send_to_server(FLAG_RM, lenToRM, ' ');
+                for(int i = lenServer - 1; i >= lenQText; i--) {
+                    send_to_server(FLAG_RM, 0, ' ');
+                }
             }
         }
 
