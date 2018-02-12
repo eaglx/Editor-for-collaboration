@@ -246,6 +246,7 @@ int accept_clients()
             {
                 cout << "#DEBUG-accept_clients: Send error" << endl;
                 delete [] buffer;
+                close(nClientDesc);
                 continue;
             }
             if(fileBuffer == "?/?/#") { fileBuffer = ""; }
