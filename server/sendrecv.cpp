@@ -9,7 +9,7 @@ int send_all(int socket, void *buffer, size_t length)
     {
         i = send(socket, ptr, length, 0);
         if (i < 0) return SEND_ERROR;
-        else if(i == 0) return RECIVE_ZERO;
+        else if(i == 0) return SEND_ZERO;
         ptr += i;
         length -= i;
     }

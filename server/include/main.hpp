@@ -38,7 +38,8 @@
 #define FLAG_END_SELECTION 667
 #define FLAG_SELECTION_OFF 668
 
-#define SEND_ALL_DATA 0
+#define SEND_ALL_DATA 1
+#define SEND_ZERO 0
 #define SEND_ERROR -1
 #define RECIVE_ZERO 0
 #define RECIVE_ERROR -1

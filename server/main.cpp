@@ -208,7 +208,7 @@ void control_client()
                                 cout << strerror(errno) << " :: " << errno << endl;
                             }
                             else if(dataSizeSendORRecv == SEND_ALL_DATA) { cout << "#DEBUG: Data send to " << ClientStruct[cli].fd << endl; }
-                            else if(dataSizeSendORRecv == RECIVE_ZERO) { delete_DEAD_client(ClientStruct[i].fd, canRemoveDesc, numberClientsDescriptors_temp); }
+                            else if(dataSizeSendORRecv == SEND_ZERO) { delete_DEAD_client(ClientStruct[i].fd, canRemoveDesc, numberClientsDescriptors_temp); }
 
                             if(errno == ECONNRESET)
                             {
