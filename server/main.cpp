@@ -144,7 +144,7 @@ void control_client()
                         }
                         else if(msgInfo.flag == FLAG_REPLACE_CHARS)
                         {
-                            /*buff_tm = new char[msgInfo.length];
+                            buff_tm = new char[msgInfo.length];
                             dataSizeSendORRecv = recv_all(ClientStruct[i].fd, buff_tm, msgInfo.length);
                             if(dataSizeSendORRecv == RECIVE_ERROR)
                             {
@@ -158,11 +158,12 @@ void control_client()
                                 delete [] buff_tm;
                                 continue;
                             }
-
-                            if(errno == ECONNRESET)
+                            string st = "";
+                            for(int st_l = 0; st_l < msgInfo.length; st_l++)
                             {
-                                cout << "#INFO: ECONNRESET" << endl;
-                            }*/
+                                st = st + buff_tm[st_l];
+                            }
+                            fileBuffer.replace(msgInfo.posX, msgInfo.length, st);
                         }
                         else if(msgInfo.flag == FLAG_APPEND)
                         {
@@ -170,7 +171,7 @@ void control_client()
                         }
                         else if(msgInfo.flag == FLAG_APPEND_CHARS)
                         {
-                            /*buff_tm = new char[msgInfo.length];
+                            buff_tm = new char[msgInfo.length];
                             dataSizeSendORRecv = recv_all(ClientStruct[i].fd, buff_tm, msgInfo.length);
                             if(dataSizeSendORRecv == RECIVE_ERROR)
                             {
@@ -184,16 +185,17 @@ void control_client()
                                 delete [] buff_tm;
                                 continue;
                             }
-
-                            if(errno == ECONNRESET)
+                            string st = "";
+                            for(int st_l = 0; st_l < msgInfo.length; st_l++)
                             {
-                                cout << "#INFO: ECONNRESET" << endl;
-                            }*/
+                                st = st + buff_tm[st_l];
+                            }
+                            fileBuffer.append(st);
                         }
                         else if(msgInfo.flag == FLAG_RM)
                         {
                             if(fileBuffer.length() > 0)
-                                fileBuffer = fileBuffer.substr(0, (fileBuffer.size() - 1));
+                                fileBuffer = fileBuffer.substr(0, (fileBuffer.size() - msgInfo.posX));
                         }
                         else if(msgInfo.flag == FLAG_DEL_ALL)
                         {
