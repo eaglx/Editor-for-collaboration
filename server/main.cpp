@@ -115,10 +115,12 @@ void control_client()
                         if(errno == ECONNRESET)
                         {
                             cout << "#INFO: ECONNRESET" << endl;
+                            errno = 0;
                         }
                         else if(errno == EPIPE)
                         {
                             cout << "#INFO: EPIPE" << endl;
+                            errno = 0;
                         }
                     }
                     else if(dataSizeSendORRecv == RECIVE_ZERO)
@@ -206,16 +208,19 @@ void control_client()
                                 cout << strerror(errno) << " :: " << errno << endl;
                             }
                             else if(dataSizeSendORRecv == SEND_ALL_DATA) { cout << "#DEBUG: Data send to " << ClientStruct[cli].fd << endl; }
+                            else if(dataSizeSendORRecv == RECIVE_ZERO) { delete_DEAD_client(ClientStruct[i].fd, canRemoveDesc, numberClientsDescriptors_temp); }
 
                             if(errno == ECONNRESET)
                             {
                                 cout << "#INFO: ECONNRESET" << endl;
                                 delete_DEAD_client(ClientStruct[i].fd, canRemoveDesc, numberClientsDescriptors_temp);
+                                errno = 0;
                             }
                             else if(errno == EPIPE)
                             {
                                 cout << "#INFO: EPIPE" << endl;
                                 delete_DEAD_client(ClientStruct[i].fd, canRemoveDesc, numberClientsDescriptors_temp);
+                                errno = 0;
                             }
 
                             /*if((msgInfo.flag == FLAG_REPLACE) || (msgInfo.flag == FLAG_APPEND))
