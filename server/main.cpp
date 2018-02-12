@@ -71,7 +71,7 @@ void control_client()
     bool canRemoveDesc;
     MESSAGE_INFO msgInfo;
     char bufferMSG[PACKETSIZE];
-    char *buff_tm;
+    char *buff_tm = NULL;
 
     cout << "#DEBUG: control_client lounched" << endl;
     while(!endProgram)
@@ -150,6 +150,7 @@ void control_client()
                             {
                                 error_read_client(ClientStruct[i].fd);
                                 delete [] buff_tm;
+                                buff_tm = NULL;
                                 continue;
                             }
                             else if(dataSizeSendORRecv == RECIVE_ZERO)
@@ -177,12 +178,14 @@ void control_client()
                             {
                                 error_read_client(ClientStruct[i].fd);
                                 delete [] buff_tm;
+                                buff_tm = NULL;
                                 continue;
                             }
                             else if(dataSizeSendORRecv == RECIVE_ZERO)
                             {
                                 delete_DEAD_client(ClientStruct[i].fd, canRemoveDesc, numberClientsDescriptors_temp);
                                 delete [] buff_tm;
+                                buff_tm = NULL;
                                 continue;
                             }
                             string st = "";
@@ -251,8 +254,12 @@ void control_client()
                                     cout << strerror(errno) << " :: " << errno << endl;
                                 }
                                 else if(dataSizeSendORRecv == SEND_ALL_DATA) { cout << "#DEBUG: Data send raw string to " << ClientStruct[cli].fd << endl; }
-                                delete [] buff_tm;
                             }
+                        }
+                        if(buff_tm != NULL)
+                        {
+                            delete [] buff_tm;
+                            buff_tm = NULL;
                         }
                     }
                 }
