@@ -23,12 +23,11 @@
 
 #define FLAG_INSERT_BEFORE 111
 #define FLAG_REPLACE 222
+#define FLAG_REPLACE_CHARS 223
 #define FLAG_APPEND 333
+#define FLAG_APPEND_CHARS 334
 #define FLAG_RM 444
 #define FLAG_DEL_ALL 555
-#define FLAG_START_SELECTION 666
-#define FLAG_END_SELECTION 667
-#define FLAG_SELECTION_OFF 668
 
 #define SEND_ALL_DATA 0
 #define SEND_ERROR -1
@@ -51,7 +50,7 @@ struct MESSAGE_INFO
 };
 
 void listen_from_server(MainWindow *);
-void send_to_server(int, int, int, char);
+void send_to_server(int, int, int, char, std::string);
 void serialize_msg(MESSAGE_INFO *, char *);
 void deserialize_msg(char *, MESSAGE_INFO *);
 

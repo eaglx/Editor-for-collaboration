@@ -1,5 +1,30 @@
 #include "connectdatamanage.h"
 
+int recv_all(int socket, void *buffer, size_t length)
+{
+    char *ptr = (char*) buffer;
+    int i;
+    int iteration = 0;
+    bool loopFinish = false;
+
+    while (!loopFinish)
+    {
+        i = recv(socket, ptr, length, 0);
+        if (i == -1) return -1;
+        else if(i == 0)
+        {
+            if(iteration == 0) return 0;
+            else loopFinish = true;
+        }
+        ptr += i;
+        length -= i;
+        ++iteration;
+        if(length <= 0) loopFinish = true;
+    }
+
+    return i;
+}
+
 void listen_from_server(MainWindow *w)
 {
     logFile << "#INFO: thread listen_from_server started\n";
@@ -32,8 +57,6 @@ void listen_from_server(MainWindow *w)
                 if(byteGet < 0)
                 {
                     logFile << "#ERROR: thread listen_from_server recv";
-                    //close(socketDesc);
-                    //return -2;
                     break;
                     errorRecv = true;
                 }
@@ -43,26 +66,40 @@ void listen_from_server(MainWindow *w)
             }
             if(errorRecv) { errorRecv = false; continue; }
             deserialize_msg(bufferMSG, &msg);
-            if(msg.flag == FLAG_INSERT_BEFORE)
+            if(msg.flag == FLAG_REPLACE)
             {
-                dataFromServer.insert(msg.posX, std::string(1, msg.chr));
+                dataFromServer[msg.posX] =  msg.chr;
             }
-            else if(msg.flag == FLAG_REPLACE)
+            else if(msg.flag == FLAG_REPLACE_CHARS)
             {
-                //while(unsigned(msg.posX + 1) > dataFromServer.size())
-                    //dataFromServer.resize(dataFromServer.size() + 1);
-                dataFromServer[msg.posX] =  msg.chr; //.replace(msg.posX, msg.posX+1, std::string(1, msg.chr));
+                char *buff_tm = new char[msg.length];
+                recv_all(socketDesc, buff_tm, msg.length);
+                std::string tm = "";
+                for(int o = 0; o < msg.length; o++)
+                {
+                    tm = tm + buff_tm[o];
+                }
+                dataFromServer.replace(msg.posX, msg.length, tm);
             }
             else if(msg.flag == FLAG_APPEND)
             {
                 dataFromServer.append(std::string(1, msg.chr));
             }
+            else if(msg.flag == FLAG_APPEND_CHARS)
+            {
+                char *buff_tm = new char[msg.length];
+                recv_all(socketDesc, buff_tm, msg.length);
+                std::string tm = "";
+                for(int o = 0; o < msg.length; o++)
+                {
+                    tm = tm + buff_tm[o];
+                }
+                dataFromServer.append(tm);
+            }
             else if(msg.flag == FLAG_RM)
             {
                 if(dataFromServer.length() > 0)
-                    dataFromServer = dataFromServer.substr(0, (dataFromServer.size() - 1));
-                //if(dataFromServer.length() == 0)
-                //    dataFromServer = "#Hey#";
+                    dataFromServer = dataFromServer.substr(0, (dataFromServer.size() - msg.posX));
             }
             else if(msg.flag == FLAG_DEL_ALL)
             {
@@ -80,7 +117,7 @@ void listen_from_server(MainWindow *w)
     logFile << "#INFO: thread listen_from_server stopped\n";
 }
 
-void send_to_server(int flag, int pos, int lng, char chr)
+void send_to_server(int flag, int pos, int lng, char chr, std::string toSend)
 {
     MESSAGE_INFO msg;
     char bufferMSG[PACKETSIZE];
@@ -103,12 +140,32 @@ void send_to_server(int flag, int pos, int lng, char chr)
         if(byteSend < 0)
         {
             logFile << "#ERROR: send_to_server send\n";
-            //close(socketDesc);
-            //return -3;
         }
         ptr += byteSend;
         length -= byteSend;
     }
+
+    if(lng != 0)
+    {
+        char *buf_tmp = new char[lng];
+        for(int bt = 0; bt < lng; bt++)
+        {
+            buf_tmp[bt] = toSend[bt];
+        }
+        ptr = buf_tmp;
+        while(lng > 0)
+        {
+            byteSend = send(socketDesc, ptr, lng, 0);
+            if(byteSend < 0)
+            {
+                logFile << "#ERROR: send_to_server send\n";
+            }
+            ptr += byteSend;
+            lng -= byteSend;
+        }
+        delete [] buf_tmp;
+    }
+
     readyM_CV = true;
     myConditionVariable.notify_all();
 }
