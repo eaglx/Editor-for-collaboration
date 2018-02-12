@@ -7,6 +7,7 @@
 #include <string>
 
 #define FLAG_UPDATE_FROM_SERV 1
+#define FLAG_UPDATE_SELECTION 2
 
 extern std::ofstream logFile;
 extern std::string dataFromQTextEdit;
@@ -33,6 +34,7 @@ public slots:
 
 private slots:
     void onTextChanged();
+    void getSelection();
     void internalMessage(int);
 
 private:
