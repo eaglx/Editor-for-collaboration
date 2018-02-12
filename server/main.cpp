@@ -109,19 +109,27 @@ void control_client()
                 if(ClientStruct[i].revents & POLLIN)
                 {
                     dataSizeSendORRecv = recv_all(ClientStruct[i].fd, bufferMSG, sizeof(bufferMSG)/sizeof(bufferMSG[0]));
+                    if(errno == ECONNRESET)
+                    {
+                        cout << "#INFO: ECONNRESET" << endl;
+                        errno = 0;
+                    }
+                    else if(errno == EPIPE)
+                    {
+                        cout << "#INFO: EPIPE" << endl;
+                        errno = 0;
+                    }
+                    else if(errno == EWOULDBLOCK)
+                    {
+                        cout << "#INFO: EWOULDBLOCK" << endl;
+                        delete_DEAD_client(ClientStruct[i].fd, canRemoveDesc, numberClientsDescriptors_temp);
+                        errno = 0;
+                        continue;
+                    }
+
                     if(dataSizeSendORRecv == RECIVE_ERROR)
                     {
                         error_read_client(ClientStruct[i].fd);
-                        if(errno == ECONNRESET)
-                        {
-                            cout << "#INFO: ECONNRESET" << endl;
-                            errno = 0;
-                        }
-                        else if(errno == EPIPE)
-                        {
-                            cout << "#INFO: EPIPE" << endl;
-                            errno = 0;
-                        }
                     }
                     else if(dataSizeSendORRecv == RECIVE_ZERO)
                     {
@@ -222,6 +230,12 @@ void control_client()
                                 delete_DEAD_client(ClientStruct[i].fd, canRemoveDesc, numberClientsDescriptors_temp);
                                 errno = 0;
                             }
+                            else if(errno == EWOULDBLOCK)
+                            {
+                                cout << "#INFO: EWOULDBLOCK" << endl;
+                                delete_DEAD_client(ClientStruct[i].fd, canRemoveDesc, numberClientsDescriptors_temp);
+                                errno = 0;
+                            }
 
                             /*if((msgInfo.flag == FLAG_REPLACE) || (msgInfo.flag == FLAG_APPEND))
                             {
@@ -275,6 +289,10 @@ int accept_clients()
     serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);
     serverAddr.sin_port = htons(PORT);
 
+    struct timeval timeout;
+    timeout.tv_sec = 1;
+    timeout.tv_usec = 0;
+
     char *buffer;
 
     nSocketDesc = socket(AF_INET, SOCK_STREAM, 0);
@@ -321,6 +339,19 @@ int accept_clients()
         close(nSocketDesc);
         return -2;
     }
+
+    if(setsockopt (nSocketDesc, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, sizeof(timeout)) < 0)
+    {
+        cout << "#ERROR: Can't setsockopt_SO_RCVTIMEO!!!" << endl;
+        return -2;
+    }
+
+    if(setsockopt (nSocketDesc, SOL_SOCKET, SO_SNDTIMEO, (char *)&timeout, sizeof(timeout)) < 0)
+    {
+        cout << "#ERROR: Can't setsockopt_SO_SNDTIMEO!!!" << endl;
+        return -2;
+    }
+
     fcntl(nSocketDesc, F_SETFL, O_NONBLOCK);
 
     if(getsockopt(nSocketDesc, SOL_SOCKET, SO_KEEPALIVE, &nFoo, &nFoo_size) < 0)
@@ -328,6 +359,7 @@ int accept_clients()
         cout << "#ERROR: Can't getsockopt!!!" << endl;
         return -2;
     }
+
     cout << "#INFO: SO_KEEPALIVE is " << (nFoo ? "ON" : "OFF") << endl;
 
     nBind = bind(nSocketDesc, (struct sockaddr *) &serverAddr, sizeof(struct sockaddr));
