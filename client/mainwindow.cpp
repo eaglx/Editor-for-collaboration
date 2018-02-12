@@ -17,7 +17,7 @@ void MainWindow::internalMessage(int internalFlag)
     disconnect(ui->textEdit, 0, this, 0);
     if(internalFlag == FLAG_UPDATE_FROM_SERV)
         ui->textEdit->setPlainText(QString::fromStdString(dataFromServer));
-    else if(internalFlag == FLAG_UPDATE_SELECTION)
+    //else if(internalFlag == FLAG_UPDATE_SELECTION)
         ; //TODO
 
     if(lenDataFromSerwer < curPos)
@@ -26,7 +26,7 @@ void MainWindow::internalMessage(int internalFlag)
         cursor.setPosition(curPos);
     ui->textEdit->setTextCursor(cursor);
     connect(ui->textEdit, SIGNAL(textChanged()), this, SLOT(onTextChanged()));
-    connect(ui->textEdit, SIGNAL(selectionChanged()), this, SLOT(getSelection()));
+    //connect(ui->textEdit, SIGNAL(selectionChanged()), this, SLOT(getSelection()));
 }
 
 void diffSearch(int len)
@@ -91,7 +91,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     connect(ui->textEdit, SIGNAL(textChanged()), this, SLOT(onTextChanged()));
-    connect(ui->textEdit, SIGNAL(selectionChanged()), this, SLOT(getSelection()));
+    //connect(ui->textEdit, SIGNAL(selectionChanged()), this, SLOT(getSelection()));
     connect(this, SIGNAL(messageSent(int)), this, SLOT(internalMessage(int)));
 }
 

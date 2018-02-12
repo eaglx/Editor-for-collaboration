@@ -13,8 +13,17 @@ string fileBuffer;
 
 void signal_callback_handler(int signum)
 {
+    int value;
     cout << "#DEBUG: Signum = " << signum <<endl;
-    endProgram = true;
+    while(true)
+    {
+        cout << "#SERVER: What to do?" << endl;
+        cout << "1 - close server\n2 - clear cache" << endl;
+        cin >> value;
+        if(value == 1) { endProgram = true; break; }
+        else if(value == 2) { fileBuffer.clear(); fileBuffer = ""; break; }
+        else { break; }
+    }
 }
 
 void pollfd_array_resize()
