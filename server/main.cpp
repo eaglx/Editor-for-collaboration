@@ -153,12 +153,13 @@ void control_client()
                                 buff_tm = NULL;
                                 continue;
                             }
-                            else if(dataSizeSendORRecv == RECIVE_ZERO)
+                            /*else if(dataSizeSendORRecv == RECIVE_ZERO)
                             {
-                                delete_DEAD_client(ClientStruct[i].fd, canRemoveDesc, numberClientsDescriptors_temp);
+                                //delete_DEAD_client(ClientStruct[i].fd, canRemoveDesc, numberClientsDescriptors_temp);
                                 delete [] buff_tm;
+                                buff_tm = NULL;
                                 continue;
-                            }
+                            }*/
                             string st = "";
                             for(int st_l = 0; st_l < msgInfo.length; st_l++)
                             {
@@ -181,13 +182,13 @@ void control_client()
                                 buff_tm = NULL;
                                 continue;
                             }
-                            else if(dataSizeSendORRecv == RECIVE_ZERO)
+                            /*else if(dataSizeSendORRecv == RECIVE_ZERO)
                             {
-                                delete_DEAD_client(ClientStruct[i].fd, canRemoveDesc, numberClientsDescriptors_temp);
+                                //delete_DEAD_client(ClientStruct[i].fd, canRemoveDesc, numberClientsDescriptors_temp);
                                 delete [] buff_tm;
                                 buff_tm = NULL;
                                 continue;
-                            }
+                            }*/
                             string st = "";
                             for(int st_l = 0; st_l < msgInfo.length; st_l++)
                             {
@@ -198,7 +199,9 @@ void control_client()
                         else if(msgInfo.flag == FLAG_RM)
                         {
                             if(fileBuffer.length() > 0)
+                            {
                                 fileBuffer = fileBuffer.substr(0, (fileBuffer.size() - msgInfo.posX));
+                            }
                         }
                         else if(msgInfo.flag == FLAG_DEL_ALL)
                         {
@@ -223,6 +226,17 @@ void control_client()
                             else if(dataSizeSendORRecv == SEND_ALL_DATA) { cout << "#DEBUG: Data send to " << ClientStruct[cli].fd << endl; }
                             else if(dataSizeSendORRecv == SEND_ZERO) { delete_DEAD_client(ClientStruct[i].fd, canRemoveDesc, numberClientsDescriptors_temp); }
 
+                            if((msgInfo.flag == FLAG_REPLACE_CHARS) || (msgInfo.flag == FLAG_APPEND_CHARS))
+                            {
+                                dataSizeSendORRecv = send_all(ClientStruct[cli].fd, buff_tm, msgInfo.length);
+                                if(dataSizeSendORRecv == SEND_ERROR)
+                                {
+                                    cout << "#DEBUG: Send raw string error to " << ClientStruct[cli].fd << endl;
+                                    cout << strerror(errno) << " :: " << errno << endl;
+                                }
+                                else if(dataSizeSendORRecv == SEND_ALL_DATA) { cout << "#DEBUG: Data send raw string to " << ClientStruct[cli].fd << endl; }
+                            }
+
                             if(errno == ECONNRESET)
                             {
                                 cout << "#INFO: ECONNRESET" << endl;
@@ -243,17 +257,6 @@ void control_client()
                                 delete_DEAD_client(ClientStruct[i].fd, canRemoveDesc, numberClientsDescriptors_temp);
                                 errno = 0;
                                 continue;
-                            }
-
-                            if((msgInfo.flag == FLAG_REPLACE_CHARS) || (msgInfo.flag == FLAG_APPEND_CHARS))
-                            {
-                                dataSizeSendORRecv = send_all(ClientStruct[cli].fd, buff_tm, msgInfo.length);
-                                if(dataSizeSendORRecv == SEND_ERROR)
-                                {
-                                    cout << "#DEBUG: Send raw string error to " << ClientStruct[cli].fd << endl;
-                                    cout << strerror(errno) << " :: " << errno << endl;
-                                }
-                                else if(dataSizeSendORRecv == SEND_ALL_DATA) { cout << "#DEBUG: Data send raw string to " << ClientStruct[cli].fd << endl; }
                             }
                         }
                         if(buff_tm != NULL)
