@@ -56,9 +56,9 @@ void MainWindow::onTextChanged()
         int lenToAdd = lenQText - lenServer;
         std::string toSend = "";
 
-        toSend = toSend + dataFromQTextEdit.at(lenServer);
-
         diffSearch(lenServer);
+
+        toSend.append(dataFromQTextEdit,lenServer,lenToAdd);
 
         send_to_server(FLAG_SEND_STRING, lenToAdd, ' ');
         send_to_server(toSend);
@@ -66,7 +66,8 @@ void MainWindow::onTextChanged()
 
     //delete chars
     if(lenServer > lenQText) {
-        int lenToRM = lenQText - lenServer;
+
+        int lenToRM = lenServer - lenQText;
         if(lenQText == 0)
             {
                 send_to_server(FLAG_DEL_ALL, 0, ' ');
@@ -74,9 +75,7 @@ void MainWindow::onTextChanged()
             else
             {
                 diffSearch(lenQText);
-                for(int i = lenServer - 1; i >= lenQText; i--) {
-                    send_to_server(FLAG_RM, lenToRM, ' ');
-                }
+                send_to_server(FLAG_RM, lenToRM, ' ');
             }
         }
 
