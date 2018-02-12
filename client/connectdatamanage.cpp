@@ -60,7 +60,7 @@ void listen_from_server(MainWindow *w)
             else if(msg.flag == FLAG_RM)
             {
                 if(dataFromServer.length() > 0)
-                    dataFromServer = dataFromServer.substr(0, (dataFromServer.size() - 1));
+                    dataFromServer = dataFromServer.substr(0, (dataFromServer.size() - msg.posX));
                 //if(dataFromServer.length() == 0)
                 //    dataFromServer = "#Hey#";
             }
@@ -68,6 +68,23 @@ void listen_from_server(MainWindow *w)
             {
                 dataFromServer.clear();
                 dataFromServer = "";
+            }
+            else if(msg.flag == FLAG_SEND_STRING)
+            {
+            #define BUFF_SIZE 50
+                char buffer[BUFF_SIZE];
+                int byteGet;
+                for(int i = 0; i < BUFF_SIZE; i++) { buffer[i] = '\0'; }
+                while(true)
+                {
+                    byteGet = recv(socketDesc, &buffer, sizeof(char) * BUFF_SIZE, 0);
+                    logFile << "#INFO: recv bytes " << byteGet << " FLAG_SEND_STRING\n";
+                    if(byteGet < 0) { logFile << "#ERROR: recv FLAG_SEND_STRING\n"; }
+                    else if(byteGet == 0) break;
+
+                    dataFromServer = dataFromServer + std::string(buffer);
+                    if(byteGet < int(sizeof(char) * BUFF_SIZE)) break;
+                }
             }
             else
             {
@@ -110,4 +127,26 @@ void send_to_server(int flag, int pos, char chr)
     }
     readyM_CV = true;
     myConditionVariable.notify_all();
+}
+
+void send_to_server(std::string toSend)
+{
+    int length = toSend.length();
+    char *buffer = new char[length];
+    for(int k = 0; k < length; k++) { buffer[k] = toSend[k]; }
+    char *ptr = buffer;
+    int i;
+
+    while (length > 0)
+    {
+        i = send(socketDesc, ptr, length, 0);
+        if (i < 0)
+        {
+            logFile << "#ERROR: send_to_server toSend\n";
+            break;
+        }
+        ptr += i;
+        length -= i;
+    }
+    delete [] buffer;
 }
