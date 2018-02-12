@@ -242,7 +242,7 @@ int accept_clients()
             buffer = new char[fileBuffer.size()];
             for(unsigned int k = 0; k < fileBuffer.size(); k++) { buffer[k] = fileBuffer[k]; }
             cout << "#DEBUG-accept_clients: Start send data with size " << fileBuffer.size() << endl;
-            if(send_all(nClientDesc, buffer, fileBuffer.size()) < SEND_ERROR)
+            if(send_all(nClientDesc, buffer, fileBuffer.size()) == SEND_ERROR)
             {
                 cout << "#DEBUG-accept_clients: Send error" << endl;
                 delete [] buffer;
