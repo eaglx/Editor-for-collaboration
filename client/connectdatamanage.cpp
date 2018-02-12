@@ -80,7 +80,7 @@ void listen_from_server(MainWindow *w)
     logFile << "#INFO: thread listen_from_server stopped\n";
 }
 
-void send_to_server(int flag, int pos, char chr)
+void send_to_server(int flag, int pos, int lng, char chr)
 {
     MESSAGE_INFO msg;
     char bufferMSG[PACKETSIZE];
@@ -92,6 +92,7 @@ void send_to_server(int flag, int pos, char chr)
     sendDATA = true;
     msg.flag = flag;
     msg.posX = pos;
+    msg.length = lng;
     msg.chr = chr;
     serialize_msg(&msg, bufferMSG);
     length = sizeof(bufferMSG)/sizeof(bufferMSG[0]);

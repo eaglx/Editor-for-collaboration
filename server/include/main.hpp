@@ -12,6 +12,7 @@
 #include <iostream>
 #include <mutex>
 #include <netinet/in.h>
+#include <netinet/tcp.h>
 #include <stdio.h>
 #include <string>
 #include <signal.h>
@@ -50,6 +51,7 @@ struct MESSAGE_INFO
 {
     int flag;
     int posX;
+    int length;
     char chr;
 };
 

@@ -33,7 +33,7 @@ void diffSearch(int len)
 {
     for(int i = 0; i < len; i++) {
         if(dataFromServer[i] != dataFromQTextEdit[i]) {
-           send_to_server(FLAG_REPLACE, i, dataFromQTextEdit[i]);
+           send_to_server(FLAG_REPLACE, i, 0, dataFromQTextEdit[i]);
         }
     }
 }
@@ -56,7 +56,7 @@ void MainWindow::onTextChanged()
         diffSearch(lenServer);
 
         for(int i = lenServer; i < lenQText; i++) {
-            send_to_server(FLAG_APPEND, 0, dataFromQTextEdit[i]);
+            send_to_server(FLAG_APPEND, 0, 0, dataFromQTextEdit[i]);
         }
     }
 
@@ -64,13 +64,13 @@ void MainWindow::onTextChanged()
     if(lenServer > lenQText) {
             if(lenQText == 0)
             {
-                send_to_server(FLAG_DEL_ALL, 0, ' ');
+                send_to_server(FLAG_DEL_ALL, 0, 0, ' ');
             }
             else
             {
                 diffSearch(lenQText);
                 for(int i = lenServer - 1; i >= lenQText; i--) {
-                    send_to_server(FLAG_RM, 0, ' ');
+                    send_to_server(FLAG_RM, 0, 0, ' ');
                 }
             }
         }

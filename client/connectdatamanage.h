@@ -46,11 +46,12 @@ struct MESSAGE_INFO
 {
     int flag;
     int posX;
+    int length;
     char chr;
 };
 
 void listen_from_server(MainWindow *);
-void send_to_server(int, int, char);
+void send_to_server(int, int, int, char);
 void serialize_msg(MESSAGE_INFO *, char *);
 void deserialize_msg(char *, MESSAGE_INFO *);
 

@@ -48,6 +48,21 @@ void pollfd_array_resize()
     }
 }
 
+void delete_DEAD_client(int sockCli, bool &canRemoveDesc, int &numberClientsDescriptors_temp)
+{
+    cout << "#DEBUG: Client with descriptor " << sockCli << " closed the connection." << endl;
+    close(sockCli);
+    canRemoveDesc = true;
+    --numberClientsDescriptors_temp;
+    clientsDescriptors.erase(std::remove(clientsDescriptors.begin(), clientsDescriptors.end(), sockCli), clientsDescriptors.end());
+}
+
+void error_read_client(int sockCli)
+{
+    cout << "#DEBUG: Send error to " << sockCli << endl;
+    cout << strerror(errno) << " :: " << errno << endl;
+}
+
 void control_client()
 {
     int readypoll;
@@ -57,6 +72,7 @@ void control_client()
     MESSAGE_INFO msgInfo;
     char bufferMSG[PACKETSIZE];
     ofstream myfile;
+    char *buff_tm;
 
     cout << "#DEBUG: control_client lounched" << endl;
     while(!endProgram)
@@ -95,16 +111,11 @@ void control_client()
                     dataSizeSendORRecv = recv_all(ClientStruct[i].fd, bufferMSG, sizeof(bufferMSG)/sizeof(bufferMSG[0]));
                     if(dataSizeSendORRecv == RECIVE_ERROR)
                     {
-                        cout << "#DEBUG: While recv from descriptor " << ClientStruct[i].fd << " get error." << endl;
-                        cout << strerror(errno) << " :: " << errno << endl;
+                        error_read_client(ClientStruct[i].fd);
                     }
                     else if(dataSizeSendORRecv == RECIVE_ZERO)
                     {
-                        cout << "#DEBUG: Client with descriptor " << ClientStruct[i].fd << " closed the connection." << endl;
-                        close(ClientStruct[i].fd);
-                        canRemoveDesc = true;
-                        --numberClientsDescriptors_temp;
-                        clientsDescriptors.erase(std::remove(clientsDescriptors.begin(), clientsDescriptors.end(), ClientStruct[i].fd), clientsDescriptors.end());
+                        delete_DEAD_client(ClientStruct[i].fd, canRemoveDesc, numberClientsDescriptors_temp);
                     }
                     else
                     {
@@ -112,48 +123,55 @@ void control_client()
                         cout << "#DEBUG: Recive flag " << msgInfo.flag << " from " <<  ClientStruct[i].fd << endl;
                         if(msgInfo.flag == FLAG_INSERT_BEFORE)
                         {
-                            //cout << "#DEBUG: FLAG_INSERT_BEFORE" << endl;
                             fileBuffer.insert(msgInfo.posX, string(1, msgInfo.chr));
                         }
                         else if(msgInfo.flag == FLAG_REPLACE)
                         {
-                            //cout << "#DEBUG: FLAG_REPLACE" << endl;
-                            //while(unsigned(msgInfo.posX + 1) > fileBuffer.size())
-                                //fileBuffer.resize(fileBuffer.size() + 1);
-                            fileBuffer[msgInfo.posX] = msgInfo.chr; //.replace(msgInfo.posX, msgInfo.posX+1, string(1, msgInfo.chr));
+                            /*buff_tm = new char[msgInfo.length];
+                            dataSizeSendORRecv = recv_all(ClientStruct[i].fd, buff_tm, msgInfo.length);
+                            if(dataSizeSendORRecv == RECIVE_ERROR)
+                            {
+                                error_read_client(ClientStruct[i].fd);
+                                delete [] buff_tm;
+                                continue;
+                            }
+                            else if(dataSizeSendORRecv == RECIVE_ZERO)
+                            {
+                                delete_DEAD_client(ClientStruct[i].fd, canRemoveDesc, numberClientsDescriptors_temp);
+                                delete [] buff_tm;
+                                continue;
+                            }*/
+                            fileBuffer[msgInfo.posX] = msgInfo.chr;
+                            // TODO
                         }
                         else if(msgInfo.flag == FLAG_APPEND)
                         {
-                            //cout << "#DEBUG: FLAG_APPEND" << endl;
-                            //if(fileBuffer.length() != unsigned(msgInfo.posX - 1))
-                            //    cout << "#DEBUG: Append in wrong place " << endl;
+                            /*buff_tm = new char[msgInfo.length];
+                            dataSizeSendORRecv = recv_all(ClientStruct[i].fd, buff_tm, msgInfo.length);
+                            if(dataSizeSendORRecv == RECIVE_ERROR)
+                            {
+                                error_read_client(ClientStruct[i].fd);
+                                delete [] buff_tm;
+                                continue;
+                            }
+                            else if(dataSizeSendORRecv == RECIVE_ZERO)
+                            {
+                                delete_DEAD_client(ClientStruct[i].fd, canRemoveDesc, numberClientsDescriptors_temp);
+                                delete [] buff_tm;
+                                continue;
+                            }*/
                             fileBuffer.append(string(1, msgInfo.chr));
+                            // TODO
                         }
                         else if(msgInfo.flag == FLAG_RM)
                         {
-                            //cout << "#DEBUG: FLAG_RM" << endl;
                             if(fileBuffer.length() > 0)
                                 fileBuffer = fileBuffer.substr(0, (fileBuffer.size() - 1));
-                            //if(fileBuffer.length() == 0)
-                                //fileBuffer = "";
                         }
                         else if(msgInfo.flag == FLAG_DEL_ALL)
                         {
-                            //cout << "#DEBUG: FLAG_DEL_ALL" << endl;
                             fileBuffer.clear();
                             fileBuffer = "";
-                        }
-                        else if(msgInfo.flag == FLAG_START_SELECTION)
-                        {
-                            //TODO
-                        }
-                        else if(msgInfo.flag == FLAG_END_SELECTION)
-                        {
-                            //TODO
-                        }
-                        else if(msgInfo.flag == FLAG_SELECTION_OFF)
-                        {
-                            //TODO
                         }
                         else
                         {
@@ -170,6 +188,18 @@ void control_client()
                                 cout << strerror(errno) << " :: " << errno << endl;
                             }
                             else if(dataSizeSendORRecv == SEND_ALL_DATA) { cout << "#DEBUG: Data send to " << ClientStruct[cli].fd << endl; }
+
+                            /*if((msgInfo.flag == FLAG_REPLACE) || (msgInfo.flag == FLAG_APPEND))
+                            {
+                                dataSizeSendORRecv = send_all(ClientStruct[cli].fd, buff_tm, msgInfo.length);
+                                if(dataSizeSendORRecv == SEND_ERROR)
+                                {
+                                    cout << "#DEBUG: Send raw string error to " << ClientStruct[cli].fd << endl;
+                                    cout << strerror(errno) << " :: " << errno << endl;
+                                }
+                                else if(dataSizeSendORRecv == SEND_ALL_DATA) { cout << "#DEBUG: Data send raw string to " << ClientStruct[cli].fd << endl; }
+                                delete [] buff_tm;
+                            }*/
                         }
                         myfile.open("cache.dump");
                         myfile << fileBuffer;
@@ -204,6 +234,7 @@ int accept_clients()
     struct sockaddr_in serverAddr, clientAddr;
     socklen_t sockAddrSize;
     int nFoo = 1;
+    socklen_t nFoo_size = sizeof(nFoo);
     sockAddrSize = sizeof(struct sockaddr);
 
     serverAddr.sin_family = AF_INET;
@@ -218,21 +249,65 @@ int accept_clients()
         cout << "#ERROR: Can't create a socket!!!" << endl;
         return -1;
     }
-    setsockopt(nSocketDesc, SOL_SOCKET, SO_REUSEADDR, (char *) &nFoo, sizeof(nFoo));
+    if(setsockopt(nSocketDesc, SOL_SOCKET, SO_REUSEADDR, (char *) &nFoo, sizeof(nFoo)) < 0)
+    {
+        cout << "#ERROR: Can't setsockopt_SO_REUSEADDR!!!" << endl;
+        close(nSocketDesc);
+        return -2;
+    }
+    if(setsockopt(nSocketDesc, SOL_SOCKET, SO_KEEPALIVE, (char *) &nFoo, sizeof(nFoo)) < 0)
+    {
+        cout << "#ERROR: Can't setsockopt_SO_KEEPALIVE!!!" << endl;
+        close(nSocketDesc);
+        return -2;
+    }
+    /* Set the number of seconds the connection must be idle before sending a KA probe. */
+    nFoo = 20;
+    if (setsockopt(nSocketDesc, IPPROTO_TCP, TCP_KEEPIDLE, &nFoo, sizeof(nFoo)) < 0)
+    {
+        cout << "#ERROR: Can't setsockopt_TCP_KEEPIDLE!!!" << endl;
+        close(nSocketDesc);
+        return -2;
+    }
+
+    /* Set how often in seconds to resend an unacked KA probe. */
+    nFoo = 5;
+    if (setsockopt(nSocketDesc, IPPROTO_TCP, TCP_KEEPINTVL, &nFoo, sizeof(nFoo)) < 0)
+    {
+        cout << "#ERROR: Can't setsockopt_TCP_KEEPINTVL!!!" << endl;
+        close(nSocketDesc);
+        return -2;
+    }
+
+    /* Set how many times to resend a KA probe if previous probe was unacked. */
+    nFoo = 3;
+    if (setsockopt(nSocketDesc, IPPROTO_TCP, TCP_KEEPCNT, &nFoo, sizeof(nFoo)) < 0)
+    {
+        cout << "#ERROR: Can't setsockopt_TCP_KEEPCNT!!!" << endl;
+        close(nSocketDesc);
+        return -2;
+    }
     fcntl(nSocketDesc, F_SETFL, O_NONBLOCK);
+
+    if(getsockopt(nSocketDesc, SOL_SOCKET, SO_KEEPALIVE, &nFoo, &nFoo_size) < 0)
+    {
+        cout << "#ERROR: Can't getsockopt!!!" << endl;
+        return -2;
+    }
+    cout << "#INFO: SO_KEEPALIVE is " << (nFoo ? "ON" : "OFF") << endl;
 
     nBind = bind(nSocketDesc, (struct sockaddr *) &serverAddr, sizeof(struct sockaddr));
     if(nBind < 0)
     {
         cout << "#ERROR: Can't bind a socket!!!" << endl;
-        return -2;
+        return -3;
     }
 
     nListen = listen(nSocketDesc, QUEUE_SIZE);
     if(nListen < 0)
     {
         cout << "#ERROR: Can't set listen queue!!!" << endl;
-        return -3;
+        return -4;
     }
 
     cout << "#INFO: accept_clients start" << endl;
