@@ -274,7 +274,7 @@ int main()
         }
         myfile.close();
     }
-    else fileBuffer = "#Hey#";
+    else fileBuffer = "";
     thread controlClientThread(control_client);
     while(accept_clients());
     controlClientThread.join();

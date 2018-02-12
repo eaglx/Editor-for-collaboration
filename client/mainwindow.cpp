@@ -9,7 +9,6 @@ void MainWindow::sendMessage(int internalFlag)
 
 void MainWindow::internalMessage(int internalFlag)
 {
-    qDebug() << "internalMessage: " << internalFlag;
     QTextCursor cursor = ui->textEdit->textCursor(); // Get cursor position
 
     int lenDataFromSerwer = dataFromServer.length();
@@ -18,7 +17,6 @@ void MainWindow::internalMessage(int internalFlag)
     disconnect(ui->textEdit, 0, this, 0);
     if(internalFlag == FLAG_UPDATE_FROM_SERV)
         ui->textEdit->setPlainText(QString::fromStdString(dataFromServer));
-    qDebug() << "dataFromServer: \n" << QString::fromStdString(dataFromServer);
 
     if(lenDataFromSerwer < curPos)
         cursor.setPosition(lenDataFromSerwer);
@@ -32,8 +30,7 @@ void diffSearch(int len)
 {
     for(int i = 0; i < len; i++) {
         if(dataFromServer[i] != dataFromQTextEdit[i]) {
-            qDebug() << "FLAG_REPLACE";
-            send_to_server(FLAG_REPLACE, i, dataFromQTextEdit[i]);
+           send_to_server(FLAG_REPLACE, i, dataFromQTextEdit[i]);
         }
     }
 }
@@ -42,8 +39,6 @@ void diffSearch(int len)
 void MainWindow::onTextChanged()
 {
     dataFromQTextEdit = ui->textEdit->toPlainText().toUtf8().constData();
-    qDebug() << "dataFromQTextEdit: \n" << QString::fromStdString(dataFromQTextEdit);
-    qDebug() << "dataFromServer: \n" << QString::fromStdString(dataFromServer);
 
     int lenServer = dataFromServer.length();
     int lenQText = dataFromQTextEdit.length();
@@ -58,7 +53,6 @@ void MainWindow::onTextChanged()
         diffSearch(lenServer);
 
         for(int i = lenServer; i < lenQText; i++) {
-            qDebug() << "FLAG_APPEND";
             send_to_server(FLAG_APPEND, 0, dataFromQTextEdit[i]);
         }
     }
@@ -67,7 +61,6 @@ void MainWindow::onTextChanged()
     if(lenServer > lenQText) {
             diffSearch(lenQText);
             for(int i = lenServer - 1; i >= lenQText; i--) {
-                qDebug() << "FLAG_RM";
                 send_to_server(FLAG_RM, 0, ' ');
             }
         }
