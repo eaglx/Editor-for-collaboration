@@ -19,6 +19,7 @@ void signal_callback_handler(int signum)
     {
         cout << "#SERVER: What to do?" << endl;
         cout << "1 - close server\n2 - clear cache" << endl;
+        cout << "Choose: ";
         cin >> value;
         if(value == 1) { endProgram = true; break; }
         else if(value == 2) { fileBuffer.clear(); fileBuffer = ""; break; }
