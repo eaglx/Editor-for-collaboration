@@ -71,7 +71,6 @@ void control_client()
     bool canRemoveDesc;
     MESSAGE_INFO msgInfo;
     char bufferMSG[PACKETSIZE];
-    ofstream myfile;
     char *buff_tm;
 
     cout << "#DEBUG: control_client lounched" << endl;
@@ -139,11 +138,11 @@ void control_client()
                     {
                         deserialize_msg(bufferMSG, &msgInfo);
                         cout << "#DEBUG: Recive flag " << msgInfo.flag << " from " <<  ClientStruct[i].fd << endl;
-                        if(msgInfo.flag == FLAG_INSERT_BEFORE)
+                        if(msgInfo.flag == FLAG_REPLACE)
                         {
-                            fileBuffer.insert(msgInfo.posX, string(1, msgInfo.chr));
+                            fileBuffer[msgInfo.posX] = msgInfo.chr;
                         }
-                        else if(msgInfo.flag == FLAG_REPLACE)
+                        else if(msgInfo.flag == FLAG_REPLACE_CHARS)
                         {
                             /*buff_tm = new char[msgInfo.length];
                             dataSizeSendORRecv = recv_all(ClientStruct[i].fd, buff_tm, msgInfo.length);
@@ -164,11 +163,13 @@ void control_client()
                             {
                                 cout << "#INFO: ECONNRESET" << endl;
                             }*/
-                            fileBuffer[msgInfo.posX] = msgInfo.chr;
-                            // TODO
                         }
                         else if(msgInfo.flag == FLAG_APPEND)
                         {
+                            fileBuffer.append(string(1, msgInfo.chr));
+                        }
+                        else if(msgInfo.flag == FLAG_APPEND_CHARS)
+                        {
                             /*buff_tm = new char[msgInfo.length];
                             dataSizeSendORRecv = recv_all(ClientStruct[i].fd, buff_tm, msgInfo.length);
                             if(dataSizeSendORRecv == RECIVE_ERROR)
@@ -188,8 +189,6 @@ void control_client()
                             {
                                 cout << "#INFO: ECONNRESET" << endl;
                             }*/
-                            fileBuffer.append(string(1, msgInfo.chr));
-                            // TODO
                         }
                         else if(msgInfo.flag == FLAG_RM)
                         {
@@ -206,6 +205,7 @@ void control_client()
                             cout << "#DEBUG: Recive wrong flag " << msgInfo.flag << endl;
                             continue;
                         }
+
                         serialize_msg(&msgInfo, bufferMSG);
                         for(int cli = 0; cli < numberClientsDescriptors; cli++)
                         {
@@ -223,21 +223,24 @@ void control_client()
                                 cout << "#INFO: ECONNRESET" << endl;
                                 delete_DEAD_client(ClientStruct[i].fd, canRemoveDesc, numberClientsDescriptors_temp);
                                 errno = 0;
+                                continue;
                             }
                             else if(errno == EPIPE)
                             {
                                 cout << "#INFO: EPIPE" << endl;
                                 delete_DEAD_client(ClientStruct[i].fd, canRemoveDesc, numberClientsDescriptors_temp);
                                 errno = 0;
+                                continue;
                             }
                             else if(errno == EWOULDBLOCK)
                             {
                                 cout << "#INFO: EWOULDBLOCK" << endl;
                                 delete_DEAD_client(ClientStruct[i].fd, canRemoveDesc, numberClientsDescriptors_temp);
                                 errno = 0;
+                                continue;
                             }
 
-                            /*if((msgInfo.flag == FLAG_REPLACE) || (msgInfo.flag == FLAG_APPEND))
+                            if((msgInfo.flag == FLAG_REPLACE_CHARS) || (msgInfo.flag == FLAG_APPEND_CHARS))
                             {
                                 dataSizeSendORRecv = send_all(ClientStruct[cli].fd, buff_tm, msgInfo.length);
                                 if(dataSizeSendORRecv == SEND_ERROR)
@@ -247,11 +250,8 @@ void control_client()
                                 }
                                 else if(dataSizeSendORRecv == SEND_ALL_DATA) { cout << "#DEBUG: Data send raw string to " << ClientStruct[cli].fd << endl; }
                                 delete [] buff_tm;
-                            }*/
+                            }
                         }
-                        myfile.open("cache.dump");
-                        myfile << fileBuffer;
-                        myfile.close();
                     }
                 }
             }
@@ -419,18 +419,7 @@ int main()
     signal(SIGPIPE, SIG_IGN);
 
     cout << "#DEBUG: @@@@ SERVER STARTED @@@@" << endl;
-    ifstream myfile("cache.dump");
-    if (myfile.is_open())
-    {
-        string line;
-        fileBuffer = "";
-        while ( getline (myfile, line) )
-        {
-          fileBuffer = fileBuffer + line;
-        }
-        myfile.close();
-    }
-    else fileBuffer = "";
+    fileBuffer = "";
     thread controlClientThread(control_client);
     while(accept_clients());
     controlClientThread.join();
